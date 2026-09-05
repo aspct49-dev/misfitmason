@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# secrets — the Roobet token lives here
+.env
+.env.local
+.env*.local
+
+# deploy
+.vercel
+dist/
+
+# Gumbo's own header artwork — kept locally as a reference, not ours to publish
+header.png
+
+# agent tooling — installed skills, not part of the app
+.agents/
+.claude/
+skills-lock.json
+
+# os
+.DS_Store
+Thumbs.db

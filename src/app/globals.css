@@ -1,0 +1,707 @@
+/* ===========================================================================
+   MISFIT MASONS — design system
+
+   Restrained dark UI. Flat surfaces, one accent, generous space. Colour is
+   sampled from the mascot artwork; there is no gold and no green, because those
+   belong to other sites in this category.
+
+   Deliberately absent: display/poster type, glow shadows, grain overlays,
+   gradient washes. Hierarchy comes from size, weight and space instead.
+   =========================================================================== */
+
+:root {
+  /* Surfaces — flat steps, no gradients. */
+  --bg: #080e16;
+  --surface: #0e1622;
+  --surface-2: #141f2e;
+  --border: #1e2c3d;
+  --border-strong: #2a3c52;
+
+  /* Text — all three pass 4.5:1 on --bg and --surface. */
+  --text: #f2f6fa;
+  --muted: #93a7bd;
+  --dim: #7b90a8;
+
+  --accent: #e31b45;      /* the tie and hat band */
+  --accent-hover: #f22a55;
+  /* Accent composited over --bg rather than an alpha value: surfaces over the
+     fixed texture layer have to be opaque. */
+  --accent-quiet: #1e0f1b;
+
+  --live: #3cf0f0;        /* vest piping — the LIVE state and nothing else */
+
+  --radius: 6px;
+  --radius-lg: 10px;
+
+  --sidebar-w: 236px;
+  --gutter: 24px;
+
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-mono-stack), ui-monospace, 'SF Mono', monospace;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Topographic contour overlay across the whole page. The artwork's luminance
+   was baked into alpha and the lines repainted crimson, so the texture picks up
+   the accent instead of greying the page — and no mask-mode support is needed.
+   Fixed rather than scrolled, so it reads as a surface the content sits on. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background: url("/texture.webp") center / cover no-repeat;
+}
+
+/* The home and leaderboard pages already carry their own artwork — the lodge
+   scene, the banner frames, the chalice — so the texture is pulled back there
+   to keep it from competing. The sparser pages keep the fuller weight. */
+body:has(.home-hero)::before,
+body:has(.lb-hero)::before { opacity: 0.09; }
+
+/* The shell has to sit above the overlay, or the fixed layer paints over it. */
+.shell { position: relative; z-index: 1; }
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+
+/* One focus treatment for the whole site. Its absence was the single worst
+   accessibility defect in the first pass. */
+:focus-visible {
+  outline: 2px solid var(--live);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* -------------------------------------------------------------- typography */
+
+h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+
+.h-page { font-size: clamp(30px, 4vw, 42px); }
+.h-section { font-size: clamp(21px, 2.4vw, 26px); }
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; }
+
+.lede { color: var(--muted); font-size: 16px; max-width: 62ch; }
+
+/* -------------------------------------------------------------- app shell */
+
+.shell { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.brand { display: flex; align-items: center; gap: 9px; padding: 4px 18px 24px; }
+.brand-logo { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.brand-name { font-size: 15px; font-weight: 700; letter-spacing: 0.01em; }
+
+.nav { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.nav-item:hover { background: var(--surface-2); color: var(--text); }
+.nav-item[data-active='true'] { background: var(--surface-2); color: var(--text); font-weight: 600; }
+
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.side-foot { padding: 20px 12px 24px; display: grid; gap: 10px; }
+.side-divider { height: 1px; background: var(--border); margin: 16px 18px 0; }
+
+/* Sidebar link cards. Each carries the contour texture inside it, the way
+   Gumbo patterns its Discord button — clipped to the card, and tinted by the
+   platform's own colour through --brand. */
+.side-link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--muted);
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.side-link svg { font-size: 17px; color: var(--brand); flex: none; }
+.side-link:hover { color: var(--text); border-color: var(--border-strong); }
+
+.side-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.3;
+  background: url("/texture.webp") center / 620% auto no-repeat;
+  transition: opacity 0.18s var(--ease);
+}
+.side-link:hover::before { opacity: 0.55; }
+
+/* Each card samples a different part of the contour map, so the stack does not
+   read as the same tile repeated eight times. */
+.side-link:nth-child(3n)::before { background-position: 22% 70%; }
+.side-link:nth-child(3n + 1)::before { background-position: 78% 24%; }
+
+/* Partner card: the same shell as the social links, carrying only the
+   operator's mark. A crimson fill made it shout over the nav above it, and
+   Roobet's gold mark went muddy on it. */
+.side-link-brand { justify-content: center; padding: 0 12px; }
+.side-link-brand img {
+  height: 19px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  opacity: 0.92;
+  transition: opacity 0.18s var(--ease);
+}
+.side-link-brand:hover img { opacity: 1; }
+
+.live-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.live-chip:hover { border-color: var(--border-strong); color: var(--muted); }
+.live-chip[data-live='true'] {
+  border-color: rgba(60, 240, 240, 0.4);
+  color: var(--live);
+}
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.live-chip[data-live='true'] .live-dot { animation: pulse 2s var(--ease) infinite; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  display: none;
+  position: sticky; top: 0; z-index: 60;
+  align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.burger {
+  width: 44px; height: 44px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid; place-content: center; gap: 5px;
+  cursor: pointer;
+}
+.burger span { display: block; width: 16px; height: 1.5px; background: var(--muted); border-radius: 1px; }
+
+/* -------------------------------------------------------------- buttons */
+
+/* Chunky game-UI buttons. Three things do the work:
+     1. a solid darker lip below the face (0 Npx 0 --lip), which is what reads as
+        physical rather than as a gradient;
+     2. a hard inset top highlight, not a soft sheen;
+     3. a press that moves the face down onto the lip and shortens it.
+   The lip is a *darker version of the button's own colour*, not black — a black
+   lip is invisible on a dark page, which is exactly why the glossy version
+   looked flat. Every colour therefore supplies both --face and --lip. */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  /* Title Case on every button label. Done in CSS rather than in the strings so
+     labels built from data — "Play {partner.name}" — get it too, and so the
+     underlying text stays sentence case for screen readers and copy-paste.
+     Deliberately NOT applied to .code-copy: it renders a literal referral code
+     that must not be recapitalised. */
+  text-transform: capitalize;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    filter 0.14s var(--ease),
+    transform 0.08s var(--ease),
+    box-shadow 0.08s var(--ease),
+    border-color 0.18s var(--ease),
+    color 0.18s var(--ease);
+}
+
+.btn:hover { filter: brightness(1.07); }
+
+.btn-primary {
+  --face: var(--accent);
+  --lip: #8d0f2c;
+  background: linear-gradient(180deg, #ef4a68 0%, var(--face) 58%, #cf1740 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.32);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 5px 0 var(--lip),
+    0 9px 16px rgba(0, 0, 0, 0.45);
+}
+.btn-primary:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.24),
+    0 1px 0 var(--lip),
+    0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.btn-secondary {
+  --face: #1c2a3c;
+  --lip: #0a111b;
+  background: linear-gradient(180deg, #24344a 0%, var(--face) 58%, #16222f 100%);
+  border-color: #33475f;
+  color: var(--text);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.11),
+    0 5px 0 var(--lip),
+    0 9px 16px rgba(0, 0, 0, 0.5);
+}
+.btn-secondary:hover { border-color: #446083; }
+.btn-secondary:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08), 0 1px 0 var(--lip), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Tertiary: flat on purpose. Three raised levels on one row is a toy shop. */
+.btn-quiet {
+  background: none;
+  border-color: var(--border);
+  color: var(--muted);
+  box-shadow: none;
+}
+.btn-quiet:hover { color: var(--text); border-color: var(--border-strong); filter: none; }
+.btn-quiet:active { transform: translateY(1px); }
+
+.btn-sm { min-height: 40px; padding: 0 18px; font-size: 13.5px; border-radius: 11px; }
+.btn-block { width: 100%; }
+
+/* -------------------------------------------------------------- layout */
+
+.wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding-inline: var(--gutter); }
+
+.section { padding-block: 40px; }
+.section + .section { padding-top: 8px; }
+
+.section-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.section-head h2 { flex: none; }
+.section-head .label { margin-left: auto; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+}
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* -------------------------------------------------------------- intro */
+
+.intro { padding-block: 40px 8px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+.intro h1 { max-width: 20ch; }
+.intro .lede { margin-top: 14px; }
+.intro-mascot { width: 132px; height: auto; flex: none; }
+
+/* -------------------------------------------------------------- board banner */
+
+.banner {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Mono is for figures only. Words at this size in a monospace face read as a
+   terminal, not as a prize. */
+.banner-pot {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(46px, 6.4vw, 76px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  margin: 12px 0 0;
+}
+.banner-caption { margin-top: 8px; }
+.banner-sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
+.banner-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* One clean placement, at a size that does not compete with the numbers. */
+.banner-mascot { width: 168px; height: auto; align-self: end; margin-bottom: -30px; }
+
+/* -------------------------------------------------------------- countdown */
+
+.countdown { display: flex; align-items: center; gap: 22px; padding: 18px 0 22px; }
+.cd-cells { display: flex; gap: 20px; }
+.cd-cell { min-width: 42px; }
+.cd-num { font-family: var(--font-mono); font-weight: 700; font-size: 22px; line-height: 1; }
+.cd-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-top: 6px; }
+
+/* -------------------------------------------------------------- tabs */
+
+.tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.tab:hover { color: var(--text); border-color: var(--border-strong); }
+.tab[data-active='true'] { background: var(--surface-2); border-color: var(--border-strong); color: var(--text); font-weight: 600; }
+.tab-pot { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent); }
+
+.badge-mock {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+.notice-mark { color: var(--dim); font-family: var(--font-mono); font-size: 12px; flex: none; }
+
+/* -------------------------------------------------------------- standings */
+
+/* Solid, not transparent: the page-wide texture is a fixed layer behind
+   everything, and a see-through table let the contour lines run straight across
+   the numbers. Every row state below is an opaque colour for the same reason. */
+.standings {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.standings-head,
+.rank-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 132px 92px;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.standings-head { height: 40px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.standings-head span:nth-child(3), .standings-head span:nth-child(4) { text-align: right; }
+
+.rank-row {
+  min-height: 66px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.18s var(--ease);
+}
+.rank-row:last-child { border-bottom: 0; }
+.rank-row:hover { background: var(--surface); }
+
+/* Rank 1 is marked with a solid accent rail rather than a glow. The tints are
+   the accent already composited over --bg, so they stay opaque. */
+.rank-row[data-rank='1'] { background: #1e0f1b; box-shadow: inset 3px 0 0 var(--accent); }
+.rank-row[data-rank='1']:hover { background: #27101d; }
+
+.rank-n { font-family: var(--font-mono); font-weight: 700; font-size: 15px; color: var(--dim); }
+.rank-row[data-rank='1'] .rank-n { color: var(--accent); }
+
+.player { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.player-badge { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.player-avatar {
+  width: 26px; height: 26px; border-radius: 50%; flex: none;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.player-name { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-game { font-size: 12.5px; color: var(--dim); }
+
+.rank-wager { font-family: var(--font-mono); font-size: 14px; color: var(--muted); text-align: right; }
+.rank-prize { font-family: var(--font-mono); font-weight: 700; font-size: 16px; text-align: right; }
+.rank-row[data-rank='1'] .rank-prize { color: var(--accent); }
+
+/* An open seat is the ordinary case at this community size, so it is stated
+   quietly rather than decorated. */
+.rank-row[data-open='true'] .player-name { color: var(--dim); font-weight: 500; }
+.rank-row[data-open='true'] .rank-prize { color: var(--muted); }
+
+/* -------------------------------------------------------------- code row */
+
+.code-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.code-row-text { flex: 1; min-width: 220px; color: var(--muted); font-size: 14px; }
+.code-row-text strong { color: var(--text); font-weight: 600; }
+
+.code-copy {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 40px; padding: 0 14px;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+  background-color: var(--surface-2);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.22)
+  );
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: border-color 0.18s var(--ease), filter 0.18s var(--ease), transform 0.12s var(--ease);
+}
+.code-copy:hover { border-color: #3a5170; filter: brightness(1.06); }
+.code-copy:active { transform: translateY(1px); }
+.code-copy-state { color: var(--dim); font-size: 11px; }
+
+/* -------------------------------------------------------------- stats */
+
+.stat-row { display: flex; flex-wrap: wrap; gap: 40px; }
+.stat-v { font-family: var(--font-mono); font-weight: 700; font-size: 26px; line-height: 1; }
+.stat-v.accent { color: var(--accent); }
+/* For values that are words rather than numbers — a game title in monospace at
+   26px looks like a code sample. */
+.stat-v.text { font-family: var(--font-sans); font-size: 22px; letter-spacing: -0.02em; }
+.stat-row .label { display: block; margin-top: 8px; }
+
+.kv { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.kv:last-child { border-bottom: 0; }
+.kv span { color: var(--dim); }
+.kv b { font-weight: 600; text-align: right; }
+
+/* -------------------------------------------------------------- steps */
+
+.step-n {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+.step h3 { font-size: 16px; margin-top: 10px; }
+.step p { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+
+/* -------------------------------------------------------------- placeholder */
+
+.pending {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 14px;
+}
+
+/* -------------------------------------------------------------- footer */
+
+.footer { margin-top: auto; padding-block: 40px 28px; background: var(--surface); border-top: 1px solid var(--border); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+.footer h4 { font-size: 12px; color: var(--dim); margin-bottom: 10px; font-weight: 600; letter-spacing: 0.04em; }
+.footer nav a { display: block; color: var(--muted); font-size: 14px; padding: 5px 0; }
+.footer nav a:hover { color: var(--text); }
+.footer-note { color: var(--dim); font-size: 13.5px; max-width: 44ch; margin-top: 12px; }
+
+.socials { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.social {
+  min-height: 32px; display: inline-flex; align-items: center; padding: 0 11px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 12.5px; color: var(--muted);
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.social:hover { border-color: var(--border-strong); color: var(--text); }
+
+.footer-legal {
+  margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  color: var(--dim); font-size: 13px;
+}
+.age {
+  display: inline-grid; place-items: center; width: 30px; height: 30px;
+  border-radius: 50%; border: 1px solid var(--border-strong);
+  font-size: 11px; font-weight: 700; color: var(--muted); flex: none;
+}
+
+/* -------------------------------------------------------------- prose */
+
+.prose { max-width: 68ch; }
+.prose h2 { font-size: 20px; margin: 34px 0 10px; }
+.prose h2:first-child { margin-top: 0; }
+.prose p, .prose li { color: var(--muted); font-size: 15px; }
+.prose li { margin-bottom: 6px; }
+.prose strong { color: var(--text); font-weight: 600; }
+.prose a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.prose a:hover { color: var(--text); }
+
+/* -------------------------------------------------------------- motion */
+
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.35s var(--ease), transform 0.35s var(--ease); }
+.reveal[data-shown='true'] { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------------- responsive */
+
+@media (max-width: 1024px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; z-index: 80; left: 0; top: 0; width: 272px;
+    transform: translateX(-100%); transition: transform 0.22s var(--ease);
+  }
+  .sidebar[data-open='true'] { transform: none; }
+  .topbar { display: flex; }
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 70; }
+
+  .intro { grid-template-columns: 1fr; gap: 20px; }
+  .intro-mascot { display: none; }
+  .banner { grid-template-columns: 1fr; padding: 26px 24px; }
+  .banner-mascot { display: none; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 720px) {
+  :root { --gutter: 16px; }
+
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+  /* The wagered column is the first thing to go: rank, player and prize are
+     what a phone reader is actually scanning for. */
+  .standings-head { display: none; }
+  .rank-row {
+    grid-template-columns: 34px 1fr auto;
+    gap: 4px 12px;
+    padding: 14px 16px;
+    min-height: 0;
+  }
+  .rank-n { grid-row: 1 / span 2; }
+  .player { grid-column: 2; grid-row: 1 / span 2; }
+  .rank-wager { grid-column: 3; grid-row: 1; font-size: 12.5px; color: var(--dim); }
+  .rank-prize { grid-column: 3; grid-row: 2; font-size: 17px; }
+
+  .countdown { gap: 14px; }
+  .cd-cells { gap: 16px; }
+  .stat-row { gap: 26px; }
+}

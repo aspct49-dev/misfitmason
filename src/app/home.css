@@ -1,0 +1,553 @@
+/* ===========================================================================
+   HOME — landing layout
+
+   Full-height hero with the mascot as the centrepiece, then stacked sections
+   beneath it: partner cards, a leaderboard promo with a podium, feature tiles.
+   The detailed standings table lives on /leaderboards.
+   =========================================================================== */
+
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  display: grid;
+  place-items: start center;
+  text-align: center;
+  padding: 56px 24px 430px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* --- Plane 1: the room. Slow drift, oversized so the movement never exposes
+   an edge. --- */
+.hero-lodge {
+  position: absolute;
+  inset: -5%;
+  z-index: 0;
+  pointer-events: none;
+  background: url("/lodge.webp") center bottom / cover no-repeat;
+  will-change: transform;
+  animation: lodgeDrift 34s ease-in-out infinite alternate;
+}
+
+@keyframes lodgeDrift {
+  from { transform: scale(1.04) translate3d(-0.9%, 0.4%, 0); }
+  to { transform: scale(1.09) translate3d(0.9%, -0.4%, 0); }
+}
+
+/* Composited with `screen`, where the artwork's black field is a no-op. */
+.hero-light {
+  position: absolute;
+  inset: -8% 0 auto;
+  height: 90%;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  background: url("/light-shaft.webp") center top / cover no-repeat;
+  animation: lightBreathe 6s ease-in-out infinite alternate;
+}
+
+@keyframes lightBreathe {
+  from { opacity: 0.38; }
+  to { opacity: 0.72; }
+}
+
+/* Darkens the margins, and knocks back the lit felt where the call to action
+   sits — the artwork is brightest exactly where the text goes. */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 76% at 50% 40%, transparent 30%, rgba(7, 12, 20, 0.78) 100%),
+    linear-gradient(to bottom, transparent 46%, rgba(7, 12, 20, 0.66) 74%, rgba(7, 12, 20, 0.9) 100%);
+}
+
+/* --- Plane 2: the wordmark, inside the dark opening of the arch. --- */
+.home-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  padding-top: 8px;
+}
+
+/* Sized to run wider than the mascot in front of it. If the type is narrower
+   than his silhouette the name disappears behind him and the layering reads as
+   a mistake rather than as depth. */
+.hero-wordmark {
+  display: grid;
+  margin: 22px 0 0;
+  font-size: clamp(50px, 13.5vw, 194px);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #e9eef5;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* PLACEHOLDER pill — restored after being lost in a CSS block replacement. */
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: rgba(14, 22, 34, 0.72);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hero-kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+/* --- Plane 3: the mascot. Anchored to the bottom rather than sitting in the
+   flow, so the table crops him at a fixed height whatever the viewport does. --- */
+.hero-mascot {
+  position: absolute;
+  left: 50%;
+  /* Well below the felt line, so the opaque table crops him at the chest. */
+  bottom: 40px;
+  z-index: 3;
+  width: clamp(250px, 34vw, 470px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: mascotArrive 820ms cubic-bezier(0.16, 1, 0.3, 1) 120ms backwards;
+}
+
+.hero-mascot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 30px 55px rgba(0, 0, 0, 0.75));
+  animation: mascotFloat 6s ease-in-out infinite alternate;
+}
+
+@keyframes mascotArrive {
+  from { opacity: 0; transform: translateX(-50%) translateY(30px) scale(0.97); }
+  to { opacity: 1; transform: translateX(-50%); }
+}
+
+@keyframes mascotFloat {
+  from { transform: translateY(0) rotate(-1.2deg); }
+  to { transform: translateY(-12px) rotate(1.2deg); }
+}
+
+/* --- Drifting props. Outer element rises, inner image sways, so the two
+   transforms never fight — frizzable's bubble mechanic. --- */
+.prop-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.props-front { z-index: 3; }
+
+.prop {
+  position: absolute;
+  top: 100%;
+  display: block;
+  will-change: transform;
+  animation: propRise linear infinite;
+}
+
+.prop img {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: propSway ease-in-out infinite alternate;
+}
+
+@keyframes propRise {
+  0% { opacity: 0; transform: translateY(0); }
+  8% { opacity: 1; }
+  84% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-125vh); }
+}
+
+@keyframes propSway {
+  from { transform: translateX(-16px) rotate(-9deg); }
+  to { transform: translateX(16px) rotate(9deg); }
+}
+
+/* --- Plane 4: the table, in front of the mascot. --- */
+.hero-table {
+  position: absolute;
+  inset: auto 0 -2px;
+  /* The felt only starts about two-thirds of the way down the artwork, so the
+     container height alone does not control where the opaque edge lands.
+     Scaling the image past 100% raises that edge above the call to action,
+     which is what makes the mascot crop and keeps the CTA on the table. */
+  height: 420px;
+  z-index: 4;
+  pointer-events: none;
+  background: url("/table-edge.webp") center bottom / 122% auto no-repeat;
+}
+
+/* --- In front of the table, on the felt. --- */
+.hero-cta {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  z-index: 5;
+  width: min(760px, calc(100% - 48px));
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  padding: 18px 20px 4px;
+  /* The felt line and the mascot's shoulders land in this band, so the copy
+     carries its own soft scrim rather than relying on the artwork being dark. */
+  background: radial-gradient(70% 130% at 50% 60%, rgba(7, 12, 20, 0.86), transparent 72%);
+}
+
+.hero-tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(14px, 1.5vw, 17px);
+  max-width: 56ch;
+  text-shadow: 0 2px 14px rgba(7, 12, 20, 0.9);
+}
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+
+/* Fade into the section below. Must sit above the table but *below* the call to
+   action — at a higher index it desaturates the buttons sitting in the same
+   band, which reads as a broken hover state. */
+.home-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 64px;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--bg) 92%);
+}
+
+/* -------------------------------------------------------------- headings */
+
+.center-head { text-align: center; margin-bottom: 28px; }
+.center-head h2 { font-size: clamp(24px, 3vw, 32px); }
+.center-head p { color: var(--dim); margin: 8px 0 0; font-size: 14.5px; }
+.center-head p b { color: var(--accent); font-family: var(--font-mono); font-weight: 700; }
+
+/* -------------------------------------------------------------- partner cards */
+
+.offer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+
+.offer {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.offer:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+
+.offer-head { min-height: 40px; display: flex; align-items: center; gap: 12px; }
+.offer-logo { height: 34px; width: auto; max-width: 168px; object-fit: contain; object-position: left; }
+.offer-name { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+
+.offer-code { margin: 14px 0 0; color: var(--dim); font-size: 13.5px; }
+.offer-code b { font-family: var(--font-mono); color: var(--accent); font-weight: 700; }
+
+.offer-rows { margin: 16px 0 0; padding: 0; list-style: none; }
+.offer-rows li {
+  display: flex; justify-content: space-between; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 14px; color: var(--muted);
+}
+.offer-rows li b { color: var(--text); font-weight: 600; font-family: var(--font-mono); }
+
+.offer-foot { margin-top: auto; padding-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* -------------------------------------------------------------- promo + podium */
+
+.promo {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(250px, 0.85fr) 1.15fr;
+  gap: 36px;
+  align-items: center;
+  padding: 34px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(560px 300px at 90% 50%, rgba(227, 27, 69, 0.12), transparent 70%),
+    var(--surface);
+}
+
+/* The mascot as an oversized watermark across the right half — the same move
+   Gumbo makes with the Stake S on its leaderboard banner, at the same weight. */
+.promo::before {
+  content: "";
+  position: absolute;
+  inset: -20% -6% -20% 46%;
+  z-index: -1;
+  opacity: 0.06;
+  background: url("/mascot.png") right center / contain no-repeat;
+  pointer-events: none;
+}
+.promo > * { position: relative; z-index: 1; }
+.promo h2 { font-size: clamp(26px, 3.4vw, 38px); }
+.promo h2 span { color: var(--accent); font-family: var(--font-mono); letter-spacing: -0.04em; }
+.promo p { color: var(--muted); margin: 12px 0 22px; }
+
+/* 2 / 1 / 3 across with first place raised — the arrangement Gumbo, Drey and
+   tegens all converge on, because the centre column is read first. */
+.podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: end; }
+
+.pod-card {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 20px 12px 16px;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--surface-2);
+  text-align: center;
+}
+.pod-1 .pod-card {
+  padding-top: 32px;
+  border-color: rgba(227, 27, 69, 0.5);
+  background: rgba(227, 27, 69, 0.09);
+}
+
+.pod-place { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--dim); }
+.pod-1 .pod-place { color: var(--accent); }
+.pod-badge { width: 30px; height: 30px; object-fit: contain; }
+.pod-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); }
+.pod-name {
+  font-size: 13.5px; font-weight: 600; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pod-label { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-top: 4px; }
+.pod-wager { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+.pod-ribbon {
+  padding: 9px 8px;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+.pod-1 .pod-ribbon { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* -------------------------------------------------------------- feature tiles */
+
+.tile-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+.tile {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 22px 20px;
+  min-height: 152px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.tile:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.tile-value { font-family: var(--font-mono); font-weight: 700; font-size: 24px; color: var(--accent); }
+.tile h3 { font-size: 16px; }
+.tile p { color: var(--muted); font-size: 13.5px; margin: 0; }
+
+/* -------------------------------------------------------------- responsive */
+
+@media (max-width: 1024px) {
+  .tile-grid { grid-template-columns: repeat(2, 1fr); }
+  .promo { grid-template-columns: 1fr; gap: 26px; padding: 26px; }
+}
+
+/* The drifting layers are the first thing to drop for anyone who has asked the
+   OS to stop motion; the backdrop itself stays. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-lodge,
+  .hero-light,
+  .prop,
+  .prop img,
+  .hero-mascot,
+  .hero-mascot img {
+    animation: none !important;
+  }
+  /* The arrive keyframe carries the horizontal centring, so without it the
+     mascot has to be re-centred explicitly. */
+  .hero-mascot { transform: translateX(-50%); }
+  /* Static props would just be clutter pinned below the fold. */
+  .prop-layer { display: none; }
+}
+
+@media (max-width: 720px) {
+  .home-hero { min-height: 92vh; padding: 34px 16px 260px; }
+  .hero-mascot { width: min(210px, 54vw); bottom: 30px; }
+  .hero-table { height: 250px; background-size: 190% auto; }
+  .hero-wordmark { margin-top: 18px; }
+  .hero-cta { bottom: 20px; }
+  .hero-actions .btn { flex: 1 1 auto; }
+
+  .offer-grid, .tile-grid { grid-template-columns: 1fr; }
+  .pod-card { padding: 14px 8px 12px; }
+  .pod-1 .pod-card { padding-top: 20px; }
+  .pod-name { font-size: 11.5px; }
+  .pod-wager { font-size: 11.5px; }
+  .pod-ribbon { font-size: 13px; }
+  .pod-badge, .pod-avatar { width: 24px; height: 24px; }
+}
+
+/* ===========================================================================
+   BRAND STRIPS + SOCIAL CARDS
+   =========================================================================== */
+
+.strip-list { display: grid; gap: 12px; }
+
+.strip {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.2s var(--ease);
+}
+.strip:hover { border-color: var(--border-strong); }
+
+.strip-mark {
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--brand);
+}
+.strip-mark-img img { max-height: 34px; max-width: 140px; width: auto; object-fit: contain; }
+
+.strip-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0;
+  padding: 12px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 14.5px;
+  text-align: center;
+}
+.strip-msg b { color: var(--brand); font-weight: 700; }
+
+.strip-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brand);
+  flex: none;
+  animation: pulse 2s var(--ease) infinite;
+}
+
+.strip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: 14px;
+  /* Same construction as .btn — face gradient, hard top highlight, and a solid
+     lip below in a darker shade of the platform's own colour. */
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand) 58%, var(--brand-deep) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #07121b;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 5px 0 var(--brand-deep),
+    0 9px 16px rgba(0, 0, 0, 0.45);
+  transition: filter 0.14s var(--ease), transform 0.08s var(--ease), box-shadow 0.08s var(--ease);
+}
+.strip-btn:hover { filter: brightness(1.07); }
+.strip-btn:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 1px 0 var(--brand-deep), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+
+
+/* ---------------------------------------------------------------- cards */
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.social-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.social-card:hover { border-color: var(--brand); transform: translateY(-2px); }
+
+.social-card-icon {
+  display: grid;
+  place-items: center;
+  width: 42px; height: 42px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--brand);
+  font-size: 20px;
+}
+
+.social-card-body { display: grid; gap: 2px; min-width: 0; }
+.social-card-body b { font-size: 15px; font-weight: 700; }
+.social-card-body span {
+  font-size: 12.5px; color: var(--dim);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.social-card-action {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+
+@media (max-width: 1024px) {
+  .social-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 720px) {
+  .strip { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 14px; }
+  .strip-msg { width: 100%; }
+  .strip-btn { width: 100%; }
+  .social-grid { grid-template-columns: 1fr; }
+}
