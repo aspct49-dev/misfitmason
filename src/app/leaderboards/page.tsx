@@ -7,8 +7,10 @@ import { getAllLeaderboards } from '@/lib/services/leaderboard';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Leaderboards — Misfit Mason',
-  description: 'Live Roobet standings, top three paid. Lootbox board coming soon.',
+  title: 'Leaderboards',
+  description: 'Live Roobet standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.',
+  alternates: { canonical: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {

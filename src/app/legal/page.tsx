@@ -3,8 +3,10 @@ import type { Metadata } from 'next';
 import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 
 export const metadata: Metadata = {
-  title: 'Legal — Misfit Mason',
-  description: 'Leaderboard rules, affiliate disclosure, terms and responsible gambling.',
+  title: 'Legal',
+  description: 'Leaderboard rules, affiliate disclosure, terms and responsible gambling information.',
+  alternates: { canonical: '/legal' },
+  openGraph: { title: 'Legal', description: 'Leaderboard rules, affiliate disclosure, terms and responsible gambling information.', url: '/legal' },
 };
 
 /**

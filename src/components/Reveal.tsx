@@ -10,17 +10,46 @@ export function Reveal({ children, delay = 0 }: { children: React.ReactNode; del
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    let done = false;
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      setShown(true);
+      io.disconnect();
+      window.removeEventListener('scroll', check);
+    };
+
+    /**
+     * IntersectionObserver alone is not enough. It only fires when the
+     * intersection ratio *crosses* a threshold, so an element that goes from
+     * below the viewport straight to above it — an instant scrollTo, an anchor
+     * jump, a restored scroll position on reload — never intersects, never
+     * fires, and stays at opacity 0 for the rest of the session.
+     *
+     * This check covers that: anything at or above the fold is revealed
+     * regardless of whether it was ever seen crossing.
+     */
+    const check = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) reveal();
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setShown(true);
-          io.disconnect();
-        }
+        if (entry.isIntersecting) reveal();
       },
       { rootMargin: '-40px' },
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    check();
+    window.addEventListener('scroll', check, { passive: true });
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', check);
+    };
   }, []);
 
   return (

@@ -370,9 +370,46 @@
 
 /* -------------------------------------------------------------- responsive */
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  /* The desktop hero is a staged composition: wordmark behind, mascot pinned to
+     the bottom in front of it, CTA pinned in front of the table. It only holds
+     on a genuinely wide viewport, because the crop depends on the table artwork
+     scaling wide enough to put its felt line above the CTA. Narrower than this
+     and two things break: a 350–440px void opens under the wordmark, and the
+     tagline lands across the mascot's chest instead of on the felt.
+
+     Below 1200px everything returns to normal flow, stacked in reading order.
+     The threshold is above the 1024px sidebar breakpoint on purpose — the
+     composition was already failing at 1100 with the sidebar still showing. */
+  .home-hero {
+    min-height: 0;
+    padding: 40px 24px 230px;
+  }
+
+  .hero-mascot {
+    position: static;
+    transform: none;
+    width: min(300px, 46vw);
+    margin: 22px auto 0;
+    animation: mascotArriveFlow 760ms cubic-bezier(0.16, 1, 0.3, 1) 120ms backwards;
+  }
+
+  .hero-cta {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: 620px;
+    margin-top: 24px;
+    padding: 0;
+    background: none;
+  }
+
   .tile-grid { grid-template-columns: repeat(2, 1fr); }
   .promo { grid-template-columns: 1fr; gap: 26px; padding: 26px; }
+}
+
+@media (max-width: 1024px) {
+  .tile-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* The drifting layers are the first thing to drop for anyone who has asked the
@@ -393,15 +430,28 @@
   .prop-layer { display: none; }
 }
 
+/* Flow entrance for the phone layout, where the mascot is no longer absolutely
+   centred and so must not carry translateX. */
+@keyframes mascotArriveFlow {
+  from { opacity: 0; transform: translateY(26px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (max-width: 720px) {
-  .home-hero { min-height: 92vh; padding: 34px 16px 260px; }
-  .hero-mascot { width: min(210px, 54vw); bottom: 30px; }
-  .hero-table { height: 250px; background-size: 190% auto; }
-  .hero-wordmark { margin-top: 18px; }
-  .hero-cta { bottom: 20px; }
+  .home-hero { padding: 26px 16px 168px; }
+  .hero-mascot { width: min(236px, 60vw); }
+  .hero-table { height: 150px; background-size: 190% auto; }
+  .hero-wordmark { margin-top: 16px; font-size: clamp(44px, 14vw, 72px); }
+  .hero-actions { margin-top: 16px; }
   .hero-actions .btn { flex: 1 1 auto; }
 
   .offer-grid, .tile-grid { grid-template-columns: 1fr; }
+  .offer { padding: 20px 18px; }
+  .offer-rows li { padding: 8px 0; font-size: 13.5px; }
+  .center-head { margin-bottom: 20px; }
+  .strip { padding: 16px; gap: 12px; }
+  .strip-msg { font-size: 13.5px; padding: 10px 14px; }
+  .tile { min-height: 0; padding: 18px; }
   .pod-card { padding: 14px 8px 12px; }
   .pod-1 .pod-card { padding-top: 20px; }
   .pod-name { font-size: 11.5px; }
@@ -438,11 +488,12 @@
 }
 .strip-mark-img img { max-height: 34px; max-width: 140px; width: auto; object-fit: contain; }
 
+/* Block, not flex: as a flex container every text node and every <b> becomes a
+   separate flex item, so the sentence broke into stacked fragments the moment
+   it had to wrap. */
 .strip-msg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
+  display: block;
+  text-align: center;
   margin: 0;
   padding: 12px 18px;
   border: 1px solid var(--border);
@@ -455,9 +506,11 @@
 .strip-msg b { color: var(--brand); font-weight: 700; }
 
 .strip-dot {
+  display: inline-block;
+  vertical-align: middle;
   width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 8px;
   background: var(--brand);
-  flex: none;
   animation: pulse 2s var(--ease) infinite;
 }
 

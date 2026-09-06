@@ -22,9 +22,18 @@ ROOBET_API_TOKEN=<affiliateStats JWT>
 ## Deploying to Vercel
 
 1. Import the repo. Vercel detects Next.js; no build settings to change.
-2. Add **`ROOBET_API_TOKEN`** under Settings → Environment Variables, for
-   Production, Preview and Development.
+2. Add these under Settings → Environment Variables, for Production, Preview and
+   Development:
+   - **`ROOBET_API_TOKEN`** — the affiliateStats JWT.
+   - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
+     `https://misfitmason.com`. Optional: without it the site falls back to
+     Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
+     the box and this only matters once a custom domain is attached.
 3. Redeploy.
+
+`robots.txt` and `sitemap.xml` are **statically generated**, so the origin is
+baked in at *build* time, not read per request. Changing the domain therefore
+needs a redeploy, not just an env var edit.
 
 The build does **not** fail without the token — the Roobet provider throws, the
 service catches it, and the board renders sample data flagged as such. That is
@@ -81,9 +90,12 @@ render from the registry.
   Roobet weights by house edge — the current top player's $2,458 wagered is $499
   weighted because he plays Limbo. Raw ranking is farmable on low-edge games;
   it is stated explicitly in the rules copy either way.
-- **Five seats always render.** The affiliate base is genuinely small, so unfilled
-  paying positions show as `UNCLAIMED` with the prize attached rather than being
-  hidden.
+- **Every paying seat always renders.** Roobet pays three ($125 / $75 / $50); the
+  affiliate base is genuinely small, so unfilled positions show as an open place
+  with the prize still attached rather than being hidden.
+- **Lootbox is `comingSoon`.** Its board renders a coming-soon panel instead of
+  standings, and its split is deliberately unpublished — the provisional array in
+  `partners.ts` is not shown anywhere until it is announced.
 - **No activity ticker, no member counts.** Nothing on the site implies a crowd
   that does not exist.
 - **No gold, no green.** Every colour is sampled from the mascot artwork.
@@ -109,6 +121,25 @@ the pipeline is reproducible from a fresh clone.
 
 The one input that is **not** committed is `header.png` — Gumbo's own artwork,
 kept locally as a visual reference only and never shipped.
+
+Icons (`src/app/icon.png`, `src/app/apple-icon.png`, `public/favicon.ico`) come
+out of the same script, composited onto an opaque ground — the mascot art is
+transparent and would vanish in a light browser tab strip.
+
+`public/og.png` is the exception: it is a screenshot of
+[`scripts/og-card.html`](scripts/og-card.html) at 1200x630. Kept as HTML so the
+card uses the site's real typeface; re-render it with any headless browser after
+editing that file.
+
+## SEO
+
+- Per-page `title`, `description` and `canonical`, with a shared title template.
+- Open Graph and Twitter `summary_large_image` cards on every page.
+- `Organization` + `WebSite` JSON-LD in one graph, cross-referenced by `@id` so
+  the social profiles attach to the site rather than floating free.
+- `robots.txt` allows everything except `/api/`, which serves the JSON proxy for
+  overlays and bots rather than anything a search result should point at.
+- `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
 Referral links and codes are real:
 `https://roobet.com/?ref=kickmisfitmason` (`kickmisfitmason`) and

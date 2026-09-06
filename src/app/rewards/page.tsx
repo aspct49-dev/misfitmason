@@ -5,9 +5,10 @@ import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
-  title: 'Rewards — Misfit Mason',
-  description:
-    'Affiliate revenue returned to players, monthly leaderboard prizes, and free Lootbox battles.',
+  title: 'Rewards',
+  description: '100% of affiliate revenue returned to players, monthly leaderboard prizes, and free Lootbox battles for depositors.',
+  alternates: { canonical: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, monthly leaderboard prizes, and free Lootbox battles for depositors.', url: '/rewards' },
 };
 
 export default function RewardsPage() {

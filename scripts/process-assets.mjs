@@ -8,7 +8,7 @@
  * manual trip through an image editor.
  */
 import sharp from 'sharp';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const OUT = 'public';
 
@@ -127,6 +127,54 @@ async function main() {
       .webp({ quality: 80, alphaQuality: 100 })
       .toFile(`${OUT}/texture.webp`);
     console.log('texture.webp');
+  }
+
+  // ---- Icons -------------------------------------------------------------
+  // Favicons need an opaque ground: the mascot art is transparent, and browser
+  // tab strips are light in light mode, where a dark rabbit on nothing vanishes.
+  {
+    const mark = await sharp('MisfitMason_mascot_hires.png')
+      .trim()
+      .resize({ width: 400, height: 400, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+
+    // Composite once at full size, then resize that result. Sharp applies
+    // resize *before* composite within one pipeline, so asking for a 180px
+    // square directly shrinks the base and then rejects the 400px mark as
+    // "must have same dimensions or smaller".
+    const base = await sharp({
+      create: { width: 512, height: 512, channels: 4, background: '#080e16' },
+    })
+      .composite([{ input: mark, gravity: 'center' }])
+      .png()
+      .toBuffer();
+
+    const square = (size) => sharp(base).resize(size, size).png();
+
+    await writeFile('src/app/icon.png', base);
+    await square(180).toFile('src/app/apple-icon.png');
+    console.log('icon.png, apple-icon.png');
+
+    // A real favicon.ico, for crawlers and older clients that ask for it by
+    // name. ICO can wrap a PNG payload directly, so this is a 22-byte header
+    // plus the image — no extra dependency needed.
+    const png32 = await square(32).toBuffer();
+    const header = Buffer.alloc(6);
+    header.writeUInt16LE(0, 0); // reserved
+    header.writeUInt16LE(1, 2); // type: icon
+    header.writeUInt16LE(1, 4); // one image
+    const entry = Buffer.alloc(16);
+    entry[0] = 32; // width
+    entry[1] = 32; // height
+    entry[2] = 0; // palette
+    entry[3] = 0; // reserved
+    entry.writeUInt16LE(1, 4); // colour planes
+    entry.writeUInt16LE(32, 6); // bits per pixel
+    entry.writeUInt32LE(png32.length, 8);
+    entry.writeUInt32LE(22, 12); // offset past header + entry
+    await writeFile('public/favicon.ico', Buffer.concat([header, entry, png32]));
+    console.log('favicon.ico');
   }
 
   // ---- The room. Opaque, full-bleed, so it only needs resizing. ----

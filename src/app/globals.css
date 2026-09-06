@@ -684,6 +684,11 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 @media (max-width: 720px) {
   :root { --gutter: 16px; }
 
+  /* 40px between every section adds up to a screen and a half of padding over
+     a long landing page. */
+  .section { padding-block: 28px; }
+  .section + .section { padding-top: 4px; }
+
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
 
