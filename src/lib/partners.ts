@@ -11,12 +11,9 @@ export const PARTNERS: Record<PartnerId, Partner> = {
   shuffle: {
     id: 'shuffle',
     name: 'Shuffle',
-    // PLACEHOLDER: confirm the referral code and link from the Shuffle
-    // affiliate dashboard. The API URL is a separate credential and is not a
-    // signup link.
-    code: 'misfitmason',
+    code: 'MisfitMason',
     logo: '/shuffle-logo.webp',
-    signupUrl: 'https://shuffle.com/?r=misfitmason',
+    signupUrl: 'https://shuffle.com/?r=MisfitMason',
     prizePool: 250,
     prizeTable: [125, 75, 50],
     metricLabel: 'Total amount wagered',

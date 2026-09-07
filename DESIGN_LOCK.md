@@ -114,8 +114,8 @@ Hover changes colour and border only, never scale or position. Full
 
 - **Shuffle** — live. `affiliate.shuffle.com/wager/<uuid>`, server-side only; the
   UUID in the path is the credential. Takes no parameters and is rate limited,
-  so the period shown is ours, not theirs. Referral code and link are
-  PLACEHOLDERS pending the affiliate dashboard.
+  so the period shown is ours, not theirs. Referral
+  `https://shuffle.com/?r=MisfitMason`, code `MisfitMason`.
 - **Lootbox** — announced, not open. GraphQL at `api.lootbox.com/graphql` with
   introspection disabled, so the query is not wired up. Renders a coming-soon
   panel. Referral `https://lootbox.com/r/misfitmason`, code `misfitmason`.

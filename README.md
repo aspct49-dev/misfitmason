@@ -125,7 +125,6 @@ render from the registry.
 | What | Where |
 |---|---|
 | Wordmark (mascot mark + type) | `src/components/Shell.tsx` |
-| Shuffle referral code and link | `PARTNERS.shuffle` in `src/lib/partners.ts` |
 | Lootbox free-battle rules | `FREE_BATTLES` in `src/lib/partners.ts` |
 | Discord invite | `SOCIALS` in `src/lib/partners.ts` |
 | Kick live state (hardcoded offline) | `LiveChip` in `src/components/Shell.tsx` |
@@ -162,6 +161,6 @@ editing that file.
   overlays and bots rather than anything a search result should point at.
 - `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
-Lootbox's referral link is real (`https://lootbox.com/r/misfitmason`). **Shuffle's
-referral code and link are placeholders** — confirm them from the Shuffle
-affiliate dashboard; the API URL is a credential, not a signup link.
+Referral links and codes are real: `https://shuffle.com/?r=MisfitMason`
+(`MisfitMason`) and `https://lootbox.com/r/misfitmason` (`misfitmason`). The
+Shuffle *API* URL is a separate credential and is not a signup link.
