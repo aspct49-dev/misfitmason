@@ -34,7 +34,7 @@ export function Shell({ totalPot, children }: { totalPot: number; children: Reac
       <aside className="sidebar" data-open={open} id="sidebar">
         <Link href="/" className="brand">
           {/* eslint-disable-next-line @next/next/no-img-element -- fixed 26px brand mark */}
-          <img className="brand-logo" src="/mascot.png" alt="" />
+          <img className="brand-logo" src="/brand-mark.webp" alt="" />
           <span className="brand-name">Misfit Mason</span>
         </Link>
 
@@ -62,13 +62,13 @@ export function Shell({ totalPot, children }: { totalPot: number; children: Reac
 
           <a
             className="side-link side-link-brand"
-            href={PARTNERS.roobet.signupUrl}
+            href={PARTNERS.shuffle.signupUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Play on ${PARTNERS.roobet.name}`}
+            aria-label={`Play on ${PARTNERS.shuffle.name}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- operator brand mark */}
-            <img src={PARTNERS.roobet.logo} alt="" aria-hidden />
+            <img src={PARTNERS.shuffle.logo} alt="" aria-hidden />
           </a>
 
           {SOCIAL_LINKS.map(({ key, href, cta, Icon, brand }) => (
@@ -104,7 +104,7 @@ export function Shell({ totalPot, children }: { totalPot: number; children: Reac
           </button>
           <Link href="/" className="brand" style={{ padding: 0, flex: 1 }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- fixed 26px brand mark */}
-            <img className="brand-logo" src="/mascot.png" alt="" />
+            <img className="brand-logo" src="/brand-mark.webp" alt="" />
             <span className="brand-name">Misfit Mason</span>
           </Link>
           <a className="btn btn-secondary btn-sm" href={SOCIALS.kick} target="_blank" rel="noreferrer">

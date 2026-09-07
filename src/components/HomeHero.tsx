@@ -43,7 +43,17 @@ function PropLayer({ items }: { items: Prop[] }) {
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element -- decorative sprite */}
-          <img src={`/prop-${sprite}.webp`} alt="" style={{ animationDuration: `${sway}s` }} />
+          <img
+            src={`/prop-${sprite}.webp`}
+            alt=""
+            /* display:none does not stop a download, but lazy does: a hidden
+               element never nears the viewport. Saves the phone five sprites
+               it will never show, and costs desktop nothing since they start
+               on screen. */
+            loading="lazy"
+            decoding="async"
+            style={{ animationDuration: `${sway}s` }}
+          />
         </span>
       ))}
     </div>
@@ -60,7 +70,7 @@ export function HomeHero() {
       <div className="home-hero-inner">
         <span className="hero-kicker">
           <span className="dot" />
-          Roobet &amp; Lootbox partner
+          Shuffle &amp; Lootbox partner
         </span>
 
         {/*
@@ -74,9 +84,12 @@ export function HomeHero() {
         </h1>
       </div>
 
-      <div className="hero-mascot">
-        {/* eslint-disable-next-line @next/next/no-img-element -- hero artwork */}
-        <img src="/mascot.png" alt="" aria-hidden />
+      {/* A CSS background rather than an <img>: the phone layout hides the
+          mascot, and browsers fetch a hidden <img> anyway — even with
+          loading="lazy" — while a background on a display:none element is never
+          requested. Purely decorative, so nothing semantic is lost. */}
+      <div className="hero-mascot" aria-hidden>
+        <span className="hero-mascot-art" />
       </div>
 
       <PropLayer items={PROPS} />
@@ -98,11 +111,11 @@ export function HomeHero() {
           </Link>
           <a
             className="btn btn-secondary"
-            href={PARTNERS.roobet.signupUrl}
+            href={PARTNERS.shuffle.signupUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Play on Roobet
+            Play on Shuffle
           </a>
         </div>
       </div>

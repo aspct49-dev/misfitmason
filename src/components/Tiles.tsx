@@ -18,7 +18,7 @@ export function Tiles() {
         <Link className="tile" href="/leaderboards">
           <span className="tile-value">{formatMoney(TOTAL_PRIZE_POOL)}</span>
           <h3>Leaderboards</h3>
-          <p>Live Roobet standings and the Lootbox board, with full rules.</p>
+          <p>Live Shuffle standings and the Lootbox board, with full rules.</p>
         </Link>
 
         <Link className="tile" href="/rewards">

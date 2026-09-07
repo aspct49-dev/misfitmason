@@ -19,7 +19,7 @@ export function SiteFooter() {
           <div>
             <div className="brand" style={{ padding: 0 }}>
               {/* eslint-disable-next-line @next/next/no-img-element -- fixed 26px brand mark */}
-              <img className="brand-logo" src="/mascot.png" alt="" />
+              <img className="brand-logo" src="/brand-mark.webp" alt="" />
               <span className="brand-name">Misfit Mason</span>
             </div>
             <p className="footer-note">

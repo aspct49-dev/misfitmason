@@ -212,7 +212,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 
 /* Partner card: the same shell as the social links, carrying only the
    operator's mark. A crimson fill made it shout over the nav above it, and
-   Roobet's gold mark went muddy on it. */
+   coloured partner marks go muddy on a filled button. */
 .side-link-brand { justify-content: center; padding: 0 12px; }
 .side-link-brand img {
   height: 19px;

@@ -4,7 +4,7 @@ import type { RawPlayer } from '../providers/shared';
 /**
  * Lootbox fixtures.
  *
- * Deliberately modest. The real Roobet affiliate base is two players, so a mock
+ * Deliberately modest. The real Shuffle affiliate base is one player, so a mock
  * Lootbox board showing a packed top five with five-figure wagers would make
  * the live board next to it look broken and would misrepresent the community's
  * size. Three players, realistic amounts, two seats open.

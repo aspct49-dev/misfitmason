@@ -11,7 +11,7 @@ import { Board } from './Board';
  * switching is instant and there is no client-side data fetching anywhere.
  */
 export function LeaderboardTabs({ boards }: { boards: Record<PartnerId, Leaderboard> }) {
-  const [active, setActive] = useState<PartnerId>('roobet');
+  const [active, setActive] = useState<PartnerId>('shuffle');
   const board = boards[active];
 
   const tabs = (

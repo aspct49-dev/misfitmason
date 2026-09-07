@@ -115,19 +115,58 @@ async function main() {
     // below the field becomes fully transparent.
     const FLOOR = 95;
     const CEIL = 255;
+    // Every pixel shares one RGB value, so the alpha channel is effectively the
+    // whole file. Quantising alpha to 16 steps cuts it by a third; the overlay
+    // renders at 9-20% opacity, where a 6%-of-alpha step is not resolvable.
+    const STEPS = 16;
+    const STEP = 255 / STEPS;
     for (let i = 0, j = 0; i < data.length; i += info.channels, j += 4) {
       const a = Math.max(0, Math.min(255, Math.round(((data[i] - FLOOR) / (CEIL - FLOOR)) * 255)));
       out[j] = 227;
       out[j + 1] = 27;
       out[j + 2] = 69; // #E31B45
-      out[j + 3] = a;
+      out[j + 3] = Math.round(a / STEP) * STEP;
     }
 
+    // Left at source scale on purpose: downscaling smears the crisp contour
+    // lines into gradients that encode *worse*, so 1400px measured larger than
+    // 1800px. Lossy alpha is worse still for the same reason.
     await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } })
       .webp({ quality: 80, alphaQuality: 100 })
       .toFile(`${OUT}/texture.webp`);
     console.log('texture.webp');
   }
+
+  // ---- Mascot derivatives -------------------------------------------------
+  // The source PNG is ~1MB. Serving it to a 26px sidebar mark, and to phones
+  // that hide the hero art entirely, is most of the page weight for nothing.
+  await sharp('MisfitMason_mascot_hires.png')
+    .resize({ width: 1100, withoutEnlargement: true })
+    .webp({ quality: 86, alphaQuality: 100 })
+    .toFile(`${OUT}/mascot.webp`);
+
+  await sharp('MisfitMason_mascot_hires.png')
+    .trim()
+    .resize({ width: 96 })
+    .webp({ quality: 90, alphaQuality: 100 })
+    .toFile(`${OUT}/brand-mark.webp`);
+
+  // Used only as a 6%-opacity watermark behind the promo band, where the full
+  // hero render is far more detail than survives the opacity.
+  await sharp('MisfitMason_mascot_hires.png')
+    .resize({ width: 520 })
+    .webp({ quality: 72, alphaQuality: 90 })
+    .toFile(`${OUT}/mascot-watermark.webp`);
+  console.log('mascot.webp, brand-mark.webp, mascot-watermark.webp');
+
+  // Shuffle's dark-background lockup. Never rendered above 44px tall here, so
+  // the source is trimmed and cut down rather than shipped as supplied.
+  await sharp('shuffle_logo2.webp')
+    .trim()
+    .resize({ width: 520, withoutEnlargement: true })
+    .webp({ quality: 90, alphaQuality: 100 })
+    .toFile(`${OUT}/shuffle-logo.webp`);
+  console.log('shuffle-logo.webp');
 
   // ---- Icons -------------------------------------------------------------
   // Favicons need an opaque ground: the mascot art is transparent, and browser

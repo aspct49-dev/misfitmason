@@ -8,9 +8,9 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Leaderboards',
-  description: 'Live Roobet standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.',
+  description: 'Live Shuffle standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.',
   alternates: { canonical: '/leaderboards' },
-  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.', url: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live Shuffle standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {

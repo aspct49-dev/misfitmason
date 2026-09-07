@@ -121,10 +121,11 @@
   animation: mascotArrive 820ms cubic-bezier(0.16, 1, 0.3, 1) 120ms backwards;
 }
 
-.hero-mascot img {
+.hero-mascot-art {
   display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 975 / 1024;
+  background: url("/mascot.webp") center / contain no-repeat;
   filter: drop-shadow(0 30px 55px rgba(0, 0, 0, 0.75));
   animation: mascotFloat 6s ease-in-out infinite alternate;
 }
@@ -295,7 +296,7 @@
   inset: -20% -6% -20% 46%;
   z-index: -1;
   opacity: 0.06;
-  background: url("/mascot.png") right center / contain no-repeat;
+  background: url("/mascot-watermark.webp") right center / contain no-repeat;
   pointer-events: none;
 }
 .promo > * { position: relative; z-index: 1; }
@@ -420,11 +421,11 @@
   .prop,
   .prop img,
   .hero-mascot,
-  .hero-mascot img {
+  .hero-mascot-art {
     animation: none !important;
   }
   /* The arrive keyframe carries the horizontal centring, so without it the
-     mascot has to be re-centred explicitly. */
+     staged mascot has to be re-centred explicitly. */
   .hero-mascot { transform: translateX(-50%); }
   /* Static props would just be clutter pinned below the fold. */
   .prop-layer { display: none; }
@@ -438,11 +439,23 @@
 }
 
 @media (max-width: 720px) {
-  .home-hero { padding: 26px 16px 168px; }
-  .hero-mascot { width: min(236px, 60vw); }
-  .hero-table { height: 150px; background-size: 190% auto; }
-  .hero-wordmark { margin-top: 16px; font-size: clamp(44px, 14vw, 72px); }
-  .hero-actions { margin-top: 16px; }
+  /* Phone hero is the wordmark and nothing else. The mascot has to be small
+     enough here that he stops reading as a character and starts reading as
+     clutter, and the drifting props cross the copy on a narrow column. The
+     room, the light and the table stay — they carry the atmosphere without
+     competing with the type. */
+  .hero-mascot,
+  .prop-layer { display: none; }
+
+  .home-hero {
+    min-height: 66vh;
+    place-items: center;
+    padding: 40px 16px 150px;
+  }
+
+  .hero-wordmark { margin-top: 18px; font-size: clamp(46px, 15vw, 78px); }
+  .hero-table { height: 140px; background-size: 190% auto; }
+  .hero-actions { margin-top: 18px; }
   .hero-actions .btn { flex: 1 1 auto; }
 
   .offer-grid, .tile-grid { grid-template-columns: 1fr; }

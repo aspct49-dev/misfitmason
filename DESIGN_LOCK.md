@@ -80,8 +80,8 @@ Hover changes colour and border only, never scale or position. Full
 ## HOMEPAGE — section order
 
 1. **Intro** — one label, one heading, one descriptive paragraph. No slogan.
-2. **Standings** — partner tabs, prize banner, countdown, five ranked places,
-   referral row, biggest multiplier.
+2. **Standings** — partner tabs, prize banner, countdown, the paying places,
+   whole-board stats.
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
 5. **Free battles** — Lootbox depositor reward.
@@ -93,15 +93,15 @@ Hover changes colour and border only, never scale or position. Full
 
 ## LEADERBOARDS
 
-- **A single ranked list, not a podium.** Five paying places, always rendered.
-  With a small player base most places are open most of the time; a podium built
-  from empty cards looks broken, where a list looks early.
+- **Banner podium for the paying places, table beneath.** Every paying place is
+  always rendered; with a small player base most are open most of the time, and
+  an open place shows the prize rather than being hidden.
 - **Rank 1** is marked by a 3px accent rail and a 10%-opacity accent tint. Not a
   glow, not a crown, not gold.
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
-- **Metric**: raw `wagered` (client decision, 2026-09-05), stated in the rules.
-- **Prizes** — Roobet $250: `100/60/40/30/20`. Lootbox $200: `80/50/30/25/15`.
+- **Metric**: raw wagered (client decision, 2026-09-05), stated in the rules.
+- **Prizes** — Shuffle $250: `125/75/50`. Lootbox: split unannounced.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
   prize stay. No horizontal scroll at 390px.
@@ -112,11 +112,13 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PARTNERS
 
-- **Roobet** — live. `roobetconnect.com/affiliate/v2/stats`, server-side only.
-  Referral `https://roobet.com/?ref=kickmisfitmason`, code `kickmisfitmason`.
-- **Lootbox** — no API. Fixtures behind the identical interface, labelled
-  "Sample" in the UI. Referral `https://lootbox.com/r/misfitmason`, code
-  `misfitmason`.
+- **Shuffle** — live. `affiliate.shuffle.com/wager/<uuid>`, server-side only; the
+  UUID in the path is the credential. Takes no parameters and is rate limited,
+  so the period shown is ours, not theirs. Referral code and link are
+  PLACEHOLDERS pending the affiliate dashboard.
+- **Lootbox** — announced, not open. GraphQL at `api.lootbox.com/graphql` with
+  introspection disabled, so the query is not wired up. Renders a coming-soon
+  panel. Referral `https://lootbox.com/r/misfitmason`, code `misfitmason`.
 - A third partner is a registry entry plus a provider module.
 
 ---

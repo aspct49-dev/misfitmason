@@ -1,6 +1,6 @@
 # Misfit Mason
 
-Community leaderboard site for the Kick streamer MisfitMason. Roobet and Lootbox
+Community leaderboard site for the Kick streamer MisfitMason. Shuffle and Lootbox
 standings, 100% affiliate revenue return, free Lootbox battles.
 
 Design spec: [DESIGN_LOCK.md](DESIGN_LOCK.md).
@@ -13,18 +13,22 @@ npm run dev     # http://localhost:3000
 npm run build && npm start
 ```
 
-`.env` holds the Roobet token (gitignored — see `.env.example`):
+`.env` holds the partner credentials (gitignored — see `.env.example`):
 
 ```
-ROOBET_API_TOKEN=<affiliateStats JWT>
+SHUFFLE_WAGER_URL=https://affiliate.shuffle.com/wager/<uuid>
+LOOTBOX_API_KEY=partner<...>
 ```
+
+The Shuffle UUID *is* the credential — there is no separate token, so treat the
+whole URL as a secret.
 
 ## Deploying to Vercel
 
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`ROOBET_API_TOKEN`** — the affiliateStats JWT.
+   - **`SHUFFLE_WAGER_URL`** — the full affiliate wager endpoint.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://misfitmason.com`. Optional: without it the site falls back to
      Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
@@ -35,19 +39,35 @@ ROOBET_API_TOKEN=<affiliateStats JWT>
 baked in at *build* time, not read per request. Changing the domain therefore
 needs a redeploy, not just an env var edit.
 
-The build does **not** fail without the token — the Roobet provider throws, the
+The build does **not** fail without the credentials — the provider throws, the
 service catches it, and the board renders sample data flagged as such. That is
-deliberate so a first deploy succeeds before the variable is set, but it also
-means a missing or expired token shows as sample standings rather than as an
-error. `[leaderboard] roobet provider failed: …` in the build log is the tell.
+deliberate so a first deploy succeeds before the variables are set, but it also
+means a missing or revoked URL shows as sample standings rather than as an
+error. `[leaderboard] shuffle provider failed: …` in the build log is the tell.
 
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
 
-There is no separate `ROOBET_USER_ID` to configure: the affiliate id is the `id`
-claim inside the token, and `affiliateIdFromToken()` reads it out.
+**Rotate both credentials before launch.** They have been through a chat window.
 
-**Rotate the token before launch.** It has been through a chat window.
+### Shuffle API constraints
+
+- **No parameters.** Any date range returns HTTP 500, so the reporting window is
+  whatever Shuffle has configured. The `period` we pass is used only for the
+  labels and the countdown; it cannot filter the data. If Shuffle's window is not
+  the calendar month, the countdown on the page will not match their reset.
+- **Rate limited.** A handful of rapid calls returns `TOO_MANY_REQUEST`. The
+  60-second `revalidate` is what keeps us under it — do not lower it.
+- Returns `{ username, wagerAmount, weightedWagerAmount }` and nothing else: no
+  avatars, favourite games or biggest-multiplier data, so those panels do not
+  appear on this board.
+
+### Lootbox — not wired up
+
+`api.lootbox.com` is a **GraphQL** endpoint (the root redirects to `/graphql`).
+Introspection is disabled and field-name suggestions are hidden, so the schema
+cannot be discovered from the key alone. The key is stored and the provider is
+ready; it needs the query shape from Lootbox's affiliate docs or dashboard.
 
 ## Architecture
 
@@ -55,7 +75,7 @@ claim inside the token, and `affiliateIdFromToken()` reads it out.
 src/lib/types.ts            domain shapes; no React, no fetch
 src/lib/partners.ts         prize pools, splits, codes, links — the only place they live
 src/lib/format.ts           masking + money/period formatting
-src/lib/providers/roobet    live API, server-only
+src/lib/providers/shuffle   live API, server-only
 src/lib/providers/lootbox   fixtures behind the identical interface
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
@@ -73,7 +93,7 @@ show the MOCK badge.
 1. Replace the body of `lootboxProvider.fetchLeaderboard` with the HTTP call.
 2. Map the response into `RawPlayer[]` and pass it through `buildEntries`.
 3. Return `source: 'live'`.
-4. Set `hasLiveApi: true` in `src/lib/partners.ts`.
+4. Set `hasLiveApi: true` and `comingSoon: false` in `src/lib/partners.ts`.
 
 Nothing in the UI changes and the MOCK badge disappears on its own.
 
@@ -86,11 +106,11 @@ render from the registry.
 
 ## Decisions worth knowing
 
-- **Ranked on raw `wagered`**, not `weightedWagered` (client decision, 2026-09-05).
-  Roobet weights by house edge — the current top player's $2,458 wagered is $499
-  weighted because he plays Limbo. Raw ranking is farmable on low-edge games;
-  it is stated explicitly in the rules copy either way.
-- **Every paying seat always renders.** Roobet pays three ($125 / $75 / $50); the
+- **Ranked on raw wagered**, not the weighted figure (client decision,
+  2026-09-05). Shuffle returns both; the weighted one discounts low-house-edge
+  play. Raw ranking is farmable on those games, which is why the rules carry an
+  explicit no-wager-abuse clause.
+- **Every paying seat always renders.** Shuffle pays three ($125 / $75 / $50); the
   affiliate base is genuinely small, so unfilled positions show as an open place
   with the prize still attached rather than being hidden.
 - **Lootbox is `comingSoon`.** Its board renders a coming-soon panel instead of
@@ -105,6 +125,7 @@ render from the registry.
 | What | Where |
 |---|---|
 | Wordmark (mascot mark + type) | `src/components/Shell.tsx` |
+| Shuffle referral code and link | `PARTNERS.shuffle` in `src/lib/partners.ts` |
 | Lootbox free-battle rules | `FREE_BATTLES` in `src/lib/partners.ts` |
 | Discord invite | `SOCIALS` in `src/lib/partners.ts` |
 | Kick live state (hardcoded offline) | `LiveChip` in `src/components/Shell.tsx` |
@@ -141,6 +162,6 @@ editing that file.
   overlays and bots rather than anything a search result should point at.
 - `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
-Referral links and codes are real:
-`https://roobet.com/?ref=kickmisfitmason` (`kickmisfitmason`) and
-`https://lootbox.com/r/misfitmason` (`misfitmason`).
+Lootbox's referral link is real (`https://lootbox.com/r/misfitmason`). **Shuffle's
+referral code and link are placeholders** — confirm them from the Shuffle
+affiliate dashboard; the API URL is a credential, not a signup link.

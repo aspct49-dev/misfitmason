@@ -5,7 +5,7 @@ import type { Leaderboard, LeaderboardProvider, Period } from '../types';
 
 /**
  * Lootbox has no affiliate API available to us yet, so this provider serves
- * fixtures. It is deliberately shaped exactly like the Roobet provider: same
+ * fixtures. It is deliberately shaped exactly like the Shuffle provider: same
  * interface, same normalisation, same return type.
  *
  * When the real API arrives, replace the body of fetchLeaderboard with the HTTP

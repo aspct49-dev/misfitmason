@@ -13,7 +13,7 @@ export function Offers() {
       <div className="center-head">
         <h2>Bonuses</h2>
         <p>
-          Register under code <b>{PARTNERS.roobet.code}</b> to join the boards
+          Register under code <b>{PARTNERS.shuffle.code}</b> to join the boards
         </p>
       </div>
 

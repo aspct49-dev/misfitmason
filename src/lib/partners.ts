@@ -8,18 +8,21 @@ import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './t
  * link's own referral parameter, so the two cannot drift apart.
  */
 export const PARTNERS: Record<PartnerId, Partner> = {
-  roobet: {
-    id: 'roobet',
-    name: 'Roobet',
-    code: 'kickmisfitmason',
-    logo: '/roobet-logo.png',
-    signupUrl: 'https://roobet.com/?ref=kickmisfitmason',
+  shuffle: {
+    id: 'shuffle',
+    name: 'Shuffle',
+    // PLACEHOLDER: confirm the referral code and link from the Shuffle
+    // affiliate dashboard. The API URL is a separate credential and is not a
+    // signup link.
+    code: 'misfitmason',
+    logo: '/shuffle-logo.webp',
+    signupUrl: 'https://shuffle.com/?r=misfitmason',
     prizePool: 250,
     prizeTable: [125, 75, 50],
     metricLabel: 'Total amount wagered',
     hasLiveApi: true,
     comingSoon: false,
-    blurb: 'Slots, originals and sports. Standings come from the Roobet affiliate API.',
+    blurb: 'Slots, originals and sports. Standings come from the Shuffle affiliate API.',
   },
   lootbox: {
     id: 'lootbox',
@@ -39,7 +42,7 @@ export const PARTNERS: Record<PartnerId, Partner> = {
   },
 };
 
-export const PARTNER_ORDER: PartnerId[] = ['roobet', 'lootbox'];
+export const PARTNER_ORDER: PartnerId[] = ['shuffle', 'lootbox'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];

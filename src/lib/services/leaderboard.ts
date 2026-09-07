@@ -2,10 +2,10 @@ import 'server-only';
 
 import { currentPeriod } from '../format';
 import { getPartner, PARTNER_ORDER } from '../partners';
-import { roobetProvider } from '../providers/roobet';
+import { shuffleProvider } from '../providers/shuffle';
 import { lootboxProvider } from '../providers/lootbox';
 import { buildEntries } from '../providers/shared';
-import { ROOBET_FALLBACK } from '../mock/roobet';
+import { SHUFFLE_FALLBACK } from '../mock/shuffle';
 import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../types';
 
 /**
@@ -15,7 +15,7 @@ import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../typ
  */
 
 const PROVIDERS: Record<PartnerId, LeaderboardProvider> = {
-  roobet: roobetProvider,
+  shuffle: shuffleProvider,
   lootbox: lootboxProvider,
 };
 
@@ -25,7 +25,7 @@ function fallbackFor(partnerId: PartnerId, period: Period, error: string): Leade
   return {
     partnerId,
     prizePool: partner.prizePool,
-    entries: buildEntries(partnerId === 'roobet' ? ROOBET_FALLBACK : [], partner.prizeTable),
+    entries: buildEntries(partnerId === 'shuffle' ? SHUFFLE_FALLBACK : [], partner.prizeTable),
     periodStart: period.start.toISOString(),
     periodEnd: period.end.toISOString(),
     updatedAt: new Date().toISOString(),
