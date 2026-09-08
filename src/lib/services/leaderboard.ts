@@ -5,7 +5,6 @@ import { getPartner, PARTNER_ORDER } from '../partners';
 import { shuffleProvider } from '../providers/shuffle';
 import { lootboxProvider } from '../providers/lootbox';
 import { buildEntries } from '../providers/shared';
-import { SHUFFLE_FALLBACK } from '../mock/shuffle';
 import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../types';
 
 /**
@@ -19,13 +18,21 @@ const PROVIDERS: Record<PartnerId, LeaderboardProvider> = {
   lootbox: lootboxProvider,
 };
 
-/** Fixtures for a partner whose live call failed, so a page never renders empty. */
+/**
+ * What a partner's board looks like when the live call failed.
+ *
+ * Deliberately empty rather than seeded with fixtures. A hardcoded row renders
+ * as a real player with a real-looking figure, so a transient outage would show
+ * frozen standings as though they were current — worse than showing none. Every
+ * place comes back unclaimed and the UI carries the "temporarily unavailable"
+ * notice above it.
+ */
 function fallbackFor(partnerId: PartnerId, period: Period, error: string): Leaderboard {
   const partner = getPartner(partnerId);
   return {
     partnerId,
     prizePool: partner.prizePool,
-    entries: buildEntries(partnerId === 'shuffle' ? SHUFFLE_FALLBACK : [], partner.prizeTable),
+    entries: buildEntries([], partner.prizeTable),
     periodStart: period.start.toISOString(),
     periodEnd: period.end.toISOString(),
     updatedAt: new Date().toISOString(),

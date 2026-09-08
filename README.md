@@ -17,6 +17,7 @@ npm run build && npm start
 
 ```
 SHUFFLE_WAGER_URL=https://affiliate.shuffle.com/wager/<uuid>
+LOOTBOX_API_URL=https://partners.lootbox.com
 LOOTBOX_API_KEY=partner<...>
 ```
 
@@ -29,6 +30,7 @@ whole URL as a secret.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
    - **`SHUFFLE_WAGER_URL`** — the full affiliate wager endpoint.
+   - **`LOOTBOX_API_URL`** and **`LOOTBOX_API_KEY`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://misfitmason.com`. Optional: without it the site falls back to
      Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
@@ -40,10 +42,15 @@ baked in at *build* time, not read per request. Changing the domain therefore
 needs a redeploy, not just an env var edit.
 
 The build does **not** fail without the credentials — the provider throws, the
-service catches it, and the board renders sample data flagged as such. That is
-deliberate so a first deploy succeeds before the variables are set, but it also
-means a missing or revoked URL shows as sample standings rather than as an
-error. `[leaderboard] shuffle provider failed: …` in the build log is the tell.
+service catches it, and the board renders every place unclaimed under a
+"temporarily unavailable" notice. That is deliberate so a first deploy succeeds
+before the variables are set, but it also means a missing or revoked credential
+shows as an empty board rather than as an error.
+`[leaderboard] shuffle provider failed: …` in the build log is the tell.
+
+Because pages are prerendered, a failure *at build time* is cached until the
+first request revalidates it — which is why a transient rate-limit during a
+build can leave the notice on screen for a minute after the API has recovered.
 
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
@@ -62,12 +69,31 @@ standings refresh about once a minute without a rebuild.
   avatars, favourite games or biggest-multiplier data, so those panels do not
   appear on this board.
 
-### Lootbox — not wired up
+### Lootbox API
 
-`api.lootbox.com` is a **GraphQL** endpoint (the root redirects to `/graphql`).
-Introspection is disabled and field-name suggestions are hidden, so the schema
-cannot be discovered from the key alone. The key is stored and the provider is
-ready; it needs the query shape from Lootbox's affiliate docs or dashboard.
+`POST {LOOTBOX_API_URL}/top-affiliate-wagers-by-period`, bearer auth. Unlike
+Shuffle it takes a real time range, so the board matches the calendar period the
+site advertises. Docs: <https://docs.lootbox.com/>.
+
+Two shape details the code depends on:
+
+- timestamps are Unix **seconds**, not milliseconds;
+- `totalWagered` comes back as a **string** — summing it unparsed would
+  concatenate rather than add.
+
+It also returns per-player `avatar` URLs, which the board uses in place of a
+tier badge.
+
+The board is wired and returning live data, but the partner is still flagged
+`comingSoon: true` so the UI shows the coming-soon panel. Flip that flag once
+the prize split is decided — `prizeTable` currently holds a provisional
+`[100, 60, 40]` that is deliberately never displayed.
+
+### Excluded accounts
+
+`src/lib/staff.ts` holds the usernames that never appear on a board. They are
+dropped before ranking *and* before the whole-board stats, so staff play does
+not inflate the totals either. Matching is case-insensitive.
 
 ## Architecture
 
@@ -76,26 +102,23 @@ src/lib/types.ts            domain shapes; no React, no fetch
 src/lib/partners.ts         prize pools, splits, codes, links — the only place they live
 src/lib/format.ts           masking + money/period formatting
 src/lib/providers/shuffle   live API, server-only
-src/lib/providers/lootbox   fixtures behind the identical interface
+src/lib/providers/lootbox   live API, server-only
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
-src/lib/mock/               fixtures
+src/lib/staff.ts            accounts excluded from every board
 src/app/api/leaderboard/    JSON proxy (OBS overlays, bots) — token never leaves the server
 src/components/             presentational, take data as props
 ```
 
-The UI never imports a provider, so which casino is live and which is mock stays
-an implementation detail. Components read `board.source` to decide whether to
-show the MOCK badge.
+The UI never imports a provider, so which casino is live stays an implementation
+detail. Components read `board.source` to decide whether to show the sample-data
+notice.
 
-### Adding the Lootbox API when it arrives
+### Opening the Lootbox board
 
-1. Replace the body of `lootboxProvider.fetchLeaderboard` with the HTTP call.
-2. Map the response into `RawPlayer[]` and pass it through `buildEntries`.
-3. Return `source: 'live'`.
-4. Set `hasLiveApi: true` and `comingSoon: false` in `src/lib/partners.ts`.
-
-Nothing in the UI changes and the MOCK badge disappears on its own.
+Set the prize split in `PARTNERS.lootbox.prizeTable`, then flip `comingSoon` to
+`false` and `hasLiveApi` to `true`. The provider is already live; nothing else
+changes.
 
 ### Adding another casino
 
@@ -116,6 +139,10 @@ render from the registry.
 - **Lootbox is `comingSoon`.** Its board renders a coming-soon panel instead of
   standings, and its split is deliberately unpublished — the provisional array in
   `partners.ts` is not shown anywhere until it is announced.
+- **A failed live call renders no players**, not fixtures. A hardcoded row shows
+  as a real player with a real-looking figure, so a transient outage would
+  present frozen standings as though they were current. Every place comes back
+  unclaimed under the "temporarily unavailable" notice instead.
 - **No activity ticker, no member counts.** Nothing on the site implies a crowd
   that does not exist.
 - **No gold, no green.** Every colour is sampled from the mascot artwork.
@@ -128,7 +155,6 @@ render from the registry.
 | Lootbox free-battle rules | `FREE_BATTLES` in `src/lib/partners.ts` |
 | Discord invite | `SOCIALS` in `src/lib/partners.ts` |
 | Kick live state (hardcoded offline) | `LiveChip` in `src/components/Shell.tsx` |
-| Lootbox standings | `src/lib/mock/lootbox.ts` |
 | Legal copy | `src/app/legal/page.tsx` — drafted, not legal advice |
 
 ## Asset pipeline

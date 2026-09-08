@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { getPartner } from '../partners';
-import { maskUsername } from '../format';
+import { withoutExcluded } from '../staff';
 import { buildEntries } from './shared';
 import type { Leaderboard, LeaderboardProvider, Period } from '../types';
 
@@ -53,10 +53,14 @@ export const shuffleProvider: LeaderboardProvider = {
       throw new Error(`Shuffle responded ${res.status}: ${await res.text()}`);
     }
 
-    const rows = (await res.json()) as ShuffleRow[];
-    if (!Array.isArray(rows)) {
+    const payload = (await res.json()) as ShuffleRow[];
+    if (!Array.isArray(payload)) {
       throw new Error('Shuffle returned an unexpected payload');
     }
+
+    // Excluded before ranking *and* before the totals, so staff play does not
+    // inflate the board stats either.
+    const rows = withoutExcluded(payload, (row) => row.username);
 
     // Ranked on raw wagered, matching the stated rules. Shuffle also returns a
     // house-edge weighted figure, which is what a switch to weighted ranking
@@ -67,10 +71,7 @@ export const shuffleProvider: LeaderboardProvider = {
       partnerId: 'shuffle',
       prizePool: partner.prizePool,
       entries: buildEntries(
-        ranked.map((row) => ({
-          username: maskUsername(row.username),
-          wagered: row.wagerAmount,
-        })),
+        ranked.map((row) => ({ username: row.username, wagered: row.wagerAmount })),
         partner.prizeTable,
       ),
       periodStart: period.start.toISOString(),
