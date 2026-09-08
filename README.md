@@ -84,10 +84,8 @@ Two shape details the code depends on:
 It also returns per-player `avatar` URLs, which the board uses in place of a
 tier badge.
 
-The board is wired and returning live data, but the partner is still flagged
-`comingSoon: true` so the UI shows the coming-soon panel. Flip that flag once
-the prize split is decided — `prizeTable` currently holds a provisional
-`[100, 60, 40]` that is deliberately never displayed.
+The board is live. Its split mirrors Shuffle's 50/30/20, scaled to the smaller
+pool: **$100 / $60 / $40** of $200 to the top three.
 
 ### Excluded accounts
 
@@ -114,12 +112,6 @@ The UI never imports a provider, so which casino is live stays an implementation
 detail. Components read `board.source` to decide whether to show the sample-data
 notice.
 
-### Opening the Lootbox board
-
-Set the prize split in `PARTNERS.lootbox.prizeTable`, then flip `comingSoon` to
-`false` and `hasLiveApi` to `true`. The provider is already live; nothing else
-changes.
-
 ### Adding another casino
 
 Add an entry to `PARTNERS` and `PARTNER_ORDER`, add a `PartnerId`, write a
@@ -133,12 +125,12 @@ render from the registry.
   2026-09-05). Shuffle returns both; the weighted one discounts low-house-edge
   play. Raw ranking is farmable on those games, which is why the rules carry an
   explicit no-wager-abuse clause.
-- **Every paying seat always renders.** Shuffle pays three ($125 / $75 / $50); the
+- **Every paying seat always renders.** Shuffle pays $125 / $75 / $50 and Lootbox
+  $100 / $60 / $40; the
   affiliate base is genuinely small, so unfilled positions show as an open place
   with the prize still attached rather than being hidden.
-- **Lootbox is `comingSoon`.** Its board renders a coming-soon panel instead of
-  standings, and its split is deliberately unpublished — the provisional array in
-  `partners.ts` is not shown anywhere until it is announced.
+- **`comingSoon` on a partner** swaps its board for a coming-soon panel and hides
+  its split everywhere, for a board that is announced but not open.
 - **A failed live call renders no players**, not fixtures. A hardcoded row shows
   as a real player with a real-looking figure, so a transient outage would
   present frozen standings as though they were current. Every place comes back

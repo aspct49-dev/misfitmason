@@ -101,7 +101,7 @@ Hover changes colour and border only, never scale or position. Full
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
 - **Metric**: raw wagered (client decision, 2026-09-05), stated in the rules.
-- **Prizes** — Shuffle $250: `125/75/50`. Lootbox: split unannounced.
+- **Prizes** — Shuffle $250: `125/75/50`. Lootbox $200: `100/60/40`.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
   prize stay. No horizontal scroll at 390px.
@@ -116,9 +116,10 @@ Hover changes colour and border only, never scale or position. Full
   UUID in the path is the credential. Takes no parameters and is rate limited,
   so the period shown is ours, not theirs. Referral
   `https://shuffle.com/?r=MisfitMason`, code `MisfitMason`.
-- **Lootbox** — announced, not open. GraphQL at `api.lootbox.com/graphql` with
-  introspection disabled, so the query is not wired up. Renders a coming-soon
-  panel. Referral `https://lootbox.com/r/misfitmason`, code `misfitmason`.
+- **Lootbox** — live. `POST partners.lootbox.com/top-affiliate-wagers-by-period`,
+  bearer auth, server-side only. Takes a real time range, so its board matches
+  the calendar month. Referral `https://lootbox.com/r/misfitmason`, code
+  `misfitmason`.
 - A third partner is a registry entry plus a provider module.
 
 ---

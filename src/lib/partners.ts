@@ -28,13 +28,11 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     logo: '/lootbox-logo.svg',
     signupUrl: 'https://lootbox.com/r/misfitmason',
     prizePool: 200,
-    // Provisional and deliberately not shown anywhere while the board is
-    // unannounced — publishing a split we have not committed to would be a
-    // promise we cannot keep.
+    // Mirrors Shuffle's 50/30/20 split, scaled to the smaller pool.
     prizeTable: [100, 60, 40],
     metricLabel: 'Total amount wagered',
-    hasLiveApi: false,
-    comingSoon: true,
+    hasLiveApi: true,
+    comingSoon: false,
     blurb: 'Case battles, boxes and upgrades. Depositors also receive free battles.',
   },
 };
