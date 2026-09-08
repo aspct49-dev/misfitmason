@@ -8,7 +8,12 @@
  * Matching is case-insensitive and trimmed, because the operators do not agree
  * on casing between their APIs and their dashboards.
  */
-const EXCLUDED = ['warhooly'];
+/**
+ * One person can appear under different names on different operators, so every
+ * alias has to be listed: the same staff member is "Warhooly" on Shuffle and
+ * "Hooly" on Lootbox.
+ */
+const EXCLUDED = ['warhooly', 'hooly'];
 
 export function isExcludedPlayer(username: string | null | undefined): boolean {
   if (!username) return false;
