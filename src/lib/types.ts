@@ -23,6 +23,15 @@ export interface Partner {
   prizeTable: number[];
   /** What the ranking is measured on, stated verbatim in the rules copy. */
   metricLabel: string;
+  /**
+   * True when the board ranks on the operator's house-edge weighted figure
+   * rather than the raw amount staked. Drives every "Wagered" label, because a
+   * weighted number shown under a plain "Wagered" heading looks like a mistake
+   * to anyone comparing it with their own account.
+   */
+  weighted: boolean;
+  /** Plain-language explanation shown beside a weighted board, one point per entry. */
+  weightingNote?: string[];
   /** True once a real API is wired up; drives the MOCK badge in the UI. */
   hasLiveApi: boolean;
   /** Announced but not yet running: the board renders a coming-soon state. */

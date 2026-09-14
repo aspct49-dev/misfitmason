@@ -62,16 +62,18 @@ export const shuffleProvider: LeaderboardProvider = {
     // inflate the board stats either.
     const rows = withoutExcluded(payload, (row) => row.username);
 
-    // Ranked on raw wagered, matching the stated rules. Shuffle also returns a
-    // house-edge weighted figure, which is what a switch to weighted ranking
-    // would use.
-    const ranked = [...rows].sort((a, b) => b.wagerAmount - a.wagerAmount);
+    // Ranked on the house-edge weighted figure (client decision, 2026-09-14),
+    // not the raw stake. Raw ranking let low-edge play buy prize places: at the
+    // switch, two of the three paying places changed hands. The weighted value
+    // is what is displayed and totalled as well, so the board never shows one
+    // number while ranking on another.
+    const ranked = [...rows].sort((a, b) => b.weightedWagerAmount - a.weightedWagerAmount);
 
     return {
       partnerId: 'shuffle',
       prizePool: partner.prizePool,
       entries: buildEntries(
-        ranked.map((row) => ({ username: row.username, wagered: row.wagerAmount })),
+        ranked.map((row) => ({ username: row.username, wagered: row.weightedWagerAmount })),
         partner.prizeTable,
       ),
       periodStart: period.start.toISOString(),
@@ -80,8 +82,8 @@ export const shuffleProvider: LeaderboardProvider = {
       source: 'live',
       stats: {
         players: rows.length,
-        totalWagered: rows.reduce((sum, r) => sum + (r.wagerAmount || 0), 0),
-        topWager: ranked.length ? ranked[0].wagerAmount : 0,
+        totalWagered: rows.reduce((sum, r) => sum + (r.weightedWagerAmount || 0), 0),
+        topWager: ranked.length ? ranked[0].weightedWagerAmount : 0,
       },
       // Shuffle publishes no per-bet detail, so there is no biggest-hit panel
       // on this board. The field is optional and the UI already omits it.

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { formatMoney } from '@/lib/format';
+import { wagerLabel } from '@/lib/partners';
 import type { Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
 
 /**
@@ -46,7 +47,7 @@ export function PromoBoard({ board, partner }: { board: Leaderboard; partner: Pa
                   <span className="pod-avatar" aria-hidden />
                 )}
                 <span className="pod-name">{entry.unclaimed ? 'Open place' : entry.username}</span>
-                <span className="pod-label">Wagered</span>
+                <span className="pod-label">{wagerLabel(partner)}</span>
                 <span className="pod-wager">{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</span>
               </div>
               <div className="pod-ribbon">{formatMoney(entry.prize)}</div>

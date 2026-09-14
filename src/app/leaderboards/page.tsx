@@ -37,10 +37,15 @@ export default async function LeaderboardsPage() {
                 : `paid ${PARTNERS[id].prizeTable.map((p) => `$${p}`).join(' / ')} to the top ${PARTNERS[id].prizeTable.length}.`}
             </li>
           ))}
-          <li>
-            Ranking is on <strong>total amount wagered</strong> during the period. This is the raw
-            figure, not weighted by house edge.
-          </li>
+          {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (
+            <li key={`metric-${id}`}>
+              {PARTNERS[id].name} is ranked on{' '}
+              <strong>{PARTNERS[id].metricLabel.toLowerCase()}</strong> during the period
+              {PARTNERS[id].weighted
+                ? `, as calculated by ${PARTNERS[id].name} from the house edge of each game. See the note under its standings.`
+                : '. This is the raw figure, not weighted by house edge.'}
+            </li>
+          ))}
           <li>There is no minimum to qualify and nothing to opt into.</li>
           <li>
             <strong>No wager abuse.</strong> Low-risk, hedged or zero-edge play used only to inflate

@@ -31,7 +31,15 @@ export default function LegalPage() {
                 : `paid ${PARTNERS[id].prizeTable.map((p) => `$${p}`).join(' / ')} to the top ${PARTNERS[id].prizeTable.length}.`}
             </li>
           ))}
-          <li>Ranking is on total amount wagered during the period, not weighted by house edge.</li>
+          {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (
+            <li key={`metric-${id}`}>
+              {PARTNERS[id].name} is ranked on {PARTNERS[id].metricLabel.toLowerCase()} during the
+              period
+              {PARTNERS[id].weighted
+                ? ', as reported by the casino. Each bet is weighted by the house edge of the game it was placed on, so low-edge play counts for less and the figure is normally below the raw amount staked.'
+                : ', not weighted by house edge.'}
+            </li>
+          ))}
           <li>No minimum wager is required to qualify.</li>
           <li>
             Entry requires an account registered through this site&apos;s referral links. Accounts

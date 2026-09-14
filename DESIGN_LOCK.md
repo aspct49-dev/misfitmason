@@ -100,7 +100,8 @@ Hover changes colour and border only, never scale or position. Full
   glow, not a crown, not gold.
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
-- **Metric**: raw wagered (client decision, 2026-09-05), stated in the rules.
+- **Metric**: Shuffle weighted wagered (2026-09-14), with a disclaimer under the
+  table; Lootbox raw wagered (its API has no weighted figure). Stated in the rules.
 - **Prizes** — Shuffle $250: `125/75/50`. Lootbox $200: `100/60/40`.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and

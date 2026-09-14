@@ -1,4 +1,5 @@
 import { formatMoney, periodLabel } from '@/lib/format';
+import { wagerLabel } from '@/lib/partners';
 import type { Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
 import { Countdown } from './Countdown';
 import { CopyCode } from './CopyCode';
@@ -107,7 +108,7 @@ function ComingSoon({ partner, prizePool }: { partner: Partner; prizePool: numbe
 function Standings({ board, partner }: { board: Leaderboard; partner: Partner }) {
   return (
     <>
-      <Podium entries={board.entries.slice(0, 3)} />
+      <Podium entries={board.entries.slice(0, 3)} wagerLabel={wagerLabel(partner)} />
 
       <div className="lb-ends">
         <span className="label">Leaderboard ends in</span>
@@ -121,8 +122,14 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
         </div>
         <div className="lb-stats-grid">
           <Stat label="Total players" value={board.stats.players.toLocaleString('en-US')} />
-          <Stat label="Total wagered" value={formatMoney(board.stats.totalWagered)} />
-          <Stat label="Top wager" value={formatMoney(board.stats.topWager)} />
+          <Stat
+            label={partner.weighted ? 'Total weighted' : 'Total wagered'}
+            value={formatMoney(board.stats.totalWagered)}
+          />
+          <Stat
+            label={partner.weighted ? 'Top weighted' : 'Top wager'}
+            value={formatMoney(board.stats.topWager)}
+          />
           <Stat label="Prize pool" value={formatMoney(board.prizePool)} accent />
         </div>
       </div>
@@ -133,7 +140,7 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
         <div className="standings-head">
           <span className="label">Rank</span>
           <span className="label">User</span>
-          <span className="label">Wagered</span>
+          <span className="label">{wagerLabel(partner)}</span>
           <span className="label">Reward</span>
         </div>
         {board.entries.map((entry) => (
@@ -141,10 +148,32 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
         ))}
       </div>
 
+      {partner.weighted && partner.weightingNote && (
+        <WeightingNote id={`weighting-${partner.id}`} points={partner.weightingNote} />
+      )}
+
       <p className="lb-note">
         Usernames are masked for privacy. Standings update as wagers are processed.
       </p>
     </>
+  );
+}
+
+/**
+ * Why the numbers are lower than a player's own account shows. Sits directly
+ * under the table rather than in the rules, because the table is where the
+ * question comes up.
+ */
+function WeightingNote({ id, points }: { id: string; points: string[] }) {
+  return (
+    <aside className="lb-weighting" aria-labelledby={id}>
+      <h3 id={id}>How wagers are weighted</h3>
+      <ul>
+        {points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+    </aside>
   );
 }
 

@@ -22,7 +22,7 @@ const EMBLEM: Record<number, string> = {
 
 const PLACE: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd' };
 
-function Seat({ entry }: { entry: LeaderboardEntry }) {
+function Seat({ entry, wagerLabel }: { entry: LeaderboardEntry; wagerLabel: string }) {
   const first = entry.rank === 1;
 
   return (
@@ -53,7 +53,7 @@ function Seat({ entry }: { entry: LeaderboardEntry }) {
       {/* Below the banner: the cloth interior is too narrow to carry a fourth
           line without the name and prize losing their weight. */}
       <div className="lb-wager">
-        <span className="label">Wagered</span>
+        <span className="label">{wagerLabel}</span>
         <b>{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</b>
       </div>
 
@@ -62,14 +62,20 @@ function Seat({ entry }: { entry: LeaderboardEntry }) {
   );
 }
 
-export function Podium({ entries }: { entries: LeaderboardEntry[] }) {
+export function Podium({
+  entries,
+  wagerLabel = 'Wagered',
+}: {
+  entries: LeaderboardEntry[];
+  wagerLabel?: string;
+}) {
   const [first, second, third] = entries;
   const order = [second, first, third].filter(Boolean);
 
   return (
     <div className="lb-podium">
       {order.map((entry) => (
-        <Seat key={entry.rank} entry={entry} />
+        <Seat key={entry.rank} entry={entry} wagerLabel={wagerLabel} />
       ))}
     </div>
   );

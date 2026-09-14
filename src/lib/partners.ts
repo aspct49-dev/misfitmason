@@ -16,7 +16,16 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     signupUrl: 'https://shuffle.com/?r=MisfitMason',
     prizePool: 250,
     prizeTable: [125, 75, 50],
-    metricLabel: 'Total amount wagered',
+    metricLabel: 'Weighted amount wagered',
+    // Client decision, 2026-09-14. Shuffle publishes no per-game weighting
+    // table, so the note describes the mechanism rather than quoting figures we
+    // cannot verify.
+    weighted: true,
+    weightingNote: [
+      'Shuffle weights every bet by the house edge of the game it is placed on. Higher-edge games count for more of the stake; low-edge games count for only a small fraction of it.',
+      'The figure on this board is that weighted total, so it is normally well below the amount wagered shown in your Shuffle account.',
+      'The weighting is calculated by Shuffle, not by us, and applies the same way to every player on the board.',
+    ],
     hasLiveApi: true,
     comingSoon: false,
     blurb: 'Slots, originals and sports. Standings come from the Shuffle affiliate API.',
@@ -31,6 +40,9 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     // Mirrors Shuffle's 50/30/20 split, scaled to the smaller pool.
     prizeTable: [100, 60, 40],
     metricLabel: 'Total amount wagered',
+    // Lootbox's API returns only the raw figure, so this board cannot be
+    // weighted even if that becomes the policy.
+    weighted: false,
     hasLiveApi: true,
     comingSoon: false,
     blurb: 'Case battles, boxes and upgrades. Depositors also receive free battles.',
@@ -41,6 +53,11 @@ export const PARTNER_ORDER: PartnerId[] = ['shuffle', 'lootbox'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];
+}
+
+/** Column and caption label for the figure a board ranks on. */
+export function wagerLabel(partner: Partner): string {
+  return partner.weighted ? 'Weighted' : 'Wagered';
 }
 
 /** Combined pot across every partner — the figure on the nav badge. */

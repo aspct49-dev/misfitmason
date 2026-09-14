@@ -101,7 +101,7 @@ export function GettingStarted() {
         <Step
           n="02"
           title="Play as you normally would"
-          body="Everything wagered in the calendar month counts toward the board. There is no minimum, no qualifying period and nothing to opt into."
+          body="Wagers in the calendar month count toward the board. On Shuffle each bet is weighted by the game's house edge, so low-edge games count for less. There is no minimum and nothing to opt into."
         />
         <Step
           n="03"

@@ -289,6 +289,21 @@
 }
 .lb-stat b.accent { color: var(--accent); }
 
+/* Weighting disclaimer. Solid surface with an accent rail: it explains a number
+   players will otherwise think is wrong, so it must not read as fine print. */
+.lb-weighting {
+  margin: 18px 0 0;
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.lb-weighting h3 { margin: 0 0 10px; font-size: 15px; }
+.lb-weighting ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.lb-weighting li { color: var(--muted); font-size: 14px; line-height: 1.55; }
+.lb-weighting li::marker { color: var(--accent); }
+
 .lb-note {
   margin: 16px 0 0;
   text-align: center;

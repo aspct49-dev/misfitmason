@@ -121,10 +121,15 @@ render from the registry.
 
 ## Decisions worth knowing
 
-- **Ranked on raw wagered**, not the weighted figure (client decision,
-  2026-09-05). Shuffle returns both; the weighted one discounts low-house-edge
-  play. Raw ranking is farmable on those games, which is why the rules carry an
-  explicit no-wager-abuse clause.
+- **Shuffle ranks on the weighted figure** (client decision, 2026-09-14,
+  replacing raw wagered from 2026-09-05). Shuffle's `weightedWagerAmount`
+  discounts low-house-edge play, which raw ranking let players farm. The
+  weighted value is ranked, displayed and totalled, every label reads
+  "Weighted", and a disclaimer sits under the table. Shuffle publishes no
+  per-game table, so the copy describes the mechanism without quoting rates.
+  Because the API has no date range, the whole month switched at once.
+- **Lootbox stays on raw wagered.** Its API returns only `totalWagered`; there
+  is nothing to weight. The `weighted` flag on each partner drives the labels.
 - **Every paying seat always renders.** Shuffle pays $125 / $75 / $50 and Lootbox
   $100 / $60 / $40; the
   affiliate base is genuinely small, so unfilled positions show as an open place
