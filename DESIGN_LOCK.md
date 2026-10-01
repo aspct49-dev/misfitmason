@@ -102,7 +102,7 @@ Hover changes colour and border only, never scale or position. Full
   and no second line — the prize column already states what is at stake.
 - **Metric**: raw wagered (Lootbox reports no weighted figure). Stated in the rules.
 - **Period**: half-months, 1st–15th and 16th–end, opening and closing at 00:00 UTC.
-- **Prizes** — Lootbox $500 per period: `250/150/100`.
+- **Prizes** — Lootbox $500 per period: `225/125/75/50/25`, five paying places.
 - **One partner, no tabs.** The switcher renders only with two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and

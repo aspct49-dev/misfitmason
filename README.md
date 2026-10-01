@@ -75,8 +75,9 @@ Two shape details the code depends on:
 It also returns per-player `avatar` URLs, which the board uses in place of a
 tier badge.
 
-It is the only board. **$500 per period, paid $250 / $150 / $100** to the top
-three — the 50/30/20 split the site has always used.
+It is the only board. **$500 per period, paid $225 / $125 / $75 / $50 / $25**
+to the top five (client split, 2026-10-01). The prize table must always total
+`prizePool`; the podium shows the top three and the table carries the rest.
 
 ### Excluded accounts
 

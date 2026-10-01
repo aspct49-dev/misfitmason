@@ -15,8 +15,9 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     logo: '/lootbox-logo.svg',
     signupUrl: 'https://lootbox.com/r/misfitmason',
     prizePool: 500,
-    // 50/30/20 of the pool, the split the boards have always used.
-    prizeTable: [250, 150, 100],
+    // Client split, 2026-10-01. Five paying places rather than three, so the
+    // pot reaches further down a small field. Must always total prizePool.
+    prizeTable: [225, 125, 75, 50, 25],
     metricLabel: 'Total amount wagered',
     // Lootbox's API returns only the raw figure, so this board cannot be
     // weighted even if that becomes the policy.
