@@ -118,9 +118,12 @@ render from the registry.
 - **Ranked on raw wagered.** Lootbox returns only `totalWagered`, so there is
   nothing to weight. The `weighted` flag on a partner still drives the labels
   and the weighting disclaimer, for an operator that does report it.
-- **Every paying seat always renders.** The affiliate base is genuinely small,
-  so unfilled positions show as an open place with the prize still attached
-  rather than being hidden.
+- **Every paying seat always renders**, and so does every player below them.
+  The affiliate base is genuinely small, so unfilled positions show as an open
+  place with the prize still attached rather than being hidden; players outside
+  the money are listed with an em dash in the prize column, so someone in 7th
+  can see the gap to 3rd. Accounts with a zero total for the period are dropped
+  — they are registrations, not standings.
 - **`comingSoon` on a partner** swaps its board for a coming-soon panel and hides
   its split everywhere, for a board that is announced but not open.
 - **A failed live call renders no players**, not fixtures. A hardcoded row shows

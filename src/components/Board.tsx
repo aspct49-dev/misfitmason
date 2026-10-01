@@ -134,8 +134,9 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
         </div>
       </div>
 
-      {/* Every paying place, not just the ones the podium left out — the podium
-          is the celebration, the table is the reference. */}
+      {/* Everyone, not only the paying places and not only the players the
+          podium left out: the podium is the celebration, the table is the
+          reference, and the gap to the money is the point of reading it. */}
       <div className="standings">
         <div className="standings-head">
           <span className="label">Rank</span>
@@ -153,7 +154,8 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
       )}
 
       <p className="lb-note">
-        Usernames are masked for privacy. Standings update as wagers are processed.
+        Every player with a wager this period is listed, paid places first. Usernames are masked
+        for privacy. Standings update as wagers are processed.
       </p>
     </>
   );
@@ -203,7 +205,12 @@ function updatedLabel(iso: string): string {
 
 function Row({ entry }: { entry: LeaderboardEntry }) {
   return (
-    <div className="rank-row" data-rank={entry.rank} data-open={entry.unclaimed}>
+    <div
+      className="rank-row"
+      data-rank={entry.rank}
+      data-open={entry.unclaimed}
+      data-paid={entry.prize > 0}
+    >
       <div className="rank-n">{entry.rank}</div>
 
       <div className="player">
@@ -224,7 +231,9 @@ function Row({ entry }: { entry: LeaderboardEntry }) {
       </div>
 
       <div className="rank-wager">{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</div>
-      <div className="rank-prize">{formatMoney(entry.prize)}</div>
+      {/* An em dash rather than $0: a zero in the prize column reads as a
+          prize of nothing won, not as a place outside the money. */}
+      <div className="rank-prize">{entry.prize > 0 ? formatMoney(entry.prize) : '—'}</div>
     </div>
   );
 }

@@ -16,17 +16,25 @@ export interface RawPlayer {
 }
 
 /**
- * Turns however many players a partner returned into exactly as many seats as
- * the prize table pays.
+ * Ranks every player the partner returned, and pads to at least as many seats
+ * as the prize table pays.
  *
- * The affiliate base is small, so an empty seat is the normal case rather than
- * an edge case: every paying position renders, and the ones nobody has taken
- * come back `unclaimed` with the prize still attached. A leaderboard with two
- * players then reads as places going spare, which is both the honest picture
- * and the more persuasive one.
+ * Two rules, both of which the small affiliate base makes the normal case
+ * rather than an edge case:
+ *
+ *   - Every paying position renders even with nobody in it, `unclaimed` with
+ *     the prize still attached. A board with two players then reads as places
+ *     going spare, which is both the honest picture and the more persuasive one.
+ *   - Everyone below the paying places is listed too, with `prize: 0`. Someone
+ *     in 7th can see exactly what the gap to 3rd is, which is the whole reason
+ *     to keep wagering; a board cut off at the prizes hides that from the
+ *     people most likely to act on it.
  */
 export function buildEntries(players: RawPlayer[], prizeTable: number[]): LeaderboardEntry[] {
-  return prizeTable.map((prize, i) => {
+  const seats = Math.max(players.length, prizeTable.length);
+
+  return Array.from({ length: seats }, (_, i) => {
+    const prize = prizeTable[i] ?? 0;
     const player = players[i];
     if (!player) {
       return { rank: i + 1, username: '', wagered: 0, prize, unclaimed: true };

@@ -289,6 +289,13 @@
 }
 .lb-stat b.accent { color: var(--accent); }
 
+/* Places outside the money: present and ranked, but quieter than the paid rows
+   so the prize places still read first. */
+.rank-row[data-paid='false'] .rank-prize {
+  color: var(--dim);
+  font-weight: 500;
+}
+
 /* Weighting disclaimer. Solid surface with an accent rail: it explains a number
    players will otherwise think is wrong, so it must not read as fine print. */
 .lb-weighting {

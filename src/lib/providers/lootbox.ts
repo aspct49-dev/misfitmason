@@ -80,7 +80,11 @@ export const lootboxProvider: LeaderboardProvider = {
       tierBadgeUrl: row.avatar,
     }));
 
-    const ranked = [...players].sort((a, b) => b.wagered - a.wagered);
+    // Registered but idle accounts come back with a zero total. They are not
+    // standings, and a row reading $0 tells a reader nothing about the race, so
+    // they are dropped from the board and from the player count alike.
+    const active = players.filter((player) => player.wagered > 0);
+    const ranked = [...active].sort((a, b) => b.wagered - a.wagered);
 
     return {
       partnerId: 'lootbox',
