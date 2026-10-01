@@ -8,37 +8,15 @@ import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './t
  * link's own referral parameter, so the two cannot drift apart.
  */
 export const PARTNERS: Record<PartnerId, Partner> = {
-  shuffle: {
-    id: 'shuffle',
-    name: 'Shuffle',
-    code: 'MisfitMason',
-    logo: '/shuffle-logo.webp',
-    signupUrl: 'https://shuffle.com/?r=MisfitMason',
-    prizePool: 250,
-    prizeTable: [125, 75, 50],
-    metricLabel: 'Weighted amount wagered',
-    // Client decision, 2026-09-14. Shuffle publishes no per-game weighting
-    // table, so the note describes the mechanism rather than quoting figures we
-    // cannot verify.
-    weighted: true,
-    weightingNote: [
-      'Shuffle weights every bet by the house edge of the game it is placed on. Higher-edge games count for more of the stake; low-edge games count for only a small fraction of it.',
-      'The figure on this board is that weighted total, so it is normally well below the amount wagered shown in your Shuffle account.',
-      'The weighting is calculated by Shuffle, not by us, and applies the same way to every player on the board.',
-    ],
-    hasLiveApi: true,
-    comingSoon: false,
-    blurb: 'Slots, originals and sports. Standings come from the Shuffle affiliate API.',
-  },
   lootbox: {
     id: 'lootbox',
     name: 'Lootbox',
     code: 'misfitmason',
     logo: '/lootbox-logo.svg',
     signupUrl: 'https://lootbox.com/r/misfitmason',
-    prizePool: 200,
-    // Mirrors Shuffle's 50/30/20 split, scaled to the smaller pool.
-    prizeTable: [100, 60, 40],
+    prizePool: 500,
+    // 50/30/20 of the pool, the split the boards have always used.
+    prizeTable: [250, 150, 100],
     metricLabel: 'Total amount wagered',
     // Lootbox's API returns only the raw figure, so this board cannot be
     // weighted even if that becomes the policy.
@@ -49,7 +27,7 @@ export const PARTNERS: Record<PartnerId, Partner> = {
   },
 };
 
-export const PARTNER_ORDER: PartnerId[] = ['shuffle', 'lootbox'];
+export const PARTNER_ORDER: PartnerId[] = ['lootbox'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];

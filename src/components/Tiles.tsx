@@ -18,13 +18,13 @@ export function Tiles() {
         <Link className="tile" href="/leaderboards">
           <span className="tile-value">{formatMoney(TOTAL_PRIZE_POOL)}</span>
           <h3>Leaderboards</h3>
-          <p>Live Shuffle standings and the Lootbox board, with full rules.</p>
+          <p>Live Lootbox standings for the current period, with full rules.</p>
         </Link>
 
         <Link className="tile" href="/rewards">
           <span className="tile-value">{AFFILIATE_RETURN.percentage}%</span>
           <h3>Affiliate revenue</h3>
-          <p>All of it returned monthly to the players who generated it.</p>
+          <p>All of it returned to the players who generated it.</p>
         </Link>
 
         <Link className="tile" href="/rewards#battles">
@@ -36,7 +36,7 @@ export function Tiles() {
         <Link className="tile" href="/how-it-works">
           <span className="tile-value">3</span>
           <h3>How it works</h3>
-          <p>Three steps from signing up to being paid at month end.</p>
+          <p>Three steps from signing up to being paid at period end.</p>
         </Link>
       </div>
     </section>

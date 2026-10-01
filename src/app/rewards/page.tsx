@@ -6,9 +6,9 @@ import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players, monthly leaderboard prizes, and free Lootbox battles for depositors.',
+  description: '100% of affiliate revenue returned to players, bi-weekly leaderboard prizes, and free Lootbox battles for depositors.',
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, monthly leaderboard prizes, and free Lootbox battles for depositors.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, bi-weekly leaderboard prizes, and free Lootbox battles for depositors.', url: '/rewards' },
 };
 
 export default function RewardsPage() {
@@ -30,7 +30,7 @@ export default function RewardsPage() {
               100%
             </div>
             <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Returned monthly to the players who generated it.
+              Returned to the players who generated it.
             </p>
           </div>
           <div className="card">

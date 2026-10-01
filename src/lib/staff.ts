@@ -10,8 +10,8 @@
  */
 /**
  * One person can appear under different names on different operators, so every
- * alias has to be listed: the same staff member is "Warhooly" on Shuffle and
- * "Hooly" on Lootbox.
+ * alias has to be listed: the same staff member is "Hooly" on Lootbox and
+ * "Warhooly" on Shuffle, which the site has carried before.
  */
 const EXCLUDED = ['warhooly', 'hooly'];
 

@@ -28,7 +28,7 @@ export function PromoBoard({ board, partner }: { board: Leaderboard; partner: Pa
           </h2>
           <p>
             Climb the {partner.name} board under code {partner.code} and take a share of the pot.
-            Top {partner.prizeTable.length} are paid at the end of the month.
+            Top {partner.prizeTable.length} are paid when the period closes.
           </p>
           <Link className="btn btn-primary" href="/leaderboards">
             View leaderboard

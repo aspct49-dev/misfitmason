@@ -100,9 +100,10 @@ Hover changes colour and border only, never scale or position. Full
   glow, not a crown, not gold.
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
-- **Metric**: Shuffle weighted wagered (2026-09-14), with a disclaimer under the
-  table; Lootbox raw wagered (its API has no weighted figure). Stated in the rules.
-- **Prizes** — Shuffle $250: `125/75/50`. Lootbox $200: `100/60/40`.
+- **Metric**: raw wagered (Lootbox reports no weighted figure). Stated in the rules.
+- **Period**: half-months, 1st–15th and 16th–end, opening and closing at 00:00 UTC.
+- **Prizes** — Lootbox $500 per period: `250/150/100`.
+- **One partner, no tabs.** The switcher renders only with two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
   prize stay. No horizontal scroll at 390px.
@@ -113,16 +114,13 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PARTNERS
 
-- **Shuffle** — live. `affiliate.shuffle.com/wager/<uuid>`, server-side only; the
-  UUID in the path is the credential. Takes no parameters, is rate limited and
-  reports cumulative totals that never reset, so the monthly board is the feed
-  minus a month-start snapshot (`SHUFFLE_BASELINE`, refreshed on the 1st). Referral
-  `https://shuffle.com/?r=MisfitMason`, code `MisfitMason`.
-- **Lootbox** — live. `POST partners.lootbox.com/top-affiliate-wagers-by-period`,
+- **Lootbox** — the only partner (Shuffle removed 2026-10-01).
+  `POST partners.lootbox.com/top-affiliate-wagers-by-period`,
   bearer auth, server-side only. Takes a real time range, so its board matches
-  the calendar month. Referral `https://lootbox.com/r/misfitmason`, code
+  the advertised period exactly. Referral `https://lootbox.com/r/misfitmason`, code
   `misfitmason`.
-- A third partner is a registry entry plus a provider module.
+- A second partner is a registry entry plus a provider module; adding one brings
+  the tab switcher back on its own.
 
 ---
 

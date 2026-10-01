@@ -1,7 +1,15 @@
 # Misfit Mason
 
-Community leaderboard site for the Kick streamer MisfitMason. Shuffle and Lootbox
-standings, 100% affiliate revenue return, free Lootbox battles.
+Community leaderboard site for the Kick streamer MisfitMason. A $500 bi-weekly
+Lootbox wager leaderboard, 100% affiliate revenue return, free Lootbox battles.
+
+**Periods are half-months**, both ends at 00:00 UTC: the 1st to the 15th, and the
+16th to the last day of the month. `currentPeriod()` in `src/lib/format.ts` is
+the only place that is decided.
+
+Shuffle was removed on 2026-10-01 (client decision: no Shuffle board this
+month). Its provider, baseline script and logo went with it — `git show
+ebfbe3a` has the last version if it comes back.
 
 Design spec: [DESIGN_LOCK.md](DESIGN_LOCK.md).
 
@@ -16,20 +24,15 @@ npm run build && npm start
 `.env` holds the partner credentials (gitignored — see `.env.example`):
 
 ```
-SHUFFLE_WAGER_URL=https://affiliate.shuffle.com/wager/<uuid>
 LOOTBOX_API_URL=https://partners.lootbox.com
 LOOTBOX_API_KEY=partner<...>
 ```
-
-The Shuffle UUID *is* the credential — there is no separate token, so treat the
-whole URL as a secret.
 
 ## Deploying to Vercel
 
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`SHUFFLE_WAGER_URL`** — the full affiliate wager endpoint.
    - **`LOOTBOX_API_URL`** and **`LOOTBOX_API_KEY`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://misfitmason.com`. Optional: without it the site falls back to
@@ -46,7 +49,7 @@ service catches it, and the board renders every place unclaimed under a
 "temporarily unavailable" notice. That is deliberate so a first deploy succeeds
 before the variables are set, but it also means a missing or revoked credential
 shows as an empty board rather than as an error.
-`[leaderboard] shuffle provider failed: …` in the build log is the tell.
+`[leaderboard] lootbox provider failed: …` in the build log is the tell.
 
 Because pages are prerendered, a failure *at build time* is cached until the
 first request revalidates it — which is why a transient rate-limit during a
@@ -55,47 +58,13 @@ build can leave the notice on screen for a minute after the API has recovered.
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
 
-**Rotate both credentials before launch.** They have been through a chat window.
-
-### Shuffle API constraints
-
-- **No parameters, and the totals are cumulative.** Confirmed against the live
-  API on 2026-10-01: `startTime`/`endTime` return HTTP 500, while `from`/`to`,
-  `startDate`/`endDate`, `start`/`end` and `period` return 200 with byte-identical
-  data — they are ignored, not honoured. The feed never resets, so it reports
-  every wager since the affiliate link opened.
-
-#### The monthly baseline (a real chore, not optional)
-
-Because of that, a month-long board only exists by subtraction. On the 1st, as
-soon after 00:00 UTC as possible:
-
-```bash
-node scripts/shuffle-baseline.mjs          # prints the value for this month
-```
-
-Put the output in **`SHUFFLE_BASELINE`** (`.env` locally, Vercel env vars in
-production) and redeploy. The provider subtracts it per player, drops anyone
-with no play this period, and clamps at zero.
-
-Miss it and the board is wrong in a loud way, not a silent one: a baseline whose
-`period` does not match the current month is **ignored**, the board shows
-cumulative totals again, and `[shuffle] SHUFFLE_BASELINE is for …` appears in the
-log. Any play between 00:00 and the snapshot is lost from the new month, so
-snapshot early.
-
-Lootbox needs none of this — its API takes a real date range.
-- **Rate limited.** A handful of rapid calls returns `TOO_MANY_REQUEST`. The
-  60-second `revalidate` is what keeps us under it — do not lower it.
-- Returns `{ username, wagerAmount, weightedWagerAmount }` and nothing else: no
-  avatars, favourite games or biggest-multiplier data, so those panels do not
-  appear on this board.
+**Rotate the Lootbox key before launch.** It has been through a chat window.
 
 ### Lootbox API
 
-`POST {LOOTBOX_API_URL}/top-affiliate-wagers-by-period`, bearer auth. Unlike
-Shuffle it takes a real time range, so the board matches the calendar period the
-site advertises. Docs: <https://docs.lootbox.com/>.
+`POST {LOOTBOX_API_URL}/top-affiliate-wagers-by-period`, bearer auth. It takes a
+real time range, so the board matches the half-month period the site advertises
+and resets on its own. Docs: <https://docs.lootbox.com/>.
 
 Two shape details the code depends on:
 
@@ -106,8 +75,8 @@ Two shape details the code depends on:
 It also returns per-player `avatar` URLs, which the board uses in place of a
 tier badge.
 
-The board is live. Its split mirrors Shuffle's 50/30/20, scaled to the smaller
-pool: **$100 / $60 / $40** of $200 to the top three.
+It is the only board. **$500 per period, paid $250 / $150 / $100** to the top
+three — the 50/30/20 split the site has always used.
 
 ### Excluded accounts
 
@@ -121,7 +90,6 @@ not inflate the totals either. Matching is case-insensitive.
 src/lib/types.ts            domain shapes; no React, no fetch
 src/lib/partners.ts         prize pools, splits, codes, links — the only place they live
 src/lib/format.ts           masking + money/period formatting
-src/lib/providers/shuffle   live API, server-only
 src/lib/providers/lootbox   live API, server-only
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
@@ -143,22 +111,16 @@ render from the registry.
 
 ## Decisions worth knowing
 
-- **Shuffle ranks on the weighted figure** (client decision, 2026-09-14,
-  replacing raw wagered from 2026-09-05). Shuffle's `weightedWagerAmount`
-  discounts low-house-edge play, which raw ranking let players farm. The
-  weighted value is ranked, displayed and totalled, every label reads
-  "Weighted", and a disclaimer sits under the table. Shuffle publishes no
-  per-game table, so the copy describes the mechanism without quoting rates.
-  Because the API has no date range, the whole month switched at once.
-- **Shuffle periods come from a subtracted baseline** (2026-10-01). Its feed is
-  cumulative with no date filter, so without the month-start snapshot a player
-  who stopped wagering would hold a prize place for ever.
-- **Lootbox stays on raw wagered.** Its API returns only `totalWagered`; there
-  is nothing to weight. The `weighted` flag on each partner drives the labels.
-- **Every paying seat always renders.** Shuffle pays $125 / $75 / $50 and Lootbox
-  $100 / $60 / $40; the
-  affiliate base is genuinely small, so unfilled positions show as an open place
-  with the prize still attached rather than being hidden.
+- **Half-month periods** (client decision, 2026-10-01), not rolling fortnights,
+  so a period never straddles a month boundary and the reset dates are the same
+  every month. Lootbox's API takes a real date range, so the board resets by
+  itself with no snapshot or cron.
+- **Ranked on raw wagered.** Lootbox returns only `totalWagered`, so there is
+  nothing to weight. The `weighted` flag on a partner still drives the labels
+  and the weighting disclaimer, for an operator that does report it.
+- **Every paying seat always renders.** The affiliate base is genuinely small,
+  so unfilled positions show as an open place with the prize still attached
+  rather than being hidden.
 - **`comingSoon` on a partner** swaps its board for a coming-soon panel and hides
   its split everywhere, for a board that is announced but not open.
 - **A failed live call renders no players**, not fixtures. A hardcoded row shows
@@ -209,6 +171,5 @@ editing that file.
   overlays and bots rather than anything a search result should point at.
 - `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
-Referral links and codes are real: `https://shuffle.com/?r=MisfitMason`
-(`MisfitMason`) and `https://lootbox.com/r/misfitmason` (`misfitmason`). The
-Shuffle *API* URL is a separate credential and is not a signup link.
+The referral link and code are real: `https://lootbox.com/r/misfitmason`
+(`misfitmason`).

@@ -7,14 +7,17 @@ import type { Leaderboard, PartnerId } from '@/lib/types';
 import { Board } from './Board';
 
 /**
- * Partner switcher. Both boards are fetched on the server and passed down, so
+ * Partner switcher. Every board is fetched on the server and passed down, so
  * switching is instant and there is no client-side data fetching anywhere.
+ *
+ * With one partner there is nothing to switch between, so the row is dropped
+ * rather than rendered as a single permanently-selected tab.
  */
 export function LeaderboardTabs({ boards }: { boards: Record<PartnerId, Leaderboard> }) {
-  const [active, setActive] = useState<PartnerId>('shuffle');
+  const [active, setActive] = useState<PartnerId>(PARTNER_ORDER[0]);
   const board = boards[active];
 
-  const tabs = (
+  const tabs = PARTNER_ORDER.length < 2 ? undefined : (
     <div className="tabs" role="tablist" aria-label="Partner leaderboards">
       {PARTNER_ORDER.map((id) => {
         const partner = PARTNERS[id];

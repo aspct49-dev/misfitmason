@@ -70,7 +70,7 @@ export function HomeHero() {
       <div className="home-hero-inner">
         <span className="hero-kicker">
           <span className="dot" />
-          Shuffle &amp; Lootbox partner
+          Lootbox partner
         </span>
 
         {/*
@@ -102,7 +102,7 @@ export function HomeHero() {
         {/* Kept to one line at this width: two lines reach up past the felt and
             land on the mascot's shoulders. */}
         <p className="hero-tagline">
-          {formatMoney(TOTAL_PRIZE_POOL)} in monthly prizes, and {AFFILIATE_RETURN.percentage}% of
+          {formatMoney(TOTAL_PRIZE_POOL)} every two weeks, and {AFFILIATE_RETURN.percentage}% of
           affiliate revenue returned to players.
         </p>
         <div className="hero-actions">
@@ -111,11 +111,11 @@ export function HomeHero() {
           </Link>
           <a
             className="btn btn-secondary"
-            href={PARTNERS.shuffle.signupUrl}
+            href={PARTNERS.lootbox.signupUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Play on Shuffle
+            Play on Lootbox
           </a>
         </div>
       </div>

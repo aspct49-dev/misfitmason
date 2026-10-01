@@ -101,12 +101,12 @@ export function GettingStarted() {
         <Step
           n="02"
           title="Play as you normally would"
-          body="Wagers in the calendar month count toward the board. On Shuffle each bet is weighted by the game's house edge, so low-edge games count for less. There is no minimum and nothing to opt into."
+          body="Everything wagered inside the current period counts toward the board. There is no minimum, no qualifying period and nothing to opt into."
         />
         <Step
           n="03"
-          title="Prizes at month end"
-          body="The paying places on each board are settled from that board's prize pool, and affiliate revenue is returned separately on a monthly cycle."
+          title="Prizes at period end"
+          body="The paying places are settled from the prize pool when the period closes, and affiliate revenue is returned separately on a monthly cycle."
         />
       </div>
     </section>

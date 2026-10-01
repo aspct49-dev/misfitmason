@@ -8,9 +8,9 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Leaderboards',
-  description: 'Live Shuffle standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.',
+  description: 'Live Lootbox standings for the $500 bi-weekly wager leaderboard, top three paid. Periods run 1st-15th and 16th-end of month, UTC.',
   alternates: { canonical: '/leaderboards' },
-  openGraph: { title: 'Leaderboards', description: 'Live Shuffle standings for the $250 monthly wager leaderboard, top three paid. The $200 Lootbox board opens soon.', url: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live Lootbox standings for the $500 bi-weekly wager leaderboard, top three paid. Periods run 1st-15th and 16th-end of month, UTC.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {
@@ -18,7 +18,7 @@ export default async function LeaderboardsPage() {
 
   return (
     <>
-      {/* No page title: the hero's "$250 Monthly Leaderboard" is the heading. */}
+      {/* No page title: the hero's "$500 Bi-Weekly Leaderboard" is the heading. */}
       <section className="section wrap" style={{ paddingTop: 32 }}>
         <LeaderboardTabs boards={boards} />
       </section>
@@ -55,7 +55,10 @@ export default async function LeaderboardsPage() {
             Entry requires an account registered through the partner&apos;s referral link on this
             site. Casinos do not transfer existing accounts between affiliates.
           </li>
-          <li>Periods run for the calendar month and reset at 00:00 UTC on the 1st.</li>
+          <li>
+            Periods run <strong>twice a month</strong>: the 1st to the 15th, and the 16th to the
+            last day. Each one opens and closes at 00:00 UTC.
+          </li>
           <li>Usernames are shown masked to their last four characters.</li>
           <li>
             Prize pools are funded personally by MisfitMason and are separate from the affiliate

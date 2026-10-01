@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   // Absolute origin for canonicals, Open Graph and the sitemap.
   metadataBase: new URL(SITE.url),
   title: {
-    default: `${SITE.name} — Monthly wager leaderboards`,
+    default: `${SITE.name} — Bi-weekly wager leaderboards`,
     // Every other page supplies just its own name.
     template: `%s — ${SITE.name}`,
   },
@@ -42,13 +42,13 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     locale: SITE.locale,
     url: '/',
-    title: `${SITE.name} — Monthly wager leaderboards`,
+    title: `${SITE.name} — Bi-weekly wager leaderboards`,
     description: SITE.tagline,
     images: [{ url: '/og.png', width: 1200, height: 630, alt: SITE.name }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE.name} — Monthly wager leaderboards`,
+    title: `${SITE.name} — Bi-weekly wager leaderboards`,
     description: SITE.tagline,
     images: ['/og.png'],
   },

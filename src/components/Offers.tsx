@@ -13,7 +13,7 @@ export function Offers() {
       <div className="center-head">
         <h2>Bonuses</h2>
         <p>
-          Register under code <b>{PARTNERS.shuffle.code}</b> to join the boards
+          Register under code <b>{PARTNERS.lootbox.code}</b> to join the board
         </p>
       </div>
 
@@ -41,7 +41,7 @@ export function Offers() {
 
               <ul className="offer-rows">
                 <li>
-                  <span>Monthly prize pool</span>
+                  <span>Prize pool per period</span>
                   <b>{formatMoney(p.prizePool)}</b>
                 </li>
                 <li>

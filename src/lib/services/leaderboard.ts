@@ -2,7 +2,6 @@ import 'server-only';
 
 import { currentPeriod } from '../format';
 import { getPartner, PARTNER_ORDER } from '../partners';
-import { shuffleProvider } from '../providers/shuffle';
 import { lootboxProvider } from '../providers/lootbox';
 import { buildEntries } from '../providers/shared';
 import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../types';
@@ -14,7 +13,6 @@ import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../typ
  */
 
 const PROVIDERS: Record<PartnerId, LeaderboardProvider> = {
-  shuffle: shuffleProvider,
   lootbox: lootboxProvider,
 };
 

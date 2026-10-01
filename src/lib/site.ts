@@ -26,9 +26,9 @@ export const SITE = {
   handle: 'MisfitMason',
   url: resolveSiteUrl(),
   description:
-    'Monthly Shuffle and Lootbox wager leaderboards. Play under the Misfit Mason code, climb the board, and get 100% of the affiliate revenue returned to players.',
+    'A $500 bi-weekly Lootbox wager leaderboard. Play under the Misfit Mason code, climb the board, and get 100% of the affiliate revenue returned to players.',
   /** Short form for Open Graph, where long descriptions get truncated. */
-  tagline: 'Monthly wager leaderboards. 100% of affiliate revenue returned to players.',
+  tagline: 'Bi-weekly wager leaderboards. 100% of affiliate revenue returned to players.',
   locale: 'en_GB',
 } as const;
 

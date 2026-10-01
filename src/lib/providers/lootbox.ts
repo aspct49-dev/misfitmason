@@ -8,7 +8,7 @@ import type { Leaderboard, LeaderboardProvider, Period } from '../types';
 /**
  * Lootbox Partner Data API — `POST /top-affiliate-wagers-by-period`.
  *
- * Unlike Shuffle, this endpoint takes a real time range, so the board matches
+ * This endpoint takes a real time range, so the board matches
  * the calendar period the site advertises rather than a window configured
  * elsewhere.
  *

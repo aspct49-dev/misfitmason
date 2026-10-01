@@ -45,7 +45,10 @@ export default function LegalPage() {
             Entry requires an account registered through this site&apos;s referral links. Accounts
             opened under another affiliate cannot be transferred.
           </li>
-          <li>Periods run for the calendar month, resetting at 00:00 UTC on the 1st.</li>
+          <li>
+            Periods run twice a month — the 1st to the 15th, and the 16th to the last day of the
+            month — opening and closing at 00:00 UTC.
+          </li>
           <li>
             Standings come from each casino&apos;s own reporting and may lag or be corrected. Final
             placings are taken from the casino&apos;s figures at period close.

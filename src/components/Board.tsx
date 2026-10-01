@@ -30,7 +30,7 @@ export function Board({
         <img className="lb-hero-logo" src={partner.logo} alt={partner.name} />
 
         <h1 className="lb-hero-title">
-          <span className="amt">{formatMoney(board.prizePool)}</span> Monthly
+          <span className="amt">{formatMoney(board.prizePool)}</span> Bi-Weekly
           <br />
           Leaderboard
         </h1>
@@ -60,7 +60,7 @@ export function Board({
         </div>
 
         <span className="label lb-hero-period">
-          {partner.comingSoon ? 'Not open yet' : periodLabel(board.periodStart)}
+          {partner.comingSoon ? 'Not open yet' : periodLabel(board.periodStart, board.periodEnd)}
         </span>
       </div>
 
