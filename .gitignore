@@ -27,3 +27,6 @@ skills-lock.json
 # os
 .DS_Store
 Thumbs.db
+
+# Local leaderboard snapshots — player data, not for the public repo.
+/data/

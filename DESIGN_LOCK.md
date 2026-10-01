@@ -114,8 +114,9 @@ Hover changes colour and border only, never scale or position. Full
 ## PARTNERS
 
 - **Shuffle** — live. `affiliate.shuffle.com/wager/<uuid>`, server-side only; the
-  UUID in the path is the credential. Takes no parameters and is rate limited,
-  so the period shown is ours, not theirs. Referral
+  UUID in the path is the credential. Takes no parameters, is rate limited and
+  reports cumulative totals that never reset, so the monthly board is the feed
+  minus a month-start snapshot (`SHUFFLE_BASELINE`, refreshed on the 1st). Referral
   `https://shuffle.com/?r=MisfitMason`, code `MisfitMason`.
 - **Lootbox** — live. `POST partners.lootbox.com/top-affiliate-wagers-by-period`,
   bearer auth, server-side only. Takes a real time range, so its board matches

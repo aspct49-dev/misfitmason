@@ -59,10 +59,32 @@ standings refresh about once a minute without a rebuild.
 
 ### Shuffle API constraints
 
-- **No parameters.** Any date range returns HTTP 500, so the reporting window is
-  whatever Shuffle has configured. The `period` we pass is used only for the
-  labels and the countdown; it cannot filter the data. If Shuffle's window is not
-  the calendar month, the countdown on the page will not match their reset.
+- **No parameters, and the totals are cumulative.** Confirmed against the live
+  API on 2026-10-01: `startTime`/`endTime` return HTTP 500, while `from`/`to`,
+  `startDate`/`endDate`, `start`/`end` and `period` return 200 with byte-identical
+  data — they are ignored, not honoured. The feed never resets, so it reports
+  every wager since the affiliate link opened.
+
+#### The monthly baseline (a real chore, not optional)
+
+Because of that, a month-long board only exists by subtraction. On the 1st, as
+soon after 00:00 UTC as possible:
+
+```bash
+node scripts/shuffle-baseline.mjs          # prints the value for this month
+```
+
+Put the output in **`SHUFFLE_BASELINE`** (`.env` locally, Vercel env vars in
+production) and redeploy. The provider subtracts it per player, drops anyone
+with no play this period, and clamps at zero.
+
+Miss it and the board is wrong in a loud way, not a silent one: a baseline whose
+`period` does not match the current month is **ignored**, the board shows
+cumulative totals again, and `[shuffle] SHUFFLE_BASELINE is for …` appears in the
+log. Any play between 00:00 and the snapshot is lost from the new month, so
+snapshot early.
+
+Lootbox needs none of this — its API takes a real date range.
 - **Rate limited.** A handful of rapid calls returns `TOO_MANY_REQUEST`. The
   60-second `revalidate` is what keeps us under it — do not lower it.
 - Returns `{ username, wagerAmount, weightedWagerAmount }` and nothing else: no
@@ -128,6 +150,9 @@ render from the registry.
   "Weighted", and a disclaimer sits under the table. Shuffle publishes no
   per-game table, so the copy describes the mechanism without quoting rates.
   Because the API has no date range, the whole month switched at once.
+- **Shuffle periods come from a subtracted baseline** (2026-10-01). Its feed is
+  cumulative with no date filter, so without the month-start snapshot a player
+  who stopped wagering would hold a prize place for ever.
 - **Lootbox stays on raw wagered.** Its API returns only `totalWagered`; there
   is nothing to weight. The `weighted` flag on each partner drives the labels.
 - **Every paying seat always renders.** Shuffle pays $125 / $75 / $50 and Lootbox
