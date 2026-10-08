@@ -131,8 +131,8 @@ them.
 - **Roobet** — the main board (2026-10-08).
   `GET roobetconnect.com/affiliate/v2/stats`, bearer JWT, server-side only. The
   affiliate id is the `id` claim inside the token. Takes a real date range, with
-  an exclusive `endDate`. Referral `https://roobet.com/?ref=kickmisfitmason`,
-  code `kickmisfitmason`.
+  an exclusive `endDate`. Referral `https://roobet.com/?ref=MisfitMason`,
+  code `MisfitMason` — mixed case, kept as issued.
 - **Lootbox** — the case-battle board, back alongside Roobet on 2026-10-08.
   `POST partners.lootbox.com/top-affiliate-wagers-by-period`, bearer auth,
   server-side only. Referral `https://lootbox.com/r/misfitmason`, code

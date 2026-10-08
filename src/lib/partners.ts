@@ -11,9 +11,9 @@ export const PARTNERS: Record<PartnerId, Partner> = {
   roobet: {
     id: 'roobet',
     name: 'Roobet',
-    code: 'kickmisfitmason',
+    code: 'MisfitMason',
     logo: '/roobet-logo.png',
-    signupUrl: 'https://roobet.com/?ref=kickmisfitmason',
+    signupUrl: 'https://roobet.com/?ref=MisfitMason',
     prizePool: 750,
     // Client split, 2026-10-08. Five paying places; must always total prizePool.
     prizeTable: [300, 200, 125, 75, 50],

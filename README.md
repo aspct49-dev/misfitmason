@@ -296,6 +296,7 @@ editing that file.
   overlays and bots rather than anything a search result should point at.
 - `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
-The referral link and code are real: `https://roobet.com/?ref=kickmisfitmason`
-(`kickmisfitmason`) — carried over from the site's first Roobet run, so confirm
-it is still the right link before launch.
+The referral link and code are real: `https://roobet.com/?ref=MisfitMason`
+(`MisfitMason`), confirmed by the client on 2026-10-08. The code is **mixed
+case**; it is shown as typed and the link carries the same casing, since
+affiliate attribution may be case-sensitive.
