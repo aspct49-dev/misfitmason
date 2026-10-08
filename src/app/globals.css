@@ -388,6 +388,12 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+/* A card that is itself a link: the whole surface is the target, so the
+   border has to answer on hover or it reads as a dead panel. */
+.card-link { display: block; transition: border-color 0.18s var(--ease); }
+.card-link:hover { border-color: var(--border-strong); }
 
 /* -------------------------------------------------------------- intro */
 
@@ -698,7 +704,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
   .section { padding-block: 28px; }
   .section + .section { padding-top: 4px; }
 
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
 
   /* The wagered column is the first thing to go: rank, player and prize are
@@ -800,6 +806,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 
 @media (max-width: 900px) {
   .claim-grid { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Signed-in state and the sign-in prompt inside the claim card. */

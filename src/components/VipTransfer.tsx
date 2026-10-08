@@ -11,16 +11,18 @@ import { VipTransferForm } from './VipTransferForm';
  * to type a handle they could get wrong, and so the first render already shows
  * the right state.
  */
-export async function VipTransfer() {
+export async function VipTransfer({ showHeading = true }: { showHeading?: boolean } = {}) {
   const jar = await cookies();
   const session = readPayload<SessionUser>(jar.get(SESSION_COOKIE)?.value);
   const partner = PARTNERS.roobet;
 
   return (
     <section className="section wrap" id="vip">
-      <div className="section-head">
-        <h2 className="h-section">VIP transfer</h2>
-      </div>
+      {showHeading && (
+        <div className="section-head">
+          <h2 className="h-section">VIP transfer</h2>
+        </div>
+      )}
 
       <div className="grid-2 claim-grid">
         <div>

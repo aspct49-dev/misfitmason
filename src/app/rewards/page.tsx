@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { ClaimBack } from '@/components/ClaimBack';
-import { VipTransfer } from '@/components/VipTransfer';
 import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
@@ -26,11 +26,11 @@ export default async function RewardsPage({
           <h1 className="h-page">Rewards</h1>
         </div>
         <p className="lede">
-          Three separate things, funded separately. Two are running now; the third depends on
-          detail still to be confirmed.
+          Four separate things, funded separately. The boards, the affiliate return and VIP
+          transfers are running now; the free-battle detail is still to be confirmed.
         </p>
 
-        <div className="grid-3" style={{ marginTop: 24 }}>
+        <div className="grid-4" style={{ marginTop: 24 }}>
           <div className="card">
             <span className="label">Affiliate revenue</span>
             <div className="stat-v accent" style={{ marginTop: 12 }}>
@@ -40,6 +40,15 @@ export default async function RewardsPage({
               Returned to the players who generated it.
             </p>
           </div>
+          <Link className="card card-link" href="/vip-transfer">
+            <span className="label">VIP transfer</span>
+            <div className="stat-v text" style={{ marginTop: 12 }}>
+              Matched
+            </div>
+            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
+              Already a VIP elsewhere? Apply to have the level carried over.
+            </p>
+          </Link>
           <div className="card">
             <span className="label">Free battles</span>
             <div className="stat-v text" style={{ marginTop: 12 }}>
@@ -66,7 +75,6 @@ export default async function RewardsPage({
 
       <AffiliateRevenue />
       <ClaimBack loginError={login} />
-      <VipTransfer />
       <FreeBattles />
       <Partners />
     </>

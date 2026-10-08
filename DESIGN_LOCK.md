@@ -85,8 +85,7 @@ Hover changes colour and border only, never scale or position. Full
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
 5. **Claim your share** — the affiliate-return claim form.
-6. **VIP transfer** — apply to have a level elsewhere matched.
-7. **Free battles** — Lootbox depositor reward.
+6. **Free battles** — Lootbox depositor reward.
 6. **Getting started** — three steps.
 7. **Partners** — one card each.
 8. **Footer** — legal, responsible gambling, socials.
@@ -113,6 +112,14 @@ Hover changes colour and border only, never scale or position. Full
   prize stay. No horizontal scroll at 390px.
 - **No activity ticker and no member counts**, at any community size that would
   make them misleading.
+
+---
+
+## PAGES
+
+Home · Leaderboards · Rewards · **VIP transfer** · How it works · Legal. VIP
+transfer is its own page, in the nav and the footer, because it is linked to
+directly from streams and the Discord.
 
 ---
 

@@ -161,7 +161,11 @@ webhook call and the OAuth calls send an explicit one — a bare default gets a
 
 ### VIP transfer applications
 
-`POST /api/vip-transfer`, multipart, to the **same webhook as the claims**. An
+Its own page at `/vip-transfer`, posting multipart to `POST /api/vip-transfer`
+and into the **same webhook as the claims**. A page rather than a section of
+`/rewards` because it is the one thing people arrive at with intent — sent a
+link from a stream or the Discord — and a link into the middle of a long page
+is a worse answer than a page of its own. An
 applicant holding a VIP level at another casino sends their username, where they
 play now, their lossback tier, and screenshots of their last 30 days and
 lifetime wagered; a person reads it in Discord and Roobet decides the tier.
