@@ -33,7 +33,7 @@ export function Tiles() {
           <p>Entries for {PARTNERS.lootbox.name} depositors under the referral link.</p>
         </Link>
 
-        <Link className="tile" href="/rewards#claim">
+        <Link className="tile" href="/claim">
           <span className="tile-value">Claim</span>
           <h3>Your share</h3>
           <p>Send your username and a Discord handle to open a claim.</p>

@@ -84,8 +84,7 @@ Hover changes colour and border only, never scale or position. Full
    whole-board stats.
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
-5. **Claim your share** — the affiliate-return claim form.
-6. **Free battles** — Lootbox depositor reward.
+5. **Free battles** — Lootbox depositor reward.
 6. **Getting started** — three steps.
 7. **Partners** — one card each.
 8. **Footer** — legal, responsible gambling, socials.
@@ -117,9 +116,13 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PAGES
 
-Home · Leaderboards · Rewards · **VIP transfer** · How it works · Legal. VIP
-transfer is its own page, in the nav and the footer, because it is linked to
-directly from streams and the Discord.
+Home · Leaderboards · Rewards · **Claim** · **VIP transfer** · How it works ·
+Legal.
+
+Claim and VIP transfer are pages, not sections: both are linked to directly
+from streams and the Discord, and both are something a player arrives at with
+intent. `/rewards` is the overview that explains what exists and points at
+them.
 
 ---
 

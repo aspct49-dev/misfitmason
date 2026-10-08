@@ -22,7 +22,7 @@ export function AffiliateRevenue() {
             revenue.
           </p>
           <p className="lede" style={{ marginTop: 14 }}>
-            <a className="link" href="/rewards#claim">
+            <a className="link" href="/claim">
               Open a claim
             </a>{' '}
             with your {PARTNERS[PARTNER_ORDER[0]].name} username and a Discord handle. Claims are

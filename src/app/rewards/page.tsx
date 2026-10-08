@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { ClaimBack } from '@/components/ClaimBack';
 import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
@@ -13,12 +12,7 @@ export const metadata: Metadata = {
   openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, VIP transfers, and free battles for Lootbox depositors.', url: '/rewards' },
 };
 
-export default async function RewardsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ login?: string }>;
-}) {
-  const { login } = await searchParams;
+export default function RewardsPage() {
   return (
     <>
       <section className="section wrap" style={{ paddingTop: 40 }}>
@@ -31,15 +25,15 @@ export default async function RewardsPage({
         </p>
 
         <div className="grid-4" style={{ marginTop: 24 }}>
-          <div className="card">
+          <Link className="card card-link" href="/claim">
             <span className="label">Affiliate revenue</span>
             <div className="stat-v accent" style={{ marginTop: 12 }}>
               100%
             </div>
             <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Returned to the players who generated it.
+              Returned to the players who generated it. Claim your share.
             </p>
-          </div>
+          </Link>
           <Link className="card card-link" href="/vip-transfer">
             <span className="label">VIP transfer</span>
             <div className="stat-v text" style={{ marginTop: 12 }}>
@@ -74,7 +68,6 @@ export default async function RewardsPage({
       </section>
 
       <AffiliateRevenue />
-      <ClaimBack loginError={login} />
       <FreeBattles />
       <Partners />
     </>

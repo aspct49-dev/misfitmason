@@ -26,7 +26,7 @@ export const dynamic = 'force-dynamic';
 const UA = 'MisfitMasonClaims/1.0 (+https://misfitmason.com)';
 
 function back(request: Request, error?: string) {
-  const url = new URL(error ? `/rewards?login=${error}#claim` : '/rewards#claim', request.url);
+  const url = new URL(error ? `/claim?login=${error}` : '/claim', request.url);
   return NextResponse.redirect(url);
 }
 

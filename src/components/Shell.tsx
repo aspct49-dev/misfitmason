@@ -20,6 +20,7 @@ const NAV = [
   { href: '/', label: 'Home' },
   { href: '/leaderboards', label: 'Leaderboards', showPot: true },
   { href: '/rewards', label: 'Rewards' },
+  { href: '/claim', label: 'Claim' },
   { href: '/vip-transfer', label: 'VIP transfer' },
   { href: '/how-it-works', label: 'How it works' },
 ];

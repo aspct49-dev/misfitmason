@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const credentials = discordCredentials();
   if (!credentials) {
     console.error('[auth] DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is not set');
-    return NextResponse.redirect(new URL('/rewards?login=not_configured#claim', request.url));
+    return NextResponse.redirect(new URL('/claim?login=not_configured', request.url));
   }
 
   const state = randomBytes(16).toString('base64url');

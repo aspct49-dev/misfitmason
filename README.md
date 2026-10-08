@@ -115,9 +115,13 @@ and depositors also get free battles (rules still provisional).
 
 ### Affiliate-revenue claims
 
-Sign in with Discord, then `POST /api/claim` with a Roobet username; the route
-posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is no database: the Discord
-channel is the claim record.
+Its own page at `/claim`. Sign in with Discord, then `POST /api/claim` with a
+Roobet username; the route posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There
+is no database: the Discord channel is the claim record.
+
+`/rewards` is the overview — what exists and where to do it — and links across
+to `/claim` and `/vip-transfer` rather than hosting either form. The OAuth
+routes return to `/claim`, so the sign-in lands where the player was.
 
 The form is deliberately one heading, one sentence and one field. An earlier
 version carried the eligibility rules, the review process and the payout cycle
