@@ -98,13 +98,18 @@ origin the site is served from**, exactly:
 
 ```
 http://localhost:3000/api/auth/discord/callback
-https://<your-domain>/api/auth/discord/callback
+https://misfitmason.com/api/auth/discord/callback
+https://www.misfitmason.com/api/auth/discord/callback
 ```
 
+(the `www` one only matters if that host serves the site rather than
+redirecting to the apex — registering it costs nothing either way)
+
 `redirectUri()` in `src/lib/session.ts` builds that string from
-`NEXT_PUBLIC_SITE_URL` when it is set and from the request origin otherwise, and
-Discord compares it character for character — a trailing slash or the wrong
-scheme is a `redirect_uri` mismatch, not a soft failure. With
+`NEXT_PUBLIC_SITE_URL`, except on localhost, which always keeps its own origin
+so a developer signing in locally is not bounced to production. Discord compares
+it character for character — a trailing slash or the wrong scheme is a
+`redirect_uri` mismatch, not a soft failure. With
 `NEXT_PUBLIC_SITE_URL` set in production, Vercel preview deployments send their
 sign-ins to the production origin, so preview sign-in works without registering
 every preview URL.

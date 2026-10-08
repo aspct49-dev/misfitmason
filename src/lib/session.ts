@@ -82,8 +82,14 @@ export function cookieOptions(maxAge: number) {
  * deployment can see a host that is not the one the browser used.
  */
 export function redirectUri(request: Request): string {
+  const requestOrigin = new URL(request.url).origin;
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, '');
-  const origin = configured || new URL(request.url).origin;
+
+  // Local development keeps its own origin even when the canonical one is set,
+  // or signing in on localhost would bounce the developer to production.
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin);
+  const origin = isLocal ? requestOrigin : configured || requestOrigin;
+
   return `${origin}/api/auth/discord/callback`;
 }
 
