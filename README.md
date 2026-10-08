@@ -46,7 +46,8 @@ every outstanding cooldown.
    - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**,
      **`DISCORD_CLIENT_ID`** and **`DISCORD_CLIENT_SECRET`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
-     `https://misfitmason.com`. Optional: without it the site falls back to
+     `https://www.misfitmason.com` — the host Vercel actually serves, since the
+     apex redirects to it. Optional: without it the site falls back to
      Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
      the box and this only matters once a custom domain is attached.
 3. Redeploy.
@@ -98,12 +99,14 @@ origin the site is served from**, exactly:
 
 ```
 http://localhost:3000/api/auth/discord/callback
-https://misfitmason.com/api/auth/discord/callback
 https://www.misfitmason.com/api/auth/discord/callback
 ```
 
-(the `www` one only matters if that host serves the site rather than
-redirecting to the apex — registering it costs nothing either way)
+**`www`, not the bare domain.** Vercel serves this site on
+`www.misfitmason.com` and 308-redirects the apex to it, so `www` is the origin
+the browser is on when it comes back from Discord. Localhost must be `http`:
+Discord requires HTTPS for every redirect except localhost, and rejects
+`https://localhost` as invalid.
 
 `redirectUri()` in `src/lib/session.ts` builds that string from
 `NEXT_PUBLIC_SITE_URL`, except on localhost, which always keeps its own origin
