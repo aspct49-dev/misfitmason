@@ -831,3 +831,59 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 .claim-signout:hover { color: var(--text); border-color: var(--border-strong); }
+
+/* -------------------------------------------------------------- vip transfer */
+
+/* The honeypot. Off-screen rather than display:none, because some scripts skip
+   what is hidden outright but still fill what is merely out of view. */
+.vip-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vip-subhead { margin: 26px 0 0; font-size: 16px; }
+.vip-prefilled { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+.claim-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.claim-field select:hover { border-color: var(--border-strong); }
+.claim-field select:focus-visible { border-color: var(--accent); }
+
+/* File inputs cannot be styled through, so the button half is targeted and the
+   field around it is made to match the text inputs. */
+.claim-field input[type='file'] {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.claim-field input[type='file']::file-selector-button {
+  margin-right: 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.claim-field input[type='file']::file-selector-button:hover { border-color: var(--accent); }
+
+@media (max-width: 720px) {
+  .vip-row { grid-template-columns: 1fr; }
+}

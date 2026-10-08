@@ -85,7 +85,8 @@ Hover changes colour and border only, never scale or position. Full
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
 5. **Claim your share** — the affiliate-return claim form.
-6. **Free battles** — Lootbox depositor reward.
+6. **VIP transfer** — apply to have a level elsewhere matched.
+7. **Free battles** — Lootbox depositor reward.
 6. **Getting started** — three steps.
 7. **Partners** — one card each.
 8. **Footer** — legal, responsible gambling, socials.

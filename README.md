@@ -159,6 +159,29 @@ ping the server. Discord blocks posts from unfamiliar user agents, so both the
 webhook call and the OAuth calls send an explicit one — a bare default gets a
 403 with no useful body.
 
+### VIP transfer applications
+
+`POST /api/vip-transfer`, multipart, to the **same webhook as the claims**. An
+applicant holding a VIP level at another casino sends their username, where they
+play now, their lossback tier, and screenshots of their last 30 days and
+lifetime wagered; a person reads it in Discord and Roobet decides the tier.
+
+Nothing is stored — the images stream to Discord as attachments and the request
+ends. Holding other people's account screenshots would serve nothing, since the
+only thing anyone does with an application is read it and reply.
+
+Sign-in is optional here, unlike the claim form: someone arriving from a stream
+with a level elsewhere is exactly who this is for, and an account would be a
+step between them and the thing they came to do. Signing in only saves typing,
+and gives a handle they cannot mistype.
+
+Checks, in order: a honeypot field (answered with the ordinary success shape, so
+a bot goes away rather than trying something else), a per-address burst limit of
+five in fifteen minutes, field validation, file type and size, the **actual
+first bytes of every file** — a browser reports whatever content type it likes —
+and only then a 24-hour signed-cookie cooldown, checked last so a rejected
+submission does not spend someone's allowance.
+
 ### Excluded accounts
 
 `src/lib/staff.ts` holds the usernames that never appear on a board. They are

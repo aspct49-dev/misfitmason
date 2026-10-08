@@ -82,6 +82,16 @@ export interface Leaderboard {
   error?: string;
 }
 
+export interface VipTransfer {
+  headline: string;
+  /** What the applicant must already have. */
+  requirement: string;
+  reward: string;
+  cadence: string;
+  /** PLACEHOLDER until the operator confirms the tiers. */
+  isPlaceholder: boolean;
+}
+
 export interface FreeBattleProgram {
   partnerId: PartnerId;
   /** PLACEHOLDER until the client supplies the real rules. */
@@ -101,16 +111,6 @@ export interface LeaderboardProvider {
 export interface Period {
   start: Date;
   end: Date;
-}
-
-export interface FreeBattleProgram {
-  partnerId: PartnerId;
-  /** PLACEHOLDER until the client supplies the real rules. */
-  headline: string;
-  requirement: string;
-  reward: string;
-  cadence: string;
-  isPlaceholder: boolean;
 }
 
 export interface AffiliateReturn {

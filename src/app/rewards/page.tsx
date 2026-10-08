@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 
 import { ClaimBack } from '@/components/ClaimBack';
+import { VipTransfer } from '@/components/VipTransfer';
 import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, and free battles for Lootbox depositors.',
+  description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, VIP transfers, and free battles for Lootbox depositors.',
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, and free battles for Lootbox depositors.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, VIP transfers, and free battles for Lootbox depositors.', url: '/rewards' },
 };
 
 export default async function RewardsPage({
@@ -65,6 +66,7 @@ export default async function RewardsPage({
 
       <AffiliateRevenue />
       <ClaimBack loginError={login} />
+      <VipTransfer />
       <FreeBattles />
       <Partners />
     </>

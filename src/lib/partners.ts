@@ -1,4 +1,4 @@
-import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './types';
+import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId, VipTransfer } from './types';
 
 /**
  * The partner registry. Prize pools, splits and codes live here and nowhere
@@ -67,6 +67,18 @@ export const TOTAL_PRIZE_POOL = PARTNER_ORDER.reduce(
   (sum, id) => sum + PARTNERS[id].prizePool,
   0,
 );
+
+/**
+ * VIP transfer. The mechanism is real; the tiers belong to the casino, which is
+ * why nothing here states an amount.
+ */
+export const VIP_TRANSFER: VipTransfer = {
+  headline: 'VIP transfer',
+  requirement: `Hold a VIP level at another casino and open ${PARTNERS.roobet.name} under code ${PARTNERS.roobet.code}`,
+  reward: `${PARTNERS.roobet.name} reviews your play and matches you into its VIP programme`,
+  cadence: 'Within a few days',
+  isPlaceholder: true,
+};
 
 /**
  * PLACEHOLDER. The client has not supplied the real free-battle rules yet, so
