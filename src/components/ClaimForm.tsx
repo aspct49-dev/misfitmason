@@ -3,16 +3,18 @@
 import { useEffect, useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
 
-import { MAX_NOTE_LENGTH, MAX_USERNAME_LENGTH } from '@/lib/claim';
+import { MAX_USERNAME_LENGTH } from '@/lib/claim';
 import { AFFILIATE_RETURN, PARTNERS } from '@/lib/partners';
 import type { SessionUser } from '@/lib/session';
 
 /**
  * The claim form.
  *
- * It opens a claim; it does not pay one. The copy says so plainly, because a
- * form that looks like a cashier and behaves like a ticket queue is the fastest
- * way to lose the trust the return is meant to build.
+ * Deliberately short: one heading, one sentence, one field. An earlier version
+ * explained the eligibility rules, the review process and the payout cycle in
+ * a bulleted column beside the form, which is a lot of reading in front of a
+ * box that wants a username. The rules live on /legal and in the Discord; this
+ * is the thing you came to do.
  *
  * The webhook is never touched from here — the submit goes to /api/claim, which
  * holds the URL server-side and checks the Discord session.
@@ -59,7 +61,6 @@ export function ClaimForm({
   loginError: string | null;
 }) {
   const [username, setUsername] = useState('');
-  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [expiresAt, setExpiresAt] = useState(cooldownExpiresAt);
@@ -73,8 +74,7 @@ export function ClaimForm({
   const onCooldown = remaining > 0;
 
   const error =
-    submitError ??
-    (loginError ? (LOGIN_ERRORS[loginError] ?? 'Sign-in failed. Try again.') : null);
+    submitError ?? (loginError ? (LOGIN_ERRORS[loginError] ?? 'Sign-in failed. Try again.') : null);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -86,7 +86,7 @@ export function ClaimForm({
       const res = await fetch('/api/claim', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ username, note }),
+        body: JSON.stringify({ username }),
       });
       const body = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -107,105 +107,80 @@ export function ClaimForm({
   }
 
   return (
-    <section className="section wrap" id="claim">
-      <div className="section-head">
-        <h2 className="h-section">Claim your share</h2>
-      </div>
+    <section className="section wrap claim" id="claim">
+      <span className="claim-kicker">Affiliate rewards</span>
 
-      <div className="grid-2 claim-grid">
-        <div>
-          <p className="lede">
-            {AFFILIATE_RETURN.percentage}% of the affiliate revenue your play generates goes back to
-            you. Sign in with Discord, send your {partner.name} username, and the claim opens in the
-            Discord for review.
+      <h2 className="claim-title">
+        Claim your <span className="amt">{AFFILIATE_RETURN.percentage}%</span> affiliate money back
+      </h2>
+
+      <p className="claim-lede">
+        Sign in with Discord and drop your {partner.name} username. Play under code{' '}
+        <b>{partner.code}</b> and your share comes straight back to you.
+      </p>
+
+      <div className="card claim-card">
+        {error && (
+          <p className="claim-error" role="alert">
+            {error}
           </p>
-          <ul className="claim-steps">
-            <li>Your account has to be registered under code {partner.code}.</li>
-            <li>Claims are checked against the affiliate statistics before anything is paid.</li>
-            <li>Payouts run on the {AFFILIATE_RETURN.cadence.toLowerCase()} cycle, by hand.</li>
-            <li>One claim per Discord account every 24 hours.</li>
-          </ul>
-        </div>
+        )}
 
-        <div className="card claim-card">
-          {error && (
-            <p className="claim-error" role="alert">
-              {error}
-            </p>
-          )}
-
-          {!user ? (
-            <div className="claim-signin">
-              <span className="label">Step one</span>
-              <p>
-                Sign in so the claim carries an account we can pay and reply to. Discord tells us
-                your username and avatar, nothing else.
-              </p>
-              <a className="btn btn-primary claim-submit" href="/api/auth/discord/login">
-                <FaDiscord aria-hidden /> Sign In With Discord
-              </a>
-            </div>
-          ) : done ? (
-            <div className="claim-done">
-              <span className="label">Claim received</span>
-              <p>
-                It is in the Discord for review. If anything is missing you will be asked there, so
-                keep an eye on your DMs.
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={submit} noValidate>
-              <div className="claim-user">
-                {/* eslint-disable-next-line @next/next/no-img-element -- Discord CDN avatar, fixed 32px */}
-                {user.avatarUrl && <img src={user.avatarUrl} alt="" />}
-                <div>
-                  <span className="label">Signed in</span>
-                  <b>{user.username}</b>
-                </div>
-                <SignOut />
+        {!user ? (
+          <>
+            <p className="claim-prompt">Sign in to submit a claim.</p>
+            <a className="btn btn-primary claim-submit" href="/api/auth/discord/login">
+              <FaDiscord aria-hidden /> Sign In With Discord
+            </a>
+          </>
+        ) : done ? (
+          <div className="claim-done">
+            <span className="label">Claim received</span>
+            <p>It is in the Discord for review. Keep an eye on your DMs.</p>
+          </div>
+        ) : (
+          <form onSubmit={submit} noValidate>
+            <div className="claim-user">
+              {/* eslint-disable-next-line @next/next/no-img-element -- Discord CDN avatar, fixed 32px */}
+              {user.avatarUrl && <img src={user.avatarUrl} alt="" />}
+              <div>
+                <span className="label">Signed in</span>
+                <b>{user.username}</b>
               </div>
+              <SignOut />
+            </div>
 
-              <label className="claim-field">
-                <span className="label">{partner.name} username</span>
-                <input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  maxLength={MAX_USERNAME_LENGTH}
-                  autoComplete="off"
-                  required
-                  disabled={onCooldown}
-                  placeholder="As it appears on your account"
-                />
-              </label>
+            <label className="claim-field">
+              <span className="label">{partner.name} username</span>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                maxLength={MAX_USERNAME_LENGTH}
+                autoComplete="off"
+                required
+                disabled={onCooldown}
+                placeholder="As it appears on your account"
+              />
+            </label>
 
-              <label className="claim-field">
-                <span className="label">Anything else (optional)</span>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  maxLength={MAX_NOTE_LENGTH}
-                  rows={3}
-                  disabled={onCooldown}
-                  placeholder="Period you are claiming for, payment preference…"
-                />
-              </label>
-
-              <button
-                className="btn btn-primary claim-submit"
-                type="submit"
-                disabled={busy || onCooldown}
-              >
-                {onCooldown ? `Next Claim In ${countdown(remaining)}` : busy ? 'Sending…' : 'Open A Claim'}
-              </button>
-
-              <p className="claim-note">
-                Your Discord account and {partner.name} username are sent to the Discord so the
-                claim can be checked and paid. Nothing is stored on this site.
-              </p>
-            </form>
-          )}
-        </div>
+            <button
+              className="btn btn-primary claim-submit"
+              type="submit"
+              disabled={busy || onCooldown}
+            >
+              {onCooldown
+                ? `Next Claim In ${countdown(remaining)}`
+                : busy
+                  ? 'Sending…'
+                  : 'Submit Claim'}
+            </button>
+          </form>
+        )}
       </div>
+
+      <p className="claim-note">
+        Claims are reviewed by hand against your wagers under code {partner.code}. One a day.
+      </p>
     </section>
   );
 }

@@ -728,33 +728,53 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 
 /* -------------------------------------------------------------- claim form */
 
-/* The claim sits on /rewards next to the explanation of the return, so the
-   form carries no decoration of its own — the card it lives in is enough. */
-.claim-grid { align-items: start; }
+/* Centred and narrow: one heading, one line, one card. The rules live on
+   /legal — putting them beside the field turned a username box into a page of
+   reading. */
+.claim { text-align: center; }
 
-.claim-steps {
-  margin: 16px 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 10px;
+.claim-kicker {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
 }
-.claim-steps li {
-  position: relative;
-  padding-left: 18px;
+
+.claim-title {
+  margin: 18px auto 0;
+  max-width: 18ch;
+  font-size: clamp(28px, 4.4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.claim-title .amt { color: var(--accent); }
+
+.claim-lede {
+  margin: 14px auto 0;
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.claim-lede b { color: var(--text); font-family: var(--font-mono); font-size: 14px; }
+
+.claim .claim-card {
+  margin: 28px auto 0;
+  max-width: 440px;
+  text-align: left;
+}
+
+.claim-prompt {
+  margin: 0 0 14px;
+  text-align: center;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.55;
-}
-.claim-steps li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--accent);
 }
 
 .claim-field { display: grid; gap: 8px; margin-bottom: 16px; }
@@ -795,7 +815,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 }
 
 .claim-note {
-  margin: 14px 0 0;
+  margin: 16px auto 0;
+  max-width: 52ch;
   color: var(--dim);
   font-size: 12px;
   line-height: 1.55;
@@ -804,15 +825,36 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 .claim-done { display: grid; gap: 12px; }
 .claim-done p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-@media (max-width: 900px) {
-  .claim-grid { grid-template-columns: 1fr; }
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+/* The VIP form keeps the two-column layout: it has real instructions to carry,
+   which is exactly what the claim form does not. */
+.claim-grid { align-items: start; }
+.claim-steps {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.claim-steps li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.claim-steps li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 /* Signed-in state and the sign-in prompt inside the claim card. */
-.claim-signin { display: grid; gap: 12px; }
-.claim-signin p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.claim-signin .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.claim .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
 
 .claim-user {
   display: flex;

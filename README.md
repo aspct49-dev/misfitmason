@@ -115,9 +115,15 @@ and depositors also get free battles (rules still provisional).
 
 ### Affiliate-revenue claims
 
-Sign in with Discord, then `POST /api/claim` with a Roobet username and an
-optional note; the route posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is
-no database: the Discord channel is the claim record.
+Sign in with Discord, then `POST /api/claim` with a Roobet username; the route
+posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is no database: the Discord
+channel is the claim record.
+
+The form is deliberately one heading, one sentence and one field. An earlier
+version carried the eligibility rules, the review process and the payout cycle
+in a column beside it, which is a lot of reading in front of a box that wants a
+username — those belong on `/legal` and in the Discord. The route still accepts
+an optional `note`, it simply is not asked for.
 
 **Discord OAuth.** `identify` scope only — the claim needs an account to
 attribute and a name to show, nothing more. Register the callback for **every
