@@ -86,6 +86,15 @@ body:has(.lb-hero)::before { opacity: 0.09; }
 .shell { position: relative; z-index: 1; }
 
 a { color: inherit; text-decoration: none; }
+
+/* Inline links inside body copy, where the surrounding text must stay plain. */
+.link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.link:hover { text-decoration-thickness: 2px; }
 button { font: inherit; color: inherit; }
 
 /* One focus treatment for the whole site. Its absence was the single worst
@@ -709,4 +718,86 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
   .countdown { gap: 14px; }
   .cd-cells { gap: 16px; }
   .stat-row { gap: 26px; }
+}
+
+/* -------------------------------------------------------------- claim form */
+
+/* The claim sits on /rewards next to the explanation of the return, so the
+   form carries no decoration of its own — the card it lives in is enough. */
+.claim-grid { align-items: start; }
+
+.claim-steps {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.claim-steps li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.claim-steps li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.claim-field { display: grid; gap: 8px; margin-bottom: 16px; }
+
+/* Inputs are the only ones on the site, so the rules live here rather than in
+   a shared control layer that nothing else would use. */
+.claim-field input,
+.claim-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  transition: border-color 0.18s var(--ease);
+}
+.claim-field textarea { resize: vertical; min-height: 84px; }
+.claim-field input::placeholder,
+.claim-field textarea::placeholder { color: var(--dim); }
+.claim-field input:hover,
+.claim-field textarea:hover { border-color: var(--border-strong); }
+.claim-field input:focus-visible,
+.claim-field textarea:focus-visible { border-color: var(--accent); }
+
+.claim-submit { width: 100%; margin-top: 4px; }
+.claim-submit[disabled] { opacity: 0.6; cursor: progress; }
+
+.claim-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: rgba(227, 27, 69, 0.08);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.claim-note {
+  margin: 14px 0 0;
+  color: var(--dim);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.claim-done { display: grid; gap: 12px; }
+.claim-done p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .claim-grid { grid-template-columns: 1fr; }
 }

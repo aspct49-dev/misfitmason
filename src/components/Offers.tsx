@@ -1,5 +1,5 @@
 import { formatMoney } from '@/lib/format';
-import { FREE_BATTLES, PARTNERS, PARTNER_ORDER } from '@/lib/partners';
+import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { CopyCode } from './CopyCode';
 
 /**
@@ -13,7 +13,7 @@ export function Offers() {
       <div className="center-head">
         <h2>Bonuses</h2>
         <p>
-          Register under code <b>{PARTNERS.lootbox.code}</b> to join the board
+          Register under code <b>{PARTNERS.roobet.code}</b> to join the board
         </p>
       </div>
 
@@ -21,7 +21,6 @@ export function Offers() {
         {PARTNER_ORDER.map((id) => {
           const p = PARTNERS[id];
           const logo = p.logo;
-          const battles = FREE_BATTLES.partnerId === id;
 
           return (
             <article className="offer" key={id}>
@@ -56,12 +55,6 @@ export function Offers() {
                   <span>Minimum to qualify</span>
                   <b>None</b>
                 </li>
-                {battles && (
-                  <li>
-                    <span>Depositor extra</span>
-                    <b>Free battles</b>
-                  </li>
-                )}
               </ul>
 
               <div className="offer-foot">

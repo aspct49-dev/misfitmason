@@ -1,5 +1,5 @@
 import { formatMoney } from '@/lib/format';
-import { AFFILIATE_RETURN, FREE_BATTLES, PARTNERS, PARTNER_ORDER } from '@/lib/partners';
+import { AFFILIATE_RETURN, PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { CopyCode } from './CopyCode';
 
 /** How the affiliate return works, described as a mechanism rather than a claim. */
@@ -14,14 +14,20 @@ export function AffiliateRevenue() {
         <div>
           <p className="lede">
             Casinos pay affiliates a share of the revenue their referred players generate. On Misfit
-            Masons that share is not kept. It is returned {AFFILIATE_RETURN.cadence.toLowerCase()} to
+            Mason that share is not kept. It is returned {AFFILIATE_RETURN.cadence.toLowerCase()} to
             the players who generated it, claimed on this site.
           </p>
           <p className="lede" style={{ marginTop: 14 }}>
             Leaderboard prizes are funded separately, out of pocket, and are not drawn from affiliate
             revenue.
           </p>
-          <p className="pending">Claim flow and payout detail pending</p>
+          <p className="lede" style={{ marginTop: 14 }}>
+            <a className="link" href="/rewards#claim">
+              Open a claim
+            </a>{' '}
+            with your {PARTNERS[PARTNER_ORDER[0]].name} username and a Discord handle. Claims are
+            checked against the affiliate statistics before anything is paid.
+          </p>
         </div>
 
         <div className="card">
@@ -45,44 +51,6 @@ function Kv({ k, v }: { k: string; v: string }) {
       <span>{k}</span>
       <b>{v}</b>
     </div>
-  );
-}
-
-export function FreeBattles() {
-  const lootbox = PARTNERS[FREE_BATTLES.partnerId];
-  return (
-    <section className="section wrap" id="battles">
-      <div className="section-head">
-        <h2 className="h-section">Free battles on {lootbox.name}</h2>
-      </div>
-
-      <div className="card">
-        <div className="grid-2" style={{ alignItems: 'center' }}>
-          <div>
-            <p className="lede">
-              {FREE_BATTLES.requirement} and you also receive free battle entries, separately from
-              the leaderboard and the affiliate return.
-            </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-              <CopyCode code={lootbox.code} />
-              <a className="btn btn-primary btn-sm" href={lootbox.signupUrl} target="_blank" rel="noreferrer">
-                Open {lootbox.name}
-              </a>
-            </div>
-            {FREE_BATTLES.isPlaceholder && (
-              <p className="pending">Entry amounts, cadence and eligibility pending</p>
-            )}
-          </div>
-
-          <div>
-            <Kv k="Partner" v={lootbox.name} />
-            <Kv k="Requirement" v="Deposit under the referral link" />
-            <Kv k="Reward" v={FREE_BATTLES.reward} />
-            <Kv k="Frequency" v={FREE_BATTLES.cadence} />
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 

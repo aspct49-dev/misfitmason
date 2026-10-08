@@ -18,7 +18,7 @@ export function Tiles() {
         <Link className="tile" href="/leaderboards">
           <span className="tile-value">{formatMoney(TOTAL_PRIZE_POOL)}</span>
           <h3>Leaderboards</h3>
-          <p>Live Lootbox standings for the current period, with full rules.</p>
+          <p>Live Roobet standings for the current period, with full rules.</p>
         </Link>
 
         <Link className="tile" href="/rewards">
@@ -27,10 +27,10 @@ export function Tiles() {
           <p>All of it returned to the players who generated it.</p>
         </Link>
 
-        <Link className="tile" href="/rewards#battles">
-          <span className="tile-value">Free</span>
-          <h3>Battles</h3>
-          <p>Entries for {PARTNERS.lootbox.name} depositors under the referral link.</p>
+        <Link className="tile" href="/rewards#claim">
+          <span className="tile-value">Claim</span>
+          <h3>Your share</h3>
+          <p>Send your username and a Discord handle to open a claim.</p>
         </Link>
 
         <Link className="tile" href="/how-it-works">

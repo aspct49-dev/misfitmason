@@ -26,10 +26,10 @@ export default async function HomePage() {
         <Offers />
       </Reveal>
 
-      {/* The live board is the one previewed here.
-          The full table for both partners lives on /leaderboards. */}
+      {/* The live board is the one previewed here; the full table lives on
+          /leaderboards. */}
       <Reveal>
-        <PromoBoard board={boards.lootbox} partner={PARTNERS.lootbox} />
+        <PromoBoard board={boards.roobet} partner={PARTNERS.roobet} />
       </Reveal>
 
       <Reveal>

@@ -1,15 +1,16 @@
 # Misfit Mason
 
-Community leaderboard site for the Kick streamer MisfitMason. A $500 bi-weekly
-Lootbox wager leaderboard, 100% affiliate revenue return, free Lootbox battles.
+Community leaderboard site for the Kick streamer MisfitMason. A $750 bi-weekly
+Roobet wager leaderboard ranked on weighted wager, and 100% of affiliate revenue
+returned to players, claimed through a form that posts into Discord.
 
 **Periods are half-months**, both ends at 00:00 UTC: the 1st to the 15th, and the
 16th to the last day of the month. `currentPeriod()` in `src/lib/format.ts` is
 the only place that is decided.
 
-Shuffle was removed on 2026-10-01 (client decision: no Shuffle board this
-month). Its provider, baseline script and logo went with it — `git show
-ebfbe3a` has the last version if it comes back.
+Partner history, newest first: **Roobet** since 2026-10-08 (back after Shuffle
+and Lootbox). Lootbox and its free-battles section went with that switch, and
+Shuffle before it — `git log` has both if either returns.
 
 Design spec: [DESIGN_LOCK.md](DESIGN_LOCK.md).
 
@@ -24,16 +25,25 @@ npm run build && npm start
 `.env` holds the partner credentials (gitignored — see `.env.example`):
 
 ```
-LOOTBOX_API_URL=https://partners.lootbox.com
-LOOTBOX_API_KEY=partner<...>
+ROOBET_API_TOKEN=<affiliate JWT>
+DISCORD_CLAIM_WEBHOOK_URL=<webhook the claim form posts into>
+CLAIM_SECRET=<any long random string>
 ```
+
+The Roobet JWT *is* the whole credential: the affiliate id is the `id` claim
+inside it, so there is nothing else to configure and nothing to keep in sync.
+
+`DISCORD_CLAIM_WEBHOOK_URL` is server-side only and must never become a
+`NEXT_PUBLIC_` variable — anyone holding that URL can post into the channel as
+the bot. `CLAIM_SECRET` signs the 24-hour cooldown cookie; changing it clears
+every outstanding cooldown.
 
 ## Deploying to Vercel
 
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`LOOTBOX_API_URL`** and **`LOOTBOX_API_KEY`**.
+   - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`** and **`CLAIM_SECRET`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://misfitmason.com`. Optional: without it the site falls back to
      Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
@@ -49,7 +59,7 @@ service catches it, and the board renders every place unclaimed under a
 "temporarily unavailable" notice. That is deliberate so a first deploy succeeds
 before the variables are set, but it also means a missing or revoked credential
 shows as an empty board rather than as an error.
-`[leaderboard] lootbox provider failed: …` in the build log is the tell.
+`[leaderboard] roobet provider failed: …` in the build log is the tell.
 
 Because pages are prerendered, a failure *at build time* is cached until the
 first request revalidates it — which is why a transient rate-limit during a
@@ -58,26 +68,38 @@ build can leave the notice on screen for a minute after the API has recovered.
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
 
-**Rotate the Lootbox key before launch.** It has been through a chat window.
+**Rotate the Roobet token and the Discord webhook before launch.** Both have been
+through a chat window.
 
-### Lootbox API
+### Roobet API
 
-`POST {LOOTBOX_API_URL}/top-affiliate-wagers-by-period`, bearer auth. It takes a
-real time range, so the board matches the half-month period the site advertises
-and resets on its own. Docs: <https://docs.lootbox.com/>.
+`GET https://roobetconnect.com/affiliate/v2/stats?userId=<id>&startDate=&endDate=`,
+bearer auth with the JWT. Two things the code depends on:
 
-Two shape details the code depends on:
+- **`endDate` is exclusive.** It means "up to 00:00 on this date", so the bound
+  sent is the day *after* the period ends. Sending the last day itself drops
+  that whole day's wagering — silently, on the day the board settles.
+- **It returns `wagered` and `weightedWagered`.** The board ranks, displays and
+  totals the weighted figure; see the decisions below.
 
-- timestamps are Unix **seconds**, not milliseconds;
-- `totalWagered` comes back as a **string** — summing it unparsed would
-  concatenate rather than add.
+The board is **$750 per period, paid $300 / $200 / $125 / $75 / $50** to the top
+five.
 
-It also returns per-player `avatar` URLs, which the board uses in place of a
-tier badge.
+### Affiliate-revenue claims
 
-It is the only board. **$500 per period, paid $225 / $125 / $75 / $50 / $25**
-to the top five (client split, 2026-10-01). The prize table must always total
-`prizePool`; the podium shows the top three and the table carries the rest.
+`POST /api/claim` takes a Roobet username, a Discord handle and an optional
+note, and posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is no database:
+the Discord channel is the claim record.
+
+- Every field is stripped of Discord formatting and mention syntax, and the
+  message sets `allowed_mentions: { parse: [] }`, so nothing a stranger types
+  can ping the server.
+- A 24-hour cooldown rides in an HMAC-signed cookie. Signed so an expiry cannot
+  be forged, but a cleared cookie clears the cooldown — it throttles honest
+  repeats, it does not stop a determined submitter. Making it authoritative
+  needs a datastore keyed on the player.
+- A small per-instance IP throttle sits in front of it. Serverless runs several
+  instances, so treat it as a speed bump, not a limit.
 
 ### Excluded accounts
 
@@ -91,7 +113,7 @@ not inflate the totals either. Matching is case-insensitive.
 src/lib/types.ts            domain shapes; no React, no fetch
 src/lib/partners.ts         prize pools, splits, codes, links — the only place they live
 src/lib/format.ts           masking + money/period formatting
-src/lib/providers/lootbox   live API, server-only
+src/lib/providers/roobet    live API, server-only
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
 src/lib/staff.ts            accounts excluded from every board
@@ -114,11 +136,14 @@ render from the registry.
 
 - **Half-month periods** (client decision, 2026-10-01), not rolling fortnights,
   so a period never straddles a month boundary and the reset dates are the same
-  every month. Lootbox's API takes a real date range, so the board resets by
+  every month. Roobet's API takes a real date range, so the board resets by
   itself with no snapshot or cron.
-- **Ranked on raw wagered.** Lootbox returns only `totalWagered`, so there is
-  nothing to weight. The `weighted` flag on a partner still drives the labels
-  and the weighting disclaimer, for an operator that does report it.
+- **Ranked on weighted wager** (client decision, 2026-10-08). Roobet discounts
+  each bet by the game's RTP — full value up to 97%, half to 98.99%, a tenth
+  above that — and that weighted figure is what is ranked, shown and totalled.
+  Every label reads "Weighted" and the bands are published under the table,
+  because a weighted number under a plain "Wagered" heading reads as an error to
+  anyone comparing it with their own Roobet statistics.
 - **Every paying seat always renders**, and so does every player below them.
   The affiliate base is genuinely small, so unfilled positions show as an open
   place with the prize still attached rather than being hidden; players outside
@@ -140,7 +165,6 @@ render from the registry.
 | What | Where |
 |---|---|
 | Wordmark (mascot mark + type) | `src/components/Shell.tsx` |
-| Lootbox free-battle rules | `FREE_BATTLES` in `src/lib/partners.ts` |
 | Discord invite | `SOCIALS` in `src/lib/partners.ts` |
 | Kick live state (hardcoded offline) | `LiveChip` in `src/components/Shell.tsx` |
 | Legal copy | `src/app/legal/page.tsx` — drafted, not legal advice |
@@ -175,5 +199,6 @@ editing that file.
   overlays and bots rather than anything a search result should point at.
 - `sitemap.xml` generated from `ROUTES` in `src/lib/site.ts`.
 
-The referral link and code are real: `https://lootbox.com/r/misfitmason`
-(`misfitmason`).
+The referral link and code are real: `https://roobet.com/?ref=kickmisfitmason`
+(`kickmisfitmason`) — carried over from the site's first Roobet run, so confirm
+it is still the right link before launch.

@@ -62,13 +62,13 @@ export function Shell({ totalPot, children }: { totalPot: number; children: Reac
 
           <a
             className="side-link side-link-brand"
-            href={PARTNERS.lootbox.signupUrl}
+            href={PARTNERS.roobet.signupUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Play on ${PARTNERS.lootbox.name}`}
+            aria-label={`Play on ${PARTNERS.roobet.name}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- operator brand mark */}
-            <img src={PARTNERS.lootbox.logo} alt="" aria-hidden />
+            <img src={PARTNERS.roobet.logo} alt="" aria-hidden />
           </a>
 
           {SOCIAL_LINKS.map(({ key, href, cta, Icon, brand }) => (

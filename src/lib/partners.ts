@@ -1,4 +1,4 @@
-import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './types';
+import type { AffiliateReturn, Partner, PartnerId } from './types';
 
 /**
  * The partner registry. Prize pools, splits and codes live here and nowhere
@@ -8,27 +8,32 @@ import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './t
  * link's own referral parameter, so the two cannot drift apart.
  */
 export const PARTNERS: Record<PartnerId, Partner> = {
-  lootbox: {
-    id: 'lootbox',
-    name: 'Lootbox',
-    code: 'misfitmason',
-    logo: '/lootbox-logo.svg',
-    signupUrl: 'https://lootbox.com/r/misfitmason',
-    prizePool: 500,
-    // Client split, 2026-10-01. Five paying places rather than three, so the
-    // pot reaches further down a small field. Must always total prizePool.
-    prizeTable: [225, 125, 75, 50, 25],
-    metricLabel: 'Total amount wagered',
-    // Lootbox's API returns only the raw figure, so this board cannot be
-    // weighted even if that becomes the policy.
-    weighted: false,
+  roobet: {
+    id: 'roobet',
+    name: 'Roobet',
+    code: 'kickmisfitmason',
+    logo: '/roobet-logo.png',
+    signupUrl: 'https://roobet.com/?ref=kickmisfitmason',
+    prizePool: 750,
+    // Client split, 2026-10-08. Five paying places; must always total prizePool.
+    prizeTable: [300, 200, 125, 75, 50],
+    metricLabel: 'Weighted amount wagered',
+    // Roobet discounts each bet by the game's RTP and reports the result as
+    // weightedWagered. Ranking on the raw stake let low-edge grinding buy a
+    // prize place, so the weighted figure is what is ranked, shown and totalled.
+    weighted: true,
+    weightingNote: [
+      'Roobet weights every bet by the RTP of the game it is placed on: a game returning 97% or less counts in full, one between 97.01% and 98.99% counts at half, and one at 99% or above counts at a tenth.',
+      'The figure on this board is that weighted total, so a month spent on dice moves it far less than the same money through slots, and it sits below the amount wagered shown in your Roobet statistics.',
+      'The bands are set by Roobet, not by us. We apply no weighting of our own on top, and they apply the same way to every player on the board.',
+    ],
     hasLiveApi: true,
     comingSoon: false,
-    blurb: 'Case battles, boxes and upgrades. Depositors also receive free battles.',
+    blurb: 'Slots, originals, crash and sports. Standings come from the Roobet affiliate API.',
   },
 };
 
-export const PARTNER_ORDER: PartnerId[] = ['lootbox'];
+export const PARTNER_ORDER: PartnerId[] = ['roobet'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];
@@ -44,19 +49,6 @@ export const TOTAL_PRIZE_POOL = PARTNER_ORDER.reduce(
   (sum, id) => sum + PARTNERS[id].prizePool,
   0,
 );
-
-/**
- * PLACEHOLDER. The client has not supplied the real free-battle rules yet, so
- * every string here is provisional and the UI flags it as such.
- */
-export const FREE_BATTLES: FreeBattleProgram = {
-  partnerId: 'lootbox',
-  headline: 'Free battles',
-  requirement: 'Deposit on Lootbox using the referral link',
-  reward: 'Free battle entries',
-  cadence: 'Ongoing',
-  isPlaceholder: true,
-};
 
 /**
  * The affiliate return. The percentage is fixed and real; the mechanics are

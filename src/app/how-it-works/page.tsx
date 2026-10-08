@@ -4,9 +4,9 @@ import { GettingStarted, Partners } from '@/components/Sections';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How casino affiliate revenue, the bi-weekly leaderboard and free battles fit together, in three steps.',
+  description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.',
   alternates: { canonical: '/how-it-works' },
-  openGraph: { title: 'How it works', description: 'How casino affiliate revenue, the bi-weekly leaderboard and free battles fit together, in three steps.', url: '/how-it-works' },
+  openGraph: { title: 'How it works', description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.', url: '/how-it-works' },
 };
 
 export default function HowItWorksPage() {

@@ -4,7 +4,7 @@
  * learn which casino a row came from.
  */
 
-export type PartnerId = 'lootbox';
+export type PartnerId = 'roobet';
 
 /** Whether the numbers on screen came from a real API or from fixtures. */
 export type DataSource = 'live' | 'mock';

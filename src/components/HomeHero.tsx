@@ -70,7 +70,7 @@ export function HomeHero() {
       <div className="home-hero-inner">
         <span className="hero-kicker">
           <span className="dot" />
-          Lootbox partner
+          Roobet partner
         </span>
 
         {/*
@@ -111,11 +111,11 @@ export function HomeHero() {
           </Link>
           <a
             className="btn btn-secondary"
-            href={PARTNERS.lootbox.signupUrl}
+            href={PARTNERS.roobet.signupUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Play on Lootbox
+            Play on Roobet
           </a>
         </div>
       </div>

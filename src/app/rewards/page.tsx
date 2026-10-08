@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
 
-import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
+import { ClaimBack } from '@/components/ClaimBack';
+import { AffiliateRevenue, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players, bi-weekly leaderboard prizes, and free Lootbox battles for depositors.',
+  description: '100% of affiliate revenue returned to players and $750 bi-weekly Roobet leaderboard prizes across five paying places.',
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, bi-weekly leaderboard prizes, and free Lootbox battles for depositors.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players and $750 bi-weekly Roobet leaderboard prizes across five paying places.', url: '/rewards' },
 };
 
 export default function RewardsPage() {
@@ -45,20 +46,11 @@ export default function RewardsPage() {
               . Paid to the top of each board, funded out of pocket.
             </p>
           </div>
-          <div className="card">
-            <span className="label">Free battles</span>
-            <div className="stat-v text" style={{ marginTop: 12 }}>
-              Lootbox
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Entries for depositors registered under the referral link.
-            </p>
-          </div>
         </div>
       </section>
 
       <AffiliateRevenue />
-      <FreeBattles />
+      <ClaimBack />
       <Partners />
     </>
   );

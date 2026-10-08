@@ -84,7 +84,7 @@ Hover changes colour and border only, never scale or position. Full
    whole-board stats.
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
-5. **Free battles** — Lootbox depositor reward.
+5. **Claim your share** — the affiliate-return claim form.
 6. **Getting started** — three steps.
 7. **Partners** — one card each.
 8. **Footer** — legal, responsible gambling, socials.
@@ -100,9 +100,9 @@ Hover changes colour and border only, never scale or position. Full
   glow, not a crown, not gold.
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
-- **Metric**: raw wagered (Lootbox reports no weighted figure). Stated in the rules.
+- **Metric**: Roobet weighted wager (2026-10-08), with the RTP bands under the table.
 - **Period**: half-months, 1st–15th and 16th–end, opening and closing at 00:00 UTC.
-- **Prizes** — Lootbox $500 per period: `225/125/75/50/25`, five paying places.
+- **Prizes** — Roobet $750 per period: `300/200/125/75/50`, five paying places.
 - **One partner, no tabs.** The switcher renders only with two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
@@ -114,11 +114,11 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PARTNERS
 
-- **Lootbox** — the only partner (Shuffle removed 2026-10-01).
-  `POST partners.lootbox.com/top-affiliate-wagers-by-period`,
-  bearer auth, server-side only. Takes a real time range, so its board matches
-  the advertised period exactly. Referral `https://lootbox.com/r/misfitmason`, code
-  `misfitmason`.
+- **Roobet** — the only partner (2026-10-08; Shuffle and Lootbox both removed).
+  `GET roobetconnect.com/affiliate/v2/stats`, bearer JWT, server-side only. The
+  affiliate id is the `id` claim inside the token. Takes a real date range, with
+  an exclusive `endDate`. Referral `https://roobet.com/?ref=kickmisfitmason`,
+  code `kickmisfitmason`.
 - A second partner is a registry entry plus a provider module; adding one brings
   the tab switcher back on its own.
 
@@ -142,6 +142,6 @@ src/components/           presentational
 
 ## PLACEHOLDERS
 
-Wordmark set in type (mascot used as the mark) · Lootbox free-battle rules ·
-Discord invite · Kick live state · Lootbox standings · legal copy drafted but
+Wordmark set in type (mascot used as the mark) ·
+Discord invite · Kick live state · legal copy drafted but
 not reviewed by a lawyer.
