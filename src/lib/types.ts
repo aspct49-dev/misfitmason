@@ -4,7 +4,7 @@
  * learn which casino a row came from.
  */
 
-export type PartnerId = 'roobet';
+export type PartnerId = 'roobet' | 'lootbox';
 
 /** Whether the numbers on screen came from a real API or from fixtures. */
 export type DataSource = 'live' | 'mock';
@@ -80,6 +80,16 @@ export interface Leaderboard {
   biggestHit?: BiggestHit;
   /** Set when a live provider failed and fixtures were served instead. */
   error?: string;
+}
+
+export interface FreeBattleProgram {
+  partnerId: PartnerId;
+  /** PLACEHOLDER until the client supplies the real rules. */
+  headline: string;
+  requirement: string;
+  reward: string;
+  cadence: string;
+  isPlaceholder: boolean;
 }
 
 /** What every partner integration implements. Adding a casino = adding one of these. */

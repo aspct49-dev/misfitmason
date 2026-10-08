@@ -1,4 +1,4 @@
-import type { AffiliateReturn, Partner, PartnerId } from './types';
+import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId } from './types';
 
 /**
  * The partner registry. Prize pools, splits and codes live here and nowhere
@@ -31,9 +31,27 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     comingSoon: false,
     blurb: 'Slots, originals, crash and sports. Standings come from the Roobet affiliate API.',
   },
+  lootbox: {
+    id: 'lootbox',
+    name: 'Lootbox',
+    code: 'misfitmason',
+    logo: '/lootbox-logo.svg',
+    signupUrl: 'https://lootbox.com/r/misfitmason',
+    prizePool: 500,
+    // Client split, 2026-10-01. Five paying places rather than three, so the
+    // pot reaches further down a small field. Must always total prizePool.
+    prizeTable: [225, 125, 75, 50, 25],
+    metricLabel: 'Total amount wagered',
+    // Lootbox's API returns only the raw figure, so this board cannot be
+    // weighted even if that becomes the policy.
+    weighted: false,
+    hasLiveApi: true,
+    comingSoon: false,
+    blurb: 'Case battles, boxes and upgrades. Depositors also receive free battles.',
+  },
 };
 
-export const PARTNER_ORDER: PartnerId[] = ['roobet'];
+export const PARTNER_ORDER: PartnerId[] = ['roobet', 'lootbox'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];
@@ -49,6 +67,19 @@ export const TOTAL_PRIZE_POOL = PARTNER_ORDER.reduce(
   (sum, id) => sum + PARTNERS[id].prizePool,
   0,
 );
+
+/**
+ * PLACEHOLDER. The client has not supplied the real free-battle rules yet, so
+ * every string here is provisional and the UI flags it as such.
+ */
+export const FREE_BATTLES: FreeBattleProgram = {
+  partnerId: 'lootbox',
+  headline: 'Free battles',
+  requirement: 'Deposit on Lootbox using the referral link',
+  reward: 'Free battle entries',
+  cadence: 'Ongoing',
+  isPlaceholder: true,
+};
 
 /**
  * The affiliate return. The percentage is fixed and real; the mechanics are

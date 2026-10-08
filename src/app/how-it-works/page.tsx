@@ -4,9 +4,9 @@ import { GettingStarted, Partners } from '@/components/Sections';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.',
+  description: 'How casino affiliate revenue, the bi-weekly Roobet and Lootbox leaderboards and free battles fit together, in three steps.',
   alternates: { canonical: '/how-it-works' },
-  openGraph: { title: 'How it works', description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.', url: '/how-it-works' },
+  openGraph: { title: 'How it works', description: 'How casino affiliate revenue, the bi-weekly Roobet and Lootbox leaderboards and free battles fit together, in three steps.', url: '/how-it-works' },
 };
 
 export default function HowItWorksPage() {
@@ -28,7 +28,7 @@ export default function HowItWorksPage() {
             costs nothing extra and does not change how any game behaves.
           </p>
           <p>
-            The bi-weekly leaderboard is a separate arrangement, funded out of pocket, so that
+            The bi-weekly leaderboards are a separate arrangement, funded out of pocket, so that
             there is something to compete for rather than only something to claim.
           </p>
         </div>

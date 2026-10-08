@@ -2,6 +2,7 @@ import 'server-only';
 
 import { currentPeriod } from '../format';
 import { getPartner, PARTNER_ORDER } from '../partners';
+import { lootboxProvider } from '../providers/lootbox';
 import { roobetProvider } from '../providers/roobet';
 import { buildEntries } from '../providers/shared';
 import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../types';
@@ -14,6 +15,7 @@ import type { Leaderboard, LeaderboardProvider, PartnerId, Period } from '../typ
 
 const PROVIDERS: Record<PartnerId, LeaderboardProvider> = {
   roobet: roobetProvider,
+  lootbox: lootboxProvider,
 };
 
 /**

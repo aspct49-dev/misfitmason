@@ -8,9 +8,9 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Leaderboards',
-  description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager. Periods run 1st-15th and 16th-end of month, UTC.',
+  description: 'Live standings for the $750 Roobet and $500 Lootbox bi-weekly wager leaderboards, top five paid on each. Periods run 1st-15th and 16th-end of month, UTC.',
   alternates: { canonical: '/leaderboards' },
-  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager. Periods run 1st-15th and 16th-end of month, UTC.', url: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live standings for the $750 Roobet and $500 Lootbox bi-weekly wager leaderboards, top five paid on each. Periods run 1st-15th and 16th-end of month, UTC.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {
@@ -18,7 +18,8 @@ export default async function LeaderboardsPage() {
 
   return (
     <>
-      {/* No page title: the hero's "$750 Bi-Weekly Leaderboard" is the heading. */}
+      {/* No page title: the board hero carries the heading for whichever
+          partner is selected. */}
       <section className="section wrap" style={{ paddingTop: 32 }}>
         <LeaderboardTabs boards={boards} />
       </section>

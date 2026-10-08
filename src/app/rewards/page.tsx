@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 
 import { ClaimBack } from '@/components/ClaimBack';
-import { AffiliateRevenue, Partners } from '@/components/Sections';
+import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players and $750 bi-weekly Roobet leaderboard prizes across five paying places.',
+  description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, and free battles for Lootbox depositors.',
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players and $750 bi-weekly Roobet leaderboard prizes across five paying places.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, and free battles for Lootbox depositors.', url: '/rewards' },
 };
 
 export default async function RewardsPage({
@@ -40,6 +40,15 @@ export default async function RewardsPage({
             </p>
           </div>
           <div className="card">
+            <span className="label">Free battles</span>
+            <div className="stat-v text" style={{ marginTop: 12 }}>
+              Lootbox
+            </div>
+            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
+              Entries for depositors registered under the referral link.
+            </p>
+          </div>
+          <div className="card">
             <span className="label">Leaderboard prizes</span>
             <div className="stat-v" style={{ marginTop: 12 }}>
               {formatMoney(TOTAL_PRIZE_POOL)}
@@ -56,6 +65,7 @@ export default async function RewardsPage({
 
       <AffiliateRevenue />
       <ClaimBack loginError={login} />
+      <FreeBattles />
       <Partners />
     </>
   );

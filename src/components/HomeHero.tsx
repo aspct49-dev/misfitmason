@@ -70,7 +70,7 @@ export function HomeHero() {
       <div className="home-hero-inner">
         <span className="hero-kicker">
           <span className="dot" />
-          Roobet partner
+          Roobet &amp; Lootbox partner
         </span>
 
         {/*
