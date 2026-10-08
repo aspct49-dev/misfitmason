@@ -43,7 +43,8 @@ every outstanding cooldown.
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`** and **`CLAIM_SECRET`**.
+   - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**,
+     **`DISCORD_CLIENT_ID`** and **`DISCORD_CLIENT_SECRET`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://misfitmason.com`. Optional: without it the site falls back to
      Vercel's own `VERCEL_PROJECT_PRODUCTION_URL`, so deploys are correct out of
@@ -68,8 +69,8 @@ build can leave the notice on screen for a minute after the API has recovered.
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
 
-**Rotate the Roobet token and the Discord webhook before launch.** Both have been
-through a chat window.
+**Rotate the Roobet token, the Discord webhook and the Discord client secret
+before launch.** All three have been through a chat window.
 
 ### Roobet API
 
@@ -87,19 +88,42 @@ five.
 
 ### Affiliate-revenue claims
 
-`POST /api/claim` takes a Roobet username, a Discord handle and an optional
-note, and posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is no database:
-the Discord channel is the claim record.
+Sign in with Discord, then `POST /api/claim` with a Roobet username and an
+optional note; the route posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There is
+no database: the Discord channel is the claim record.
 
-- Every field is stripped of Discord formatting and mention syntax, and the
-  message sets `allowed_mentions: { parse: [] }`, so nothing a stranger types
-  can ping the server.
-- A 24-hour cooldown rides in an HMAC-signed cookie. Signed so an expiry cannot
-  be forged, but a cleared cookie clears the cooldown — it throttles honest
-  repeats, it does not stop a determined submitter. Making it authoritative
-  needs a datastore keyed on the player.
-- A small per-instance IP throttle sits in front of it. Serverless runs several
-  instances, so treat it as a speed bump, not a limit.
+**Discord OAuth.** `identify` scope only — the claim needs an account to
+attribute and a name to show, nothing more. Register the callback for **every
+origin the site is served from**, exactly:
+
+```
+http://localhost:3000/api/auth/discord/callback
+https://<your-domain>/api/auth/discord/callback
+```
+
+`redirectUri()` in `src/lib/session.ts` builds that string from
+`NEXT_PUBLIC_SITE_URL` when it is set and from the request origin otherwise, and
+Discord compares it character for character — a trailing slash or the wrong
+scheme is a `redirect_uri` mismatch, not a soft failure. With
+`NEXT_PUBLIC_SITE_URL` set in production, Vercel preview deployments send their
+sign-ins to the production origin, so preview sign-in works without registering
+every preview URL.
+
+Anti-spam, weakest to strongest:
+
+- A small per-instance IP throttle. Serverless runs several instances, so treat
+  it as a speed bump, not a limit.
+- A 24-hour cooldown in an HMAC-signed cookie, keyed to the Discord account id.
+  Signed, so an expiry cannot be forged; cookie-based, so clearing cookies
+  clears it. Making it authoritative needs a datastore keyed on the player.
+- **Discord sign-in**, which is the one that matters: a second claim inside the
+  window needs a second Discord account.
+
+Every field is stripped of Discord formatting and mention syntax, and the
+message sets `allowed_mentions: { parse: [] }`, so nothing a stranger types can
+ping the server. Discord blocks posts from unfamiliar user agents, so both the
+webhook call and the OAuth calls send an explicit one — a bare default gets a
+403 with no useful body.
 
 ### Excluded accounts
 

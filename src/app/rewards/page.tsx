@@ -12,7 +12,12 @@ export const metadata: Metadata = {
   openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players and $750 bi-weekly Roobet leaderboard prizes across five paying places.', url: '/rewards' },
 };
 
-export default function RewardsPage() {
+export default async function RewardsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ login?: string }>;
+}) {
+  const { login } = await searchParams;
   return (
     <>
       <section className="section wrap" style={{ paddingTop: 40 }}>
@@ -50,7 +55,7 @@ export default function RewardsPage() {
       </section>
 
       <AffiliateRevenue />
-      <ClaimBack />
+      <ClaimBack loginError={login} />
       <Partners />
     </>
   );

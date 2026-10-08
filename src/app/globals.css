@@ -801,3 +801,33 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 @media (max-width: 900px) {
   .claim-grid { grid-template-columns: 1fr; }
 }
+
+/* Signed-in state and the sign-in prompt inside the claim card. */
+.claim-signin { display: grid; gap: 12px; }
+.claim-signin p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.claim-signin .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+
+.claim-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.claim-user img { width: 32px; height: 32px; border-radius: 999px; display: block; }
+.claim-user b { display: block; margin-top: 4px; font-size: 14px; }
+.claim-user > div { flex: 1; min-width: 0; }
+
+.claim-signout {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 11px;
+  cursor: pointer;
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.claim-signout:hover { color: var(--text); border-color: var(--border-strong); }
