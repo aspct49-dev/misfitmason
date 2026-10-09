@@ -82,6 +82,22 @@ export interface Leaderboard {
   error?: string;
 }
 
+/** One slot challenge: a target multiplier at a fixed stake, for a fixed prize. */
+export interface Challenge {
+  id: string;
+  game: string;
+  provider: string;
+  /** The verb, e.g. "Spin into any bonus and hit" — the multiplier follows it. */
+  requirement: string;
+  multiplier: number;
+  /** The stake the attempt must be made at, in dollars. */
+  bet: number;
+  prize: number;
+  status: 'active' | 'claimed';
+  /** Masked winner, set when status is 'claimed'. */
+  claimedBy?: string;
+}
+
 export interface VipTransfer {
   headline: string;
   /** What the applicant must already have. */

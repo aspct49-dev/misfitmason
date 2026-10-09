@@ -116,8 +116,8 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PAGES
 
-Home · Leaderboards · Rewards · **Claim** · **VIP transfer** · How it works ·
-Legal.
+Home · Leaderboards · **Challenges** · Rewards · **Claim** · **VIP transfer** ·
+How it works · Legal.
 
 Claim and VIP transfer are pages, not sections: both are linked to directly
 from streams and the Discord, and both are something a player arrives at with

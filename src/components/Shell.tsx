@@ -19,6 +19,7 @@ import { SOCIAL_LINKS } from './socials';
 const NAV = [
   { href: '/', label: 'Home' },
   { href: '/leaderboards', label: 'Leaderboards', showPot: true },
+  { href: '/challenges', label: 'Challenges' },
   { href: '/rewards', label: 'Rewards' },
   { href: '/claim', label: 'Claim' },
   { href: '/vip-transfer', label: 'VIP transfer' },

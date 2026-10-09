@@ -936,3 +936,88 @@ h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.02em; line-heig
 @media (max-width: 720px) {
   .vip-row { grid-template-columns: 1fr; }
 }
+
+/* -------------------------------------------------------------- challenges */
+
+.chal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+.chal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.chal-card {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color 0.18s var(--ease);
+}
+.chal-card:hover { border-color: var(--border-strong); }
+.chal-card[data-done='true'] { opacity: 0.55; }
+
+/* The multiplier carries the card: it is the whole proposition, and the site
+   has no slot artwork to put behind it. */
+.chal-target {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+.chal-target b { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.chal-target span { font-size: 20px; opacity: 0.7; }
+.chal-card[data-done='true'] .chal-target { color: var(--dim); }
+
+.chal-meta h3 { font-size: 17px; margin: 0; }
+.chal-provider {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.chal-req { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+.chal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.chal-prize {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+.chal-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.chal-status.chal-live { color: var(--live); }
+
+.chal-rules { margin-top: 26px; }
+.chal-empty {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+  color: var(--dim);
+}

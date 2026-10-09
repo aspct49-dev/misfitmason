@@ -113,6 +113,23 @@ flag on the partner is what keeps its labels reading "Wagered" while Roobet's
 read "Weighted". It is **$500 per period, paid $225 / $125 / $75 / $50 / $25**,
 and depositors also get free battles (rules still provisional).
 
+### Challenges
+
+`/challenges` renders `CHALLENGES` in `src/lib/challenges.ts`. There is no
+database and no admin panel, so posting, retiring or marking one claimed is an
+edit to that array and a deploy — which is the whole reason the shape is a
+registry rather than a form.
+
+`bet` is the stake the attempt must be made at, not a floor: these are posted as
+fixed-stake challenges, so a bigger bankroll cannot buy a better chance at the
+same prize. A claimed challenge keeps its card, dimmed, with the winner on it
+(`status: 'claimed'`, optional `claimedBy`) — a page showing only unclaimed
+targets reads as though nobody has ever won one.
+
+The cards are typographic: the multiplier is the proposition, and the site has
+no licensed slot artwork, so nothing is scraped from a provider to sit behind
+it.
+
 ### Affiliate-revenue claims
 
 Its own page at `/claim`. Sign in with Discord, then `POST /api/claim` with a

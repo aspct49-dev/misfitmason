@@ -40,6 +40,7 @@ export function SiteFooter() {
             <nav>
               <Link href="/">Home</Link>
               <Link href="/leaderboards">Leaderboards</Link>
+              <Link href="/challenges">Challenges</Link>
               <Link href="/rewards">Rewards</Link>
               <Link href="/claim">Claim</Link>
               <Link href="/vip-transfer">VIP transfer</Link>

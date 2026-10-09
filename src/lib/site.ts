@@ -37,6 +37,7 @@ export const ROUTES = [
   { path: '/', priority: 1, changeFrequency: 'daily' as const },
   { path: '/leaderboards', priority: 0.9, changeFrequency: 'hourly' as const },
   { path: '/rewards', priority: 0.7, changeFrequency: 'weekly' as const },
+  { path: '/challenges', priority: 0.8, changeFrequency: 'weekly' as const },
   { path: '/claim', priority: 0.7, changeFrequency: 'monthly' as const },
   { path: '/vip-transfer', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/how-it-works', priority: 0.6, changeFrequency: 'monthly' as const },
