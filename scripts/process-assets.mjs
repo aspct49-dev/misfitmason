@@ -332,6 +332,9 @@ async function main() {
     .toFile(`${OUT}/prize-chalice.webp`);
   console.log('prize-chalice.webp');
 
+  console.log('challenge tiles');
+  await challengeArt();
+
   // Three rank emblems on a flat crimson field. Flood-filling from the borders
   // rather than keying by colour distance: the emblems carry crimson gems of
   // their own, and only background reachable from an edge is background.
@@ -371,6 +374,32 @@ async function main() {
       .webp({ quality: 92, alphaQuality: 100 })
       .toFile(`${OUT}/rank-${rankNames[i]}.webp`);
     console.log(`  rank-${rankNames[i]}.webp`);
+  }
+}
+
+/**
+ * Slot tiles for the challenge cards.
+ *
+ * Supplied by the operator at mixed sizes and formats; normalised to one width
+ * so the grid does not shift as cards load, and to webp because a 270KB PNG of
+ * a slot tile is most of a phone's page weight on that route.
+ */
+async function challengeArt() {
+  const tiles = [
+    ['gates1k.png', 'chal-gates1k'],
+    ['sweets1k.png', 'chal-sweets1k'],
+    ['sugarrush1k.jpg', 'chal-sugarrush1k'],
+    ['lecowboy.jpg', 'chal-lecowboy'],
+  ];
+
+  for (const [src, name] of tiles) {
+    await sharp(src)
+      // 3:4, the ratio they all arrive in. Cover rather than contain: a tile
+      // that is a few pixels off would otherwise letterbox against the card.
+      .resize(420, 560, { fit: 'cover', position: 'top' })
+      .webp({ quality: 86 })
+      .toFile(`${OUT}/${name}.webp`);
+    console.log(`  ${name}.webp`);
   }
 }
 

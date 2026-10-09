@@ -106,18 +106,22 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
 
   return (
     <article className="chal-card" data-done={done}>
-      {/* The multiplier is the whole proposition, so it is the only thing set
-          large. There is no slot artwork on this site to put behind it, and a
-          scraped promo image would be the one unlicensed asset on the page. */}
-      <div className="chal-target">
-        <b>{challenge.multiplier.toLocaleString('en-US')}</b>
-        <span>×</span>
+      <div className="chal-art">
+        {/* eslint-disable-next-line @next/next/no-img-element -- operator-supplied slot tile */}
+        <img src={challenge.art} alt="" loading="lazy" width={420} height={560} />
+        {/* The target rides on the tile: it is the proposition, and the tile
+            already carries the game name, so repeating it below would be the
+            same words twice. */}
+        <span className="chal-target">
+          <b>{challenge.multiplier.toLocaleString('en-US')}</b>×
+        </span>
       </div>
 
-      <div className="chal-meta">
-        <h3>{challenge.game}</h3>
-        <span className="chal-provider">{challenge.provider}</span>
-      </div>
+      {/* Kept for heading structure and screen readers — the name is in the
+          artwork, which a reader cannot see. */}
+      <h3 className="sr-only">
+        {challenge.game} — {challenge.provider}
+      </h3>
 
       <p className="chal-req">
         {challenge.requirement} {challenge.multiplier.toLocaleString('en-US')}× at a{' '}

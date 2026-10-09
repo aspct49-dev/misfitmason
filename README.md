@@ -126,9 +126,13 @@ same prize. A claimed challenge keeps its card, dimmed, with the winner on it
 (`status: 'claimed'`, optional `claimedBy`) — a page showing only unclaimed
 targets reads as though nobody has ever won one.
 
-The cards are typographic: the multiplier is the proposition, and the site has
-no licensed slot artwork, so nothing is scraped from a provider to sit behind
-it.
+Each card is the operator-supplied slot tile with the target as a chip in its
+corner — top corner, because every one of these tiles carries its own title
+across the bottom third. The tiles arrive at mixed sizes and formats and go
+through `scripts/process-assets.mjs` like the rest of the art: normalised to
+420x560 webp, which took the four of them from 660KB to 134KB. The game name
+lives in the artwork, so the card's heading is screen-reader only rather than
+printed twice.
 
 ### Affiliate-revenue claims
 
@@ -286,7 +290,7 @@ render from the registry.
 ## Asset pipeline
 
 `node scripts/process-assets.mjs` regenerates everything in `public/` from the
-source art in the repo root — the lodge backdrop, the light shaft, the table
+source art in the repo root — including the challenge slot tiles — the lodge backdrop, the light shaft, the table
 edge, the five drifting props, the four tiles, the banner frames, the rank
 emblems and the page texture. Sources are committed alongside the outputs, so
 the pipeline is reproducible from a fresh clone.

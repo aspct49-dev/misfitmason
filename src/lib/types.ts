@@ -87,6 +87,8 @@ export interface Challenge {
   id: string;
   game: string;
   provider: string;
+  /** Operator-supplied slot tile, 3:4, from the asset pipeline. */
+  art: string;
   /** The verb, e.g. "Spin into any bonus and hit" — the multiplier follows it. */
   requirement: string;
   multiplier: number;
