@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { currentPeriod } from '../format';
+import { periodFor } from '../format';
 import { getPartner, PARTNER_ORDER } from '../partners';
 import { lootboxProvider } from '../providers/lootbox';
 import { roobetProvider } from '../providers/roobet';
@@ -44,23 +44,36 @@ function fallbackFor(partnerId: PartnerId, period: Period, error: string): Leade
 
 export async function getLeaderboard(
   partnerId: PartnerId,
-  period: Period = currentPeriod(),
+  period?: Period,
 ): Promise<Leaderboard> {
+  const partner = getPartner(partnerId);
+  const scheduled = periodFor(partner.schedule);
+  const window = period ?? scheduled;
+
+  /* A board that has not opened is not an empty board: calling the API for a
+     window that has not begun would return nothing and render as though a live
+     competition had no entrants. The UI shows the opening date instead. */
+  if (!period && scheduled.upcoming) {
+    return {
+      ...fallbackFor(partnerId, window, ''),
+      source: 'live',
+      error: undefined,
+      upcoming: true,
+    };
+  }
+
   try {
-    return await PROVIDERS[partnerId].fetchLeaderboard(period);
+    return await PROVIDERS[partnerId].fetchLeaderboard(window);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     console.error(`[leaderboard] ${partnerId} provider failed:`, message);
-    return fallbackFor(partnerId, period, message);
+    return fallbackFor(partnerId, window, message);
   }
 }
 
-export async function getAllLeaderboards(
-  period: Period = currentPeriod(),
-): Promise<Record<PartnerId, Leaderboard>> {
-  const boards = await Promise.all(
-    PARTNER_ORDER.map((id) => getLeaderboard(id, period)),
-  );
+/** Each partner on its own schedule, so the two boards can be cut differently. */
+export async function getAllLeaderboards(): Promise<Record<PartnerId, Leaderboard>> {
+  const boards = await Promise.all(PARTNER_ORDER.map((id) => getLeaderboard(id)));
   return Object.fromEntries(
     PARTNER_ORDER.map((id, i) => [id, boards[i]]),
   ) as Record<PartnerId, Leaderboard>;

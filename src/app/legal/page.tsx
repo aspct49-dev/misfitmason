@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
+import { PARTNERS, PARTNER_ORDER, scheduleLine } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Legal',
@@ -45,10 +45,11 @@ export default function LegalPage() {
             Entry requires an account registered through this site&apos;s referral links. Accounts
             opened under another affiliate cannot be transferred.
           </li>
-          <li>
-            Periods run twice a month — the 1st to the 15th, and the 16th to the last day of the
-            month — opening and closing at 00:00 UTC.
-          </li>
+          {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (
+            <li key={`period-${id}`}>
+              The {PARTNERS[id].name} board {scheduleLine(PARTNERS[id])}.
+            </li>
+          ))}
           <li>
             Standings come from each casino&apos;s own reporting and may lag or be corrected. Final
             placings are taken from the casino&apos;s figures at period close.

@@ -251,10 +251,16 @@ render from the registry.
 
 ## Decisions worth knowing
 
-- **Half-month periods** (client decision, 2026-10-01), not rolling fortnights,
-  so a period never straddles a month boundary and the reset dates are the same
-  every month. Both APIs take a real date range, so the boards reset by
-  themselves with no snapshot or cron.
+- **Each board runs its own schedule**, set by `schedule` on the partner and
+  resolved by `periodFor()`. Roobet runs **true 14-day periods from 2026-10-14**
+  (client decision, 2026-10-10), so every period is the same length even where
+  it crosses a month; Lootbox keeps the **half-months** it has always run,
+  because players know those dates. Both APIs take a real date range, so the
+  boards reset by themselves with no snapshot or cron.
+- **A board with a start date in the future shows the date, not an empty
+  board.** The service does not call the API for a window that has not begun —
+  it would return nothing and render as a live competition nobody had entered —
+  so `upcoming` is set and the page counts down to the opening instead.
 - **Ranked on weighted wager** (client decision, 2026-10-08). Roobet discounts
   each bet by the game's RTP — full value up to 97%, half to 98.99%, a tenth
   above that — and that weighted figure is what is ranked, shown and totalled.

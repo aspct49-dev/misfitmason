@@ -60,12 +60,18 @@ export function Board({
         </div>
 
         <span className="label lb-hero-period">
-          {partner.comingSoon ? 'Not open yet' : periodLabel(board.periodStart, board.periodEnd)}
+          {partner.comingSoon
+            ? 'Not open yet'
+            : board.upcoming
+              ? `Opens ${openingLabel(board.periodStart)}`
+              : periodLabel(board.periodStart, board.periodEnd)}
         </span>
       </div>
 
       {partner.comingSoon ? (
         <ComingSoon partner={partner} prizePool={board.prizePool} />
+      ) : board.upcoming ? (
+        <NotStarted partner={partner} board={board} />
       ) : (
         <Standings board={board} partner={partner} />
       )}
@@ -103,6 +109,52 @@ function ComingSoon({ partner, prizePool }: { partner: Partner; prizePool: numbe
       </div>
     </div>
   );
+}
+
+/**
+ * A board with a start date in the future.
+ *
+ * Distinct from ComingSoon, which is for a partner with no date at all: here
+ * the date is known, so the page counts down to it and says plainly that
+ * wagers before it do not count. Rendering the usual empty podium instead
+ * would read as a live competition nobody has entered.
+ */
+function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }) {
+  return (
+    <div className="lb-soon">
+      {/* eslint-disable-next-line @next/next/no-img-element -- decorative prize art */}
+      <img className="lb-soon-art" src="/prize-chalice.webp" alt="" aria-hidden />
+      <div>
+        <span className="label">Starts {openingLabel(board.periodStart)}</span>
+        <h2 className="lb-soon-title">
+          {formatMoney(board.prizePool)} {partner.name} leaderboard
+        </h2>
+        <p className="lb-soon-sub">
+          The first period runs {periodLabel(board.periodStart, board.periodEnd)}. Wagers before it
+          opens do not count, so register under code <strong>{partner.code}</strong> now — the
+          account has to exist before anything can be counted, and it cannot be moved across later.
+        </p>
+
+        <div className="lb-ends" style={{ margin: '4px 0 22px', justifyItems: 'start' }}>
+          <span className="label">Opens in</span>
+          <Countdown endsAt={board.periodStart} />
+        </div>
+
+        <div className="lb-hero-actions" style={{ justifyContent: 'flex-start' }}>
+          <CopyCode code={partner.code} />
+          <a className="btn btn-primary" href={partner.signupUrl} target="_blank" rel="noreferrer">
+            Sign up on {partner.name}
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** e.g. "14 October" — the opening day, without a period range around it. */
+function openingLabel(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}`;
 }
 
 function Standings({ board, partner }: { board: Leaderboard; partner: Partner }) {

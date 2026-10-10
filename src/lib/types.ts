@@ -32,6 +32,8 @@ export interface Partner {
   weighted: boolean;
   /** Plain-language explanation shown beside a weighted board, one point per entry. */
   weightingNote?: string[];
+  /** How this partner's periods are cut. */
+  schedule: Schedule;
   /** True once a real API is wired up; drives the MOCK badge in the UI. */
   hasLiveApi: boolean;
   /** Announced but not yet running: the board renders a coming-soon state. */
@@ -78,6 +80,8 @@ export interface Leaderboard {
   source: DataSource;
   stats: BoardStats;
   biggestHit?: BiggestHit;
+  /** Set when the board has not opened yet; `periodStart` is the opening date. */
+  upcoming?: boolean;
   /** Set when a live provider failed and fixtures were served instead. */
   error?: string;
 }
@@ -130,6 +134,18 @@ export interface Period {
   start: Date;
   end: Date;
 }
+
+/**
+ * How a partner's periods are cut.
+ *
+ * Two shapes because the two boards answer to different things: Lootbox has run
+ * half-months since it opened and players know those dates, while Roobet starts
+ * on a date the client picked and runs a true fortnight from it.
+ */
+export type Schedule =
+  | { kind: 'half-month' }
+  /** Fortnights counted from `anchor`, which is also the day the board opens. */
+  | { kind: 'rolling'; anchor: string; days: number };
 
 export interface AffiliateReturn {
   /** Share of affiliate revenue returned to players. Always 100 here. */

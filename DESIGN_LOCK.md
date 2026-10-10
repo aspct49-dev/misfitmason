@@ -102,7 +102,8 @@ Hover changes colour and border only, never scale or position. Full
   and no second line — the prize column already states what is at stake.
 - **Metric**: per partner. Roobet weighted wager (2026-10-08) with the RTP bands
   under the table; Lootbox raw wagered, which is all its API reports.
-- **Period**: half-months, 1st–15th and 16th–end, opening and closing at 00:00 UTC.
+- **Period**: per partner. Roobet runs 14-day periods from 14 Oct 2026; Lootbox
+  runs half-months, 1st–15th and 16th–end. Everything opens and closes 00:00 UTC.
 - **Prizes** — Roobet $750: `300/200/125/75/50`. Lootbox $500: `225/125/75/50/25`.
 - **Two partners, so the tab switcher renders.** It appears automatically at two
   or more boards; Roobet is first, so it is the default and the home preview.

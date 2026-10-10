@@ -27,6 +27,9 @@ export const PARTNERS: Record<PartnerId, Partner> = {
       'The figure on this board is that weighted total, so a month spent on dice moves it far less than the same money through slots, and it sits below the amount wagered shown in your Roobet statistics.',
       'The bands are set by Roobet, not by us. We apply no weighting of our own on top, and they apply the same way to every player on the board.',
     ],
+    // Opens 14 October 2026 (client decision) and runs true fortnights from
+    // there, so every period is the same length even where it crosses a month.
+    schedule: { kind: 'rolling', anchor: '2026-10-14T00:00:00.000Z', days: 14 },
     hasLiveApi: true,
     comingSoon: false,
     blurb: 'Slots, originals, crash and sports. Standings come from the Roobet affiliate API.',
@@ -45,6 +48,8 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     // Lootbox's API returns only the raw figure, so this board cannot be
     // weighted even if that becomes the policy.
     weighted: false,
+    // Unchanged since the board opened: players know these dates.
+    schedule: { kind: 'half-month' },
     hasLiveApi: true,
     comingSoon: false,
     blurb: 'Case battles, boxes and upgrades. Depositors also receive free battles.',
@@ -55,6 +60,20 @@ export const PARTNER_ORDER: PartnerId[] = ['roobet', 'lootbox'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];
+}
+
+/** How a partner's periods run, in a sentence. Rendered in the rules and legal copy. */
+export function scheduleLine(partner: Partner): string {
+  if (partner.schedule.kind === 'rolling') {
+    const opens = new Date(partner.schedule.anchor).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    return `runs in ${partner.schedule.days}-day periods from ${opens}, each opening and closing at 00:00 UTC`;
+  }
+  return 'runs twice a month — the 1st to the 15th, and the 16th to the last day — each opening and closing at 00:00 UTC';
 }
 
 /** Column and caption label for the figure a board ranks on. */

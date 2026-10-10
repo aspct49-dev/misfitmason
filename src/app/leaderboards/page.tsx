@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { LeaderboardTabs } from '@/components/LeaderboardTabs';
-import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
+import { PARTNERS, PARTNER_ORDER, scheduleLine } from '@/lib/partners';
 import { getAllLeaderboards } from '@/lib/services/leaderboard';
 
 export const revalidate = 60;
@@ -56,10 +56,11 @@ export default async function LeaderboardsPage() {
             Entry requires an account registered through the partner&apos;s referral link on this
             site. Casinos do not transfer existing accounts between affiliates.
           </li>
-          <li>
-            Periods run <strong>twice a month</strong>: the 1st to the 15th, and the 16th to the
-            last day. Each one opens and closes at 00:00 UTC.
-          </li>
+          {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (
+            <li key={`period-${id}`}>
+              <strong>{PARTNERS[id].name}</strong> {scheduleLine(PARTNERS[id])}.
+            </li>
+          ))}
           <li>Usernames are shown masked to their last four characters.</li>
           <li>
             Prize pools are funded personally by MisfitMason and are separate from the affiliate
