@@ -1,4 +1,4 @@
-import { formatMoney, periodLabel } from '@/lib/format';
+import { formatMoney, periodLabel, scheduleZone, timeLabel } from '@/lib/format';
 import { wagerLabel } from '@/lib/partners';
 import type { Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
 import { Countdown } from './Countdown';
@@ -23,6 +23,8 @@ export function Board({
   /** Partner switcher, rendered inside the hero rather than above it. */
   tabs?: React.ReactNode;
 }) {
+  const zone = scheduleZone(partner.schedule);
+
   return (
     <div>
       <div className="lb-hero">
@@ -63,8 +65,14 @@ export function Board({
           {partner.comingSoon
             ? 'Not open yet'
             : board.upcoming
-              ? `Opens ${openingLabel(board.periodStart)}`
-              : periodLabel(board.periodStart, board.periodEnd)}
+              ? `Opens ${openingLabel(board.periodStart, zone)}`
+              : // A fortnight that opens at 8am closes at 7:59am on its last day, so the
+                // hour is stated with the dates rather than left to be guessed at.
+                `${periodLabel(board.periodStart, board.periodEnd, zone)}${
+                  partner.schedule.kind === 'rolling'
+                    ? ` · ${timeLabel(board.periodStart, zone)}`
+                    : ''
+                }`}
         </span>
       </div>
 
@@ -120,19 +128,25 @@ function ComingSoon({ partner, prizePool }: { partner: Partner; prizePool: numbe
  * would read as a live competition nobody has entered.
  */
 function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }) {
+  const zone = scheduleZone(partner.schedule);
+
   return (
     <div className="lb-soon">
       {/* eslint-disable-next-line @next/next/no-img-element -- decorative prize art */}
       <img className="lb-soon-art" src="/prize-chalice.webp" alt="" aria-hidden />
       <div>
-        <span className="label">Starts {openingLabel(board.periodStart)}</span>
+        <span className="label">
+          Starts {openingLabel(board.periodStart, zone)},{' '}
+          {timeLabel(board.periodStart, zone)}
+        </span>
         <h2 className="lb-soon-title">
           {formatMoney(board.prizePool)} {partner.name} leaderboard
         </h2>
         <p className="lb-soon-sub">
-          The first period runs {periodLabel(board.periodStart, board.periodEnd)}. Wagers before it
-          opens do not count, so register under code <strong>{partner.code}</strong> now — the
-          account has to exist before anything can be counted, and it cannot be moved across later.
+          The first period runs {periodLabel(board.periodStart, board.periodEnd, zone)}, opening at{' '}
+          {timeLabel(board.periodStart, zone)}. Wagers before it opens do not count, so register
+          under code <strong>{partner.code}</strong> now — the account has to exist before anything
+          can be counted, and it cannot be moved across later.
         </p>
 
         <div className="lb-ends" style={{ margin: '4px 0 22px', justifyItems: 'start' }}>
@@ -151,10 +165,9 @@ function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }
   );
 }
 
-/** e.g. "14 October" — the opening day, without a period range around it. */
-function openingLabel(iso: string): string {
-  const d = new Date(iso);
-  return `${d.getUTCDate()} ${d.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}`;
+/** e.g. "14 October" — the opening day, read in the board's own zone. */
+function openingLabel(iso: string, timeZone: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone });
 }
 
 function Standings({ board, partner }: { board: Leaderboard; partner: Partner }) {

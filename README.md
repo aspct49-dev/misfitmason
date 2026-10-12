@@ -252,10 +252,17 @@ render from the registry.
 ## Decisions worth knowing
 
 - **Each board runs its own schedule**, set by `schedule` on the partner and
-  resolved by `periodFor()`. Roobet runs **true 14-day periods from 2026-10-14**
-  (client decision, 2026-10-10), so every period is the same length even where
-  it crosses a month; Lootbox keeps the **half-months** it has always run,
-  because players know those dates. Both APIs take a real date range, so the
+  resolved by `periodFor()`. Roobet runs **14-day periods from 2026-10-14 at
+  08:00 America/New_York** (client decision, 2026-10-12); Lootbox keeps the
+  **half-months** it has always run, at 00:00 UTC, because players know those
+  dates.
+- **A rolling schedule stores a zone, not a UTC instant.** Eastern is UTC-4 on
+  14 October and UTC-5 from 1 November, so a fixed offset would quietly move the
+  advertised 8am start to 7am from the third period onwards. Boundaries are
+  computed by adding whole days to the anchor *date* and resolving the time in
+  the zone — adding 14x24h to an instant drifts the same way — and `periodLabel`
+  reads its dates in that zone, since a period ending 07:59 local is the next
+  day in UTC. Both APIs take a real date range, so the
   boards reset by themselves with no snapshot or cron.
 - **A board with a start date in the future shows the date, not an empty
   board.** The service does not call the API for a window that has not begun —

@@ -144,8 +144,23 @@ export interface Period {
  */
 export type Schedule =
   | { kind: 'half-month' }
-  /** Fortnights counted from `anchor`, which is also the day the board opens. */
-  | { kind: 'rolling'; anchor: string; days: number };
+  /**
+   * Fortnights counted from `anchor`, which is also the day the board opens.
+   *
+   * The boundary is a wall-clock time in `timeZone`, not a fixed UTC instant:
+   * a board advertised as opening at 8am has to keep opening at 8am after the
+   * clocks change, which a fixed offset would not.
+   */
+  | {
+      kind: 'rolling';
+      /** Opening day, YYYY-MM-DD, read in `timeZone`. */
+      anchor: string;
+      days: number;
+      /** 24-hour HH:mm in `timeZone`. */
+      time: string;
+      /** IANA zone, e.g. 'America/New_York'. */
+      timeZone: string;
+    };
 
 export interface AffiliateReturn {
   /** Share of affiliate revenue returned to players. Always 100 here. */

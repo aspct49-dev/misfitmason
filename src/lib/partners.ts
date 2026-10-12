@@ -1,3 +1,4 @@
+import { periodFor, timeLabel } from './format';
 import type { AffiliateReturn, FreeBattleProgram, Partner, PartnerId, VipTransfer } from './types';
 
 /**
@@ -27,9 +28,17 @@ export const PARTNERS: Record<PartnerId, Partner> = {
       'The figure on this board is that weighted total, so a month spent on dice moves it far less than the same money through slots, and it sits below the amount wagered shown in your Roobet statistics.',
       'The bands are set by Roobet, not by us. We apply no weighting of our own on top, and they apply the same way to every player on the board.',
     ],
-    // Opens 14 October 2026 (client decision) and runs true fortnights from
-    // there, so every period is the same length even where it crosses a month.
-    schedule: { kind: 'rolling', anchor: '2026-10-14T00:00:00.000Z', days: 14 },
+    // Opens 14 October 2026 at 8am Eastern (client decision) and runs
+    // fortnights from there. The zone is carried rather than baked into a UTC
+    // instant: Eastern is UTC-4 that day and UTC-5 from 1 November, and a board
+    // advertised as opening at 8am has to keep opening at 8am.
+    schedule: {
+      kind: 'rolling',
+      anchor: '2026-10-14',
+      days: 14,
+      time: '08:00',
+      timeZone: 'America/New_York',
+    },
     hasLiveApi: true,
     comingSoon: false,
     blurb: 'Slots, originals, crash and sports. Standings come from the Roobet affiliate API.',
@@ -64,14 +73,17 @@ export function getPartner(id: PartnerId): Partner {
 
 /** How a partner's periods run, in a sentence. Rendered in the rules and legal copy. */
 export function scheduleLine(partner: Partner): string {
-  if (partner.schedule.kind === 'rolling') {
-    const opens = new Date(partner.schedule.anchor).toLocaleDateString('en-GB', {
+  const { schedule } = partner;
+  if (schedule.kind === 'rolling') {
+    const first = periodFor(schedule).start;
+    const opens = first.toLocaleDateString('en-GB', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-      timeZone: 'UTC',
+      timeZone: schedule.timeZone,
     });
-    return `runs in ${partner.schedule.days}-day periods from ${opens}, each opening and closing at 00:00 UTC`;
+    const at = timeLabel(first.toISOString(), schedule.timeZone);
+    return `runs in ${schedule.days}-day periods from ${opens}, each opening and closing at ${at}`;
   }
   return 'runs twice a month — the 1st to the 15th, and the 16th to the last day — each opening and closing at 00:00 UTC';
 }

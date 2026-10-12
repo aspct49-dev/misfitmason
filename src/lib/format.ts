@@ -64,44 +64,145 @@ export function currentPeriod(now: Date = new Date()) {
  * the anchor there is no period at all — the caller decides what to show, and
  * for a board that has not opened that is an opening date, not standings.
  */
-export function rollingPeriod(anchorIso: string, days: number, now: Date = new Date()) {
-  const anchor = new Date(anchorIso);
-  const length = days * 24 * 60 * 60 * 1000;
-  const elapsed = now.getTime() - anchor.getTime();
+/** How far `timeZone` is from UTC at that instant, in milliseconds. */
+function zoneOffset(at: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+    .formatToParts(at)
+    .reduce<Record<string, string>>((acc, p) => ({ ...acc, [p.type]: p.value }), {});
 
-  if (elapsed < 0) {
-    // The first period, which has not started: start is the opening date.
-    return { start: anchor, end: new Date(anchor.getTime() + length - 1000), upcoming: true };
+  const asUtc = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    Number(parts.hour) % 24,
+    Number(parts.minute),
+    Number(parts.second),
+  );
+  return asUtc - at.getTime();
+}
+
+/**
+ * The UTC instant of a wall-clock time in a zone.
+ *
+ * Twice, because the offset depends on the instant we are trying to find: the
+ * first pass is a guess made at UTC, the second corrects it using the offset in
+ * force at that guess. One pass is wrong by an hour either side of a clock
+ * change, which is exactly when a period boundary is worth getting right.
+ */
+export function zonedInstant(
+  y: number,
+  m: number,
+  d: number,
+  hours: number,
+  minutes: number,
+  timeZone: string,
+): Date {
+  const guess = Date.UTC(y, m, d, hours, minutes);
+  const firstPass = new Date(guess - zoneOffset(new Date(guess), timeZone));
+  return new Date(guess - zoneOffset(firstPass, timeZone));
+}
+
+/**
+ * Fortnights counted from an anchor day, each starting at the same wall-clock
+ * time in the schedule's own zone.
+ *
+ * Boundaries are computed by adding whole days to the anchor *date* and then
+ * resolving the time in the zone, rather than adding 14x24h to an instant. The
+ * two differ by an hour across a clock change, and the first way is the one
+ * that keeps a board advertised as opening at 8am opening at 8am.
+ *
+ * Before the anchor there is no period yet — the caller decides what to show,
+ * and for a board that has not opened that is an opening date, not standings.
+ */
+export function rollingPeriod(
+  anchorDate: string,
+  days: number,
+  time: string,
+  timeZone: string,
+  now: Date = new Date(),
+) {
+  const [y, m, d] = anchorDate.split('-').map(Number);
+  const [hh, mm] = time.split(':').map(Number);
+
+  const boundary = (periodIndex: number) =>
+    zonedInstant(y, m - 1, d + periodIndex * days, hh, mm, timeZone);
+
+  const first = boundary(0);
+  if (now.getTime() < first.getTime()) {
+    return { start: first, end: new Date(boundary(1).getTime() - 1000), upcoming: true };
   }
 
-  const index = Math.floor(elapsed / length);
-  const start = new Date(anchor.getTime() + index * length);
-  return { start, end: new Date(start.getTime() + length - 1000), upcoming: false };
+  // Walk forward rather than dividing: period lengths vary by an hour across a
+  // clock change, so arithmetic on a fixed length drifts.
+  let index = Math.floor((now.getTime() - first.getTime()) / (days * 86_400_000));
+  while (boundary(index + 1).getTime() <= now.getTime()) index += 1;
+  while (boundary(index).getTime() > now.getTime()) index -= 1;
+
+  return {
+    start: boundary(index),
+    end: new Date(boundary(index + 1).getTime() - 1000),
+    upcoming: false,
+  };
 }
 
 /** The period a partner is in right now, by its own schedule. */
 export function periodFor(schedule: Schedule, now: Date = new Date()) {
   if (schedule.kind === 'rolling') {
-    return rollingPeriod(schedule.anchor, schedule.days, now);
+    return rollingPeriod(schedule.anchor, schedule.days, schedule.time, schedule.timeZone, now);
   }
   return { ...currentPeriod(now), upcoming: false };
 }
 
-/** e.g. "1 – 15 OCTOBER 2026", or "14 OCT – 27 OCT 2026" across a month boundary. */
-export function periodLabel(start: string, end: string): string {
-  const from = new Date(start);
-  const to = new Date(end);
+/** The zone a schedule's dates should be read in. Half-months are UTC. */
+export function scheduleZone(schedule: Schedule): string {
+  return schedule.kind === 'rolling' ? schedule.timeZone : 'UTC';
+}
 
-  const monthOf = (d: Date, long: boolean) =>
-    d
-      .toLocaleString('en-US', { month: long ? 'long' : 'short', timeZone: 'UTC' })
-      .toUpperCase();
+/** e.g. "8:00 AM EDT" — the opening time, named in its own zone. */
+export function timeLabel(iso: string, timeZone: string): string {
+  return new Date(iso).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone,
+    timeZoneName: 'short',
+  });
+}
+
+/** e.g. "1 – 15 OCTOBER 2026", or "14 OCT – 27 OCT 2026" across a month boundary. */
+export function periodLabel(start: string, end: string, timeZone = 'UTC'): string {
+  // Read in the schedule's own zone: a period that ends at 07:59 local is in
+  // UTC terms the following day, and labelling it that way would put a date on
+  // screen that nobody can wager in.
+  const parts = (iso: string) => {
+    const d = new Date(iso);
+    const get = (opts: Intl.DateTimeFormatOptions) =>
+      d.toLocaleString('en-US', { ...opts, timeZone });
+    return {
+      day: Number(get({ day: 'numeric' })),
+      monthIndex: get({ month: 'numeric' }),
+      monthShort: get({ month: 'short' }).toUpperCase(),
+      monthLong: get({ month: 'long' }).toUpperCase(),
+      year: get({ year: 'numeric' }),
+    };
+  };
+
+  const from = parts(start);
+  const to = parts(end);
 
   // A fortnight can straddle a month, and "28 – 10 NOVEMBER" would be a lie, so
   // both months are named when they differ.
-  if (from.getUTCMonth() !== to.getUTCMonth()) {
-    return `${from.getUTCDate()} ${monthOf(from, false)} – ${to.getUTCDate()} ${monthOf(to, false)} ${to.getUTCFullYear()}`;
+  if (from.monthIndex !== to.monthIndex) {
+    return `${from.day} ${from.monthShort} – ${to.day} ${to.monthShort} ${to.year}`;
   }
 
-  return `${from.getUTCDate()} – ${to.getUTCDate()} ${monthOf(to, true)} ${to.getUTCFullYear()}`;
+  return `${from.day} – ${to.day} ${to.monthLong} ${to.year}`;
 }
