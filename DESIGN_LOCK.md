@@ -84,7 +84,6 @@ Hover changes colour and border only, never scale or position. Full
    whole-board stats.
 3. **Kick row** — a link out, not an embed.
 4. **Affiliate revenue** — mechanism plus a summary table.
-5. **Free battles** — Lootbox depositor reward.
 6. **Getting started** — three steps.
 7. **Partners** — one card each.
 8. **Footer** — legal, responsible gambling, socials.
@@ -100,15 +99,13 @@ Hover changes colour and border only, never scale or position. Full
   glow, not a crown, not gold.
 - **Open places** say "Open place" with the prize still shown. No dashed borders
   and no second line — the prize column already states what is at stake.
-- **Metric**: per partner. Roobet weighted wager (2026-10-08) with the RTP bands
-  under the table; Lootbox raw wagered, which is all its API reports.
-- **Period**: per partner. Roobet runs 14-day periods from 14 Oct 2026, opening
-  and closing at **8:00 AM America/New_York** — held across the clock change,
-  not a fixed UTC offset. Lootbox runs half-months, 1st–15th and 16th–end, at
-  00:00 UTC.
-- **Prizes** — Roobet $750: `300/200/125/75/50`. Lootbox $500: `225/125/75/50/25`.
-- **Two partners, so the tab switcher renders.** It appears automatically at two
-  or more boards; Roobet is first, so it is the default and the home preview.
+- **Metric**: Roobet weighted wager (2026-10-08), with the RTP bands under the
+  table. The per-partner `weighted` flag drives the labels, for an operator that
+  reports no weighted figure.
+- **Period**: 14-day periods from 14 Oct 2026, opening and closing at **8:00 AM
+  America/New_York** — held across the clock change, not a fixed UTC offset.
+- **Prizes** — Roobet $750 per period: `300/200/125/75/50`, five paying places.
+- **One partner, no tabs.** The switcher renders only at two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
   prize stay. No horizontal scroll at 390px.
@@ -136,10 +133,6 @@ them.
   affiliate id is the `id` claim inside the token. Takes a real date range, with
   an exclusive `endDate`. Referral `https://roobet.com/?ref=MisfitMason`,
   code `MisfitMason` — mixed case, kept as issued.
-- **Lootbox** — the case-battle board, back alongside Roobet on 2026-10-08.
-  `POST partners.lootbox.com/top-affiliate-wagers-by-period`, bearer auth,
-  server-side only. Referral `https://lootbox.com/r/misfitmason`, code
-  `misfitmason`. Depositors also get free battles.
 - A third partner is a registry entry plus a provider module.
 
 ---
@@ -162,6 +155,6 @@ src/components/           presentational
 
 ## PLACEHOLDERS
 
-Wordmark set in type (mascot used as the mark) · Lootbox free-battle rules ·
+Wordmark set in type (mascot used as the mark) ·
 Discord invite · Kick live state · legal copy drafted but
 not reviewed by a lawyer.

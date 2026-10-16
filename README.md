@@ -1,20 +1,18 @@
 # Misfit Mason
 
-Community leaderboard site for the Kick streamer MisfitMason. Two bi-weekly
-wager leaderboards — **$750 on Roobet**, ranked on weighted wager, and **$500 on
-Lootbox** for case battles — plus 100% of affiliate revenue returned to players,
-claimed through a form that posts into Discord.
-
-Roobet is the main board: first in `PARTNER_ORDER`, so it is the default tab and
-the one the home page previews.
+Community leaderboard site for the Kick streamer MisfitMason. A **$750 bi-weekly
+Roobet** wager leaderboard ranked on weighted wager, slot challenges, and 100% of
+affiliate revenue returned to players — claimed through a form that posts into
+Discord.
 
 **Periods are half-months**, both ends at 00:00 UTC: the 1st to the 15th, and the
 16th to the last day of the month. `currentPeriod()` in `src/lib/format.ts` is
 the only place that is decided.
 
-Partner history: **Roobet** returned 2026-10-08 after a Shuffle and then a
-Lootbox run; **Lootbox** came back alongside it the same day, with its
-free-battles section. Shuffle is gone — `git log` has it if it returns.
+Partner history: Roobet → Shuffle → Lootbox → **Roobet** (2026-10-08). Lootbox
+ran alongside it for a week and was removed again on 2026-10-16, taking its
+free-battles section with it. `git log` has both if either returns; its final
+standings are archived in `data/`.
 
 Design spec: [DESIGN_LOCK.md](DESIGN_LOCK.md).
 
@@ -30,8 +28,6 @@ npm run build && npm start
 
 ```
 ROOBET_API_TOKEN=<affiliate JWT>
-LOOTBOX_API_URL=https://partners.lootbox.com
-LOOTBOX_API_KEY=partner<...>
 DISCORD_CLAIM_WEBHOOK_URL=<webhook the claim form posts into>
 CLAIM_SECRET=<any long random string>
 DISCORD_CLIENT_ID=<OAuth app id>
@@ -51,9 +47,8 @@ every outstanding cooldown.
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`ROOBET_API_TOKEN`**, **`LOOTBOX_API_URL`**, **`LOOTBOX_API_KEY`**,
-     **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**, **`DISCORD_CLIENT_ID`**
-     and **`DISCORD_CLIENT_SECRET`**.
+   - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**,
+     **`DISCORD_CLIENT_ID`** and **`DISCORD_CLIENT_SECRET`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://www.misfitmason.com` — the host Vercel actually serves, since the
      apex redirects to it. Optional: without it the site falls back to
@@ -79,8 +74,8 @@ build can leave the notice on screen for a minute after the API has recovered.
 Pages using live data are statically generated with `revalidate = 60`, so
 standings refresh about once a minute without a rebuild.
 
-**Rotate the Roobet token, the Lootbox key, the Discord webhook and the Discord
-client secret before launch.** All four have been through a chat window.
+**Rotate the Roobet token, the Discord webhook and the Discord client secret
+before launch.** All three have been through a chat window.
 
 ### Roobet API
 
@@ -95,44 +90,6 @@ bearer auth with the JWT. Two things the code depends on:
 
 The Roobet board is **$750 per period, paid $300 / $200 / $125 / $75 / $50** to
 the top five.
-
-### Lootbox API
-
-`POST {LOOTBOX_API_URL}/top-affiliate-wagers-by-period`, bearer auth. It takes a
-real date range, so the board matches the half-month period the site advertises
-and resets on its own. Docs: <https://docs.lootbox.com/>.
-
-Two shape details the code depends on:
-
-- timestamps are Unix **seconds**, not milliseconds;
-- `totalWagered` comes back as a **string** — summing it unparsed would
-  concatenate rather than add.
-
-It returns only the raw figure, so this board cannot be weighted; the `weighted`
-flag on the partner is what keeps its labels reading "Wagered" while Roobet's
-read "Weighted". It is **$500 per period, paid $225 / $125 / $75 / $50 / $25**,
-and depositors also get free battles (rules still provisional).
-
-### Challenges
-
-`/challenges` renders `CHALLENGES` in `src/lib/challenges.ts`. There is no
-database and no admin panel, so posting, retiring or marking one claimed is an
-edit to that array and a deploy — which is the whole reason the shape is a
-registry rather than a form.
-
-`bet` is the stake the attempt must be made at, not a floor: these are posted as
-fixed-stake challenges, so a bigger bankroll cannot buy a better chance at the
-same prize. A claimed challenge keeps its card, dimmed, with the winner on it
-(`status: 'claimed'`, optional `claimedBy`) — a page showing only unclaimed
-targets reads as though nobody has ever won one.
-
-Each card is the operator-supplied slot tile with the target as a chip in its
-corner — top corner, because every one of these tiles carries its own title
-across the bottom third. The tiles arrive at mixed sizes and formats and go
-through `scripts/process-assets.mjs` like the rest of the art: normalised to
-420x560 webp, which took the four of them from 660KB to 134KB. The game name
-lives in the artwork, so the card's heading is screen-reader only rather than
-printed twice.
 
 ### Affiliate-revenue claims
 
@@ -230,7 +187,6 @@ src/lib/types.ts            domain shapes; no React, no fetch
 src/lib/partners.ts         prize pools, splits, codes, links — the only place they live
 src/lib/format.ts           masking + money/period formatting
 src/lib/providers/roobet    live API, server-only
-src/lib/providers/lootbox   live API, server-only
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
 src/lib/staff.ts            accounts excluded from every board
@@ -253,9 +209,8 @@ render from the registry.
 
 - **Each board runs its own schedule**, set by `schedule` on the partner and
   resolved by `periodFor()`. Roobet runs **14-day periods from 2026-10-14 at
-  08:00 America/New_York** (client decision, 2026-10-12); Lootbox keeps the
-  **half-months** it has always run, at 00:00 UTC, because players know those
-  dates.
+  08:00 America/New_York** (client decision, 2026-10-12). The half-month shape
+  is still there for a board that wants the 1st and the 16th.
 - **A rolling schedule stores a zone, not a UTC instant.** Eastern is UTC-4 on
   14 October and UTC-5 from 1 November, so a fixed offset would quietly move the
   advertised 8am start to 7am from the third period onwards. Boundaries are
@@ -295,7 +250,6 @@ render from the registry.
 | What | Where |
 |---|---|
 | Wordmark (mascot mark + type) | `src/components/Shell.tsx` |
-| Lootbox free-battle rules | `FREE_BATTLES` in `src/lib/partners.ts` |
 | Discord invite | `SOCIALS` in `src/lib/partners.ts` |
 | Kick live state (hardcoded offline) | `LiveChip` in `src/components/Shell.tsx` |
 | Legal copy | `src/app/legal/page.tsx` — drafted, not legal advice |

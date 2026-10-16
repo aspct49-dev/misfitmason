@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { AffiliateRevenue, FreeBattles, Partners } from '@/components/Sections';
+import { AffiliateRevenue, Partners } from '@/components/Sections';
 import { formatMoney } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, VIP transfers, and free battles for Lootbox depositors.',
+  description: '100% of affiliate revenue returned to players, $750 in bi-weekly Roobet leaderboard prizes across five paying places, and VIP transfers.',
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $1,250 in bi-weekly leaderboard prizes across Roobet and Lootbox, VIP transfers, and free battles for Lootbox depositors.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $750 in bi-weekly Roobet leaderboard prizes across five paying places, and VIP transfers.', url: '/rewards' },
 };
 
 export default function RewardsPage() {
@@ -20,11 +20,10 @@ export default function RewardsPage() {
           <h1 className="h-page">Rewards</h1>
         </div>
         <p className="lede">
-          Four separate things, funded separately. The boards, the affiliate return and VIP
-          transfers are running now; the free-battle detail is still to be confirmed.
+          Three separate things, funded separately, and all three are running now.
         </p>
 
-        <div className="grid-4" style={{ marginTop: 24 }}>
+        <div className="grid-3" style={{ marginTop: 24 }}>
           <Link className="card card-link" href="/claim">
             <span className="label">Affiliate revenue</span>
             <div className="stat-v accent" style={{ marginTop: 12 }}>
@@ -44,15 +43,6 @@ export default function RewardsPage() {
             </p>
           </Link>
           <div className="card">
-            <span className="label">Free battles</span>
-            <div className="stat-v text" style={{ marginTop: 12 }}>
-              Lootbox
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Entries for depositors registered under the referral link.
-            </p>
-          </div>
-          <div className="card">
             <span className="label">Leaderboard prizes</span>
             <div className="stat-v" style={{ marginTop: 12 }}>
               {formatMoney(TOTAL_PRIZE_POOL)}
@@ -68,7 +58,6 @@ export default function RewardsPage() {
       </section>
 
       <AffiliateRevenue />
-      <FreeBattles />
       <Partners />
     </>
   );

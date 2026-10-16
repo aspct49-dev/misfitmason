@@ -4,7 +4,7 @@
  * learn which casino a row came from.
  */
 
-export type PartnerId = 'roobet' | 'lootbox';
+export type PartnerId = 'roobet';
 
 /** Whether the numbers on screen came from a real API or from fixtures. */
 export type DataSource = 'live' | 'mock';
@@ -114,16 +114,6 @@ export interface VipTransfer {
   isPlaceholder: boolean;
 }
 
-export interface FreeBattleProgram {
-  partnerId: PartnerId;
-  /** PLACEHOLDER until the client supplies the real rules. */
-  headline: string;
-  requirement: string;
-  reward: string;
-  cadence: string;
-  isPlaceholder: boolean;
-}
-
 /** What every partner integration implements. Adding a casino = adding one of these. */
 export interface LeaderboardProvider {
   readonly partnerId: PartnerId;
@@ -138,9 +128,9 @@ export interface Period {
 /**
  * How a partner's periods are cut.
  *
- * Two shapes because the two boards answer to different things: Lootbox has run
- * half-months since it opened and players know those dates, while Roobet starts
- * on a date the client picked and runs a true fortnight from it.
+ * Two shapes because a board's periods are not always calendar-shaped: Roobet
+ * starts on a date the client picked and runs a true fortnight from it, while
+ * half-months are what a board pinned to the 1st and the 16th wants.
  */
 export type Schedule =
   | { kind: 'half-month' }
