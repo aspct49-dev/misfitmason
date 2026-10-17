@@ -91,6 +91,38 @@ bearer auth with the JWT. Two things the code depends on:
 The Roobet board is **$750 per period, paid $300 / $200 / $125 / $75 / $50** to
 the top five.
 
+### Period-close announcements
+
+When a period ends, `/api/cron/period-close` posts the final table into the same
+Discord channel as the claims. Run by Vercel Cron (`vercel.json`), guarded by
+`CRON_SECRET` — Vercel sends it as a bearer token automatically once the
+variable is set, and the route refuses outright when it is unset rather than
+leaving a public endpoint that posts to Discord.
+
+**Why two daily schedules and a window, rather than one cron at the close.**
+There is no database, so nothing can record "already announced". The guard is
+time instead: a run only posts within an hour of a close, and the two schedules
+(12:30 and 13:30 UTC) are placed so exactly one of them falls in that window —
+whichever side of the US clock change the board is on, since 8am Eastern is
+12:00 UTC in summer and 13:00 UTC in winter. The half-hour delay is deliberate:
+Roobet's figures update hourly, and announcing off a stale read is worse than
+announcing late.
+
+The route refuses to invent a period: before the first boundary there is no
+previous period, and `periodFor` answers that case with the first period
+itself, so `closedPeriod` returns null rather than announcing the period that is
+still running as its own final standings.
+
+Query parameters, all requiring the secret:
+
+- `dry=1` builds the message and returns it without posting.
+- `at=<ISO>` pretends it is another time — **dry runs only**, so a preview
+  cannot announce the wrong period.
+- `force=1` posts outside the window, for a run that was missed.
+
+Usernames are wrapped in inline code: masked names begin with asterisks, which
+Discord otherwise reads as bold markers and swallows the rest of the line.
+
 ### Affiliate-revenue claims
 
 Its own page at `/claim`. Sign in with Discord, then `POST /api/claim` with a

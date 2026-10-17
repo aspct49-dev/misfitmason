@@ -240,7 +240,13 @@
 
 /* -------------------------------------------------------------- partner cards */
 
+/* Two columns when there are two partners; one partner gets a centred card of
+   its own rather than a half-width card hugging the left edge. */
 .offer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.offer-grid:has(.offer:only-child) {
+  grid-template-columns: minmax(0, 520px);
+  justify-content: center;
+}
 
 .offer {
   display: flex;
