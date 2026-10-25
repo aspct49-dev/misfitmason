@@ -5,6 +5,7 @@ import '../globals.css';
 import '../ported.css';
 import '../tournaments.css';
 import './overlay.css';
+import './overlay-brand.css';
 
 /**
  * The root layout for stream overlays.

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FaCrown, FaRegClock, FaTicketAlt } from 'react-icons/fa';
 
 import { SPIN_MS, type RaffleOverlay as State } from '@/lib/overlay.shared';
+import { PRIMARY_PARTNER } from '@/lib/partners';
 import { usePoll } from './usePoll';
 
 /**
@@ -137,6 +138,13 @@ export function RaffleOverlay({ demo }: { demo: RaffleDemo | null }) {
           <span className="ovr-avatar">
             {/* eslint-disable-next-line @next/next/no-img-element -- channel mark */}
             <img src="/brand-mark.webp" alt="" />
+            {/* The crown from the leaderboard's first-place banner, pinned to
+                the mascot once someone has won — the same mark means "first"
+                everywhere on the site. */}
+            {p === 'winner' && (
+              // eslint-disable-next-line @next/next/no-img-element -- rank emblem
+              <img className="ovr-emblem" src="/rank-crown.webp" alt="" />
+            )}
           </span>
           <span className="ovr-head">
             <span className="ovr-label">{label}</span>
@@ -169,11 +177,18 @@ export function RaffleOverlay({ demo }: { demo: RaffleDemo | null }) {
               </>
             )}
           </span>
-          {p === 'winner' && ago && (
-            <span className="ovr-badge">
-              <FaRegClock aria-hidden /> {ago}
+          <span className="ovr-tags">
+            {p === 'winner' && ago && (
+              <span className="ovr-badge">
+                <FaRegClock aria-hidden /> {ago}
+              </span>
+            )}
+            {/* Every raffle is an ad for the code: the people watching are the
+                people who could be playing under it. */}
+            <span className="ovr-code">
+              Code <b>{PRIMARY_PARTNER.code}</b>
             </span>
-          )}
+          </span>
         </div>
       </div>
     </div>

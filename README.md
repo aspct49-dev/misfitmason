@@ -156,8 +156,24 @@ palette (`ported.css` maps Fugroo's token names onto ours; overlays are
 crimson-led). Overlays live in their own root layout, `src/app/(overlay)`, so
 an OBS browser source gets a transparent page with no sidebar:
 
-- `/overlay/tournament` — the live bracket.
+- `/overlay/tournament` — the live bracket; `?view=stage` for the single-round
+  panel that ends on the champion.
 - `/overlay/raffle` — the raffle card and winner.
+
+Every state can be previewed without live data, for positioning a source in
+OBS: `/overlay/raffle?demo=open|drawing|winner` and
+`/overlay/tournament?demo=1` (add `&view=stage`).
+
+**The skin is `overlay-brand.css`**, loaded after the ported `overlay.css`.
+That split is deliberate: `overlay.css` owns layout, sizing units and timing;
+the brand file owns only the look, so a sizing fix and a brand change never
+touch the same lines. What it carries over from the site: flat surfaces with
+the contour texture, depth from a solid lip rather than glow (DESIGN_LOCK rules
+glow out), mono labels, crimson for everything that matters and cyan only for
+"live". The ported animations kept their timing but now move the lip instead of
+a halo — the winner reveal presses the card down and springs it back, like the
+site's buttons. The mascot, the leaderboard's crown emblem and the chalice mark
+the winner and champion, and every overlay carries the code.
 
 The raffle picker reads Kick chat **from the admin's browser** (Kick's Pusher
 socket), so entries only collect while that tab is open. The server looks the

@@ -1,0 +1,441 @@
+/* ===========================================================================
+   Misfit Mason skin for the stream overlays.
+
+   overlay.css (ported from Fugroo) owns the layout, the sizing units and the
+   animation — the raffle in vw, designed at 500px wide where 1vw is 5px, and
+   the tournament in --u. This file only changes how it looks, so the two can
+   be read separately: a sizing fix goes there, a brand change goes here.
+
+   The site's language, carried onto stream:
+   - Flat surfaces with the crimson contour texture, never glow. DESIGN_LOCK
+     rules out glow shadows; depth comes from a solid lip under the card, the
+     same treatment as the site's chunky buttons.
+   - Labels in the mono, set small and tracked. Names in the sans at 700.
+   - Crimson for everything that matters. The cyan only means "live", exactly
+     as it does on the site's Kick chip.
+   =========================================================================== */
+
+.ov-body {
+  --ov-surface: #0e1622;
+  --ov-surface-2: #141f2e;
+  --ov-border: #2a3c52;
+  --ov-lip: #04080d;
+  --ov-crimson: #e31b45;
+  --ov-crimson-lip: #8e0f2b;
+  --ov-crimson-quiet: rgba(227, 27, 69, 0.12);
+  --ov-live: #3cf0f0;
+  /* The textured fill: the contour artwork under a near-opaque wash of the
+     surface, so it reads as material rather than pattern. */
+  --ov-fill:
+    linear-gradient(rgba(14, 22, 34, 0.9), rgba(14, 22, 34, 0.9)),
+    url('/texture.webp') center / cover no-repeat,
+    #0e1622;
+}
+
+/* ======================================================================= raffle */
+
+.ov-body .ovr-card {
+  background: var(--ov-fill);
+  border: 1px solid var(--ov-border);
+  border-radius: 3.6vw;
+  box-shadow:
+    0 1.4vw 0 var(--ov-lip),
+    0 4vw 7vw rgba(0, 0, 0, 0.45);
+}
+.ov-body .ovr[data-phase='drawing'] .ovr-card { border-color: rgba(227, 27, 69, 0.5); }
+.ov-body .ovr[data-phase='winner'] .ovr-card {
+  border-color: var(--ov-crimson);
+  box-shadow:
+    0 1.4vw 0 var(--ov-crimson-lip),
+    0 4vw 7vw rgba(0, 0, 0, 0.45);
+}
+
+/* The mascot in a flat crimson ring, with the crown pinned on a win. */
+.ov-body .ovr-avatar {
+  position: relative;
+  background: var(--ov-crimson);
+  box-shadow: 0 0.8vw 0 var(--ov-crimson-lip);
+}
+.ov-body .ovr-emblem {
+  position: absolute;
+  right: -2.2vw;
+  bottom: -1.8vw;
+  width: 7.6vw;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  filter: drop-shadow(0 0.6vw 0 var(--ov-lip));
+}
+
+.ov-body .ovr-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #93a7bd;
+}
+/* Only the headline label takes the phase colour; the small label beside the
+   entries or keyword stays quiet, or the card has two competing headlines. */
+.ov-body .ovr[data-phase='winner'] .ovr-head .ovr-label { color: var(--ov-crimson); }
+.ov-body .ovr[data-phase='open'] .ovr-head .ovr-label { color: var(--ov-live); }
+.ov-body .ovr[data-phase='open'] .ovr-field .ovr-label,
+.ov-body .ovr[data-phase='winner'] .ovr-field .ovr-label { color: #93a7bd; }
+
+/* Names: white, heavy, no gradient fill and no glow. */
+.ov-body .ovr-name {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: #f2f6fa;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-shadow: 0 0.4vw 0 rgba(0, 0, 0, 0.35);
+}
+.ov-body .ovr[data-phase='winner'] .ovr-name-box { filter: none; }
+.ov-body .ovr-name-cta em {
+  color: var(--ov-crimson);
+  -webkit-text-fill-color: var(--ov-crimson);
+  font-family: var(--font-mono);
+  font-style: normal;
+}
+.ov-body .ovr-name-reel { color: #93a7bd; }
+
+/* Chips, in the site's mono-on-surface style. */
+.ov-body .ovr-badge {
+  background: var(--ov-surface-2);
+  border: 1px solid var(--ov-border);
+  color: #f2f6fa;
+  font-family: var(--font-mono);
+  box-shadow: 0 0.6vw 0 var(--ov-lip);
+}
+.ov-body .ovr-badge-live {
+  color: var(--ov-live);
+  border-color: rgba(60, 240, 240, 0.45);
+}
+
+.ov-body .ovr-dot {
+  background: var(--ov-live);
+  box-shadow: none;
+}
+
+/* The left rule beside the entries/keyword field: a crimson bar, flat. */
+.ov-body .ovr-field {
+  border-left-color: var(--ov-crimson);
+}
+.ov-body .ovr-field .ovr-label { color: #93a7bd; }
+.ov-body .ovr-field strong { color: #f2f6fa; font-family: var(--font-sans); }
+.ov-body .ovr-count { font-family: var(--font-mono); }
+
+.ov-body .ovr-tags {
+  display: flex;
+  align-items: center;
+  gap: 1.6vw;
+  margin-left: auto;
+}
+
+/* The code, set like the site's copy-code chip: the ad the overlay carries. */
+.ov-body .ovr-code {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1.2vw;
+  padding: 1.4vw 2.4vw;
+  border-radius: 2.4vw;
+  background: var(--ov-crimson);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font-mono);
+  font-size: 2.2vw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 0.8vw 0 var(--ov-crimson-lip);
+  white-space: nowrap;
+}
+.ov-body .ovr-code b {
+  color: #fff;
+  font-size: 2.8vw;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* =================================================================== tournament */
+
+.ov-body .ovt-head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 1.2);
+  background: var(--ov-fill);
+  border: 1px solid var(--ov-border);
+  box-shadow:
+    0 calc(var(--u) * 0.5) 0 var(--ov-lip),
+    0 calc(var(--u) * 1.4) calc(var(--u) * 2.4) rgba(0, 0, 0, 0.4);
+}
+.ov-body .ovt-mark {
+  flex: none;
+  width: calc(var(--u) * 4.2);
+  height: calc(var(--u) * 4.2);
+  border-radius: 50%;
+  background: var(--ov-crimson);
+  box-shadow: 0 calc(var(--u) * 0.3) 0 var(--ov-crimson-lip);
+  object-fit: cover;
+}
+.ov-body .ovt-title { flex: 1; min-width: 0; }
+.ov-body .ovt-eyebrow {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  color: #93a7bd;
+}
+
+/* The stage panel is 420px wide: the mark comes down, and the channel name
+   goes — the mascot beside it already says whose tournament it is, and the
+   name it was crowding out is the one thing the panel has to show. */
+.ov-body .ovt[data-view='stage'] .ovt-mark {
+  width: calc(var(--u) * 2.6);
+  height: calc(var(--u) * 2.6);
+}
+.ov-body .ovt[data-view='stage'] .ovt-brand { display: none; }
+.ov-body .ovt[data-view='stage'] .ovt-head { gap: calc(var(--u) * 0.7); }
+.ov-body .ovt-eyebrow b { color: var(--ov-crimson); }
+.ov-body .ovt-name { font-family: var(--font-sans); font-weight: 700; color: #f2f6fa; }
+
+.ov-body .ovt-stage-label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--ov-live);
+}
+.ov-body .ovt-stage-label::before { background: var(--ov-live); box-shadow: none; }
+.ov-body .ovt-stage[data-done] .ovt-stage-label { color: #93a7bd; }
+.ov-body .ovt-stage[data-done] .ovt-stage-label::before { background: var(--ov-crimson); }
+.ov-body .ovt-stage strong {
+  background: none;
+  -webkit-text-fill-color: var(--ov-crimson);
+  color: var(--ov-crimson);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-shadow: none;
+}
+
+/* The stage rail: the site's tabs. Done is quiet, now is a primary button
+   with its lip, next is an outline. */
+.ov-body .ovt-rail li {
+  background: var(--ov-surface);
+  border: 1px solid var(--ov-border);
+  color: #7b90a8;
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  box-shadow: 0 calc(var(--u) * 0.3) 0 var(--ov-lip);
+}
+.ov-body .ovt-rail li[data-state='done'] { color: #93a7bd; background: var(--ov-surface-2); }
+.ov-body .ovt-rail li[data-state='now'] {
+  background: var(--ov-crimson);
+  border-color: var(--ov-crimson);
+  color: #fff;
+  box-shadow: 0 calc(var(--u) * 0.35) 0 var(--ov-crimson-lip);
+}
+
+/* Stage view matches. */
+.ov-body .ovt-match {
+  background: var(--ov-surface);
+  border: 1px solid var(--ov-border);
+  box-shadow: 0 calc(var(--u) * 0.35) 0 var(--ov-lip);
+}
+.ov-body .ovt-match[data-live] {
+  border-color: var(--ov-crimson);
+  box-shadow: 0 calc(var(--u) * 0.35) 0 var(--ov-crimson-lip);
+}
+.ov-body .ovt-live {
+  background: var(--ov-crimson);
+  color: #fff;
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  box-shadow: 0 calc(var(--u) * 0.2) 0 var(--ov-crimson-lip);
+}
+
+/* Winner: a crimson rail down the left and a quiet crimson wash, like first
+   place in the standings table. Loser: dimmed, not hidden. */
+.ov-body .ovt-row[data-winner] {
+  background: var(--ov-crimson-quiet);
+  box-shadow: inset calc(var(--u) * 0.3) 0 0 var(--ov-crimson);
+}
+.ov-body .ovt-row[data-winner] .ovt-who b,
+.ov-body .ovt-row[data-winner] .ovt-mult { color: #f2f6fa; }
+.ov-body .ovt-row[data-winner] .ovt-mult { color: var(--ov-crimson); }
+.ov-body .ovt-who b { font-family: var(--font-sans); font-weight: 700; color: #f2f6fa; }
+.ov-body .ovt-who span { color: #7b90a8; }
+.ov-body .ovt-mult { font-family: var(--font-mono); font-weight: 700; color: #93a7bd; }
+.ov-body .ovt-seed {
+  background: var(--ov-surface-2);
+  border-color: var(--ov-border);
+  color: #93a7bd;
+  font-family: var(--font-mono);
+}
+
+/* Champion: the chalice behind, the crown in the label, the prize as a
+   crimson chip with its lip. */
+.ov-body .ovt-champ {
+  position: relative;
+  overflow: hidden;
+  background: var(--ov-fill);
+  border: 1px solid var(--ov-crimson);
+  box-shadow: 0 calc(var(--u) * 0.5) 0 var(--ov-crimson-lip);
+}
+.ov-body .ovt-champ-art {
+  position: absolute;
+  right: calc(var(--u) * -1.5);
+  bottom: calc(var(--u) * -2);
+  width: calc(var(--u) * 16);
+  height: auto;
+  opacity: 0.32;
+  pointer-events: none;
+}
+.ov-body .ovt-champ-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 0.6);
+  color: var(--ov-crimson);
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+}
+.ov-body .ovt-champ-crown {
+  width: calc(var(--u) * 2.6);
+  height: auto;
+}
+.ov-body .ovt-champ-body { position: relative; }
+.ov-body .ovt-champ-body strong { font-family: var(--font-sans); font-weight: 700; color: #f2f6fa; }
+.ov-body .ovt-champ-prize {
+  position: relative;
+  background: var(--ov-crimson);
+  color: #fff;
+  font-family: var(--font-mono);
+  box-shadow: 0 calc(var(--u) * 0.35) 0 var(--ov-crimson-lip);
+}
+
+/* The code line under the stage panel. */
+/* Sized off the panel's own type: a little under the player names. */
+.ov-body .ovt-code {
+  margin: 0;
+  padding: calc(var(--u) * 0.55) calc(var(--u) * 0.8);
+  border: 1px solid var(--ov-border);
+  border-radius: calc(var(--u) * 0.6);
+  background: var(--ov-surface);
+  color: #93a7bd;
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 0.5);
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 calc(var(--u) * 0.2) 0 var(--ov-lip);
+}
+.ov-body .ovt-code b {
+  color: var(--ov-crimson);
+  font-size: calc(var(--u) * 0.68);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* Bracket view: the site's bracket cards, flat with a lip instead of a glow. */
+.ov-body .ovt .bkt-card,
+.ov-body .ovt .bkt-champ {
+  background: var(--ov-surface);
+  border-color: var(--ov-border);
+  box-shadow: 0 5px 0 var(--ov-lip);
+}
+.ov-body .ovt .bkt-card[data-live] {
+  border-color: var(--ov-crimson);
+  box-shadow: 0 5px 0 var(--ov-crimson-lip);
+}
+.ov-body .ovt .bkt-round {
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+.ov-body .ovt .bkt-round[data-current] { color: var(--ov-crimson); }
+
+/* ===================================================================== motion
+
+   overlay.css animates glows: the card charges with a halo while drawing,
+   flashes one on the winner, and the live match throbs with one. The motion
+   carries meaning, so it stays — what moves is the lip, the way the site's
+   buttons move, with no blur anywhere. Specificity is matched one level up so
+   these win over the originals regardless of load order. */
+
+/* Drawing: the lip pulses between black and crimson. */
+.ov-body .ovr[data-phase='drawing'] .ovr-card {
+  animation-name: mm-charge;
+}
+@keyframes mm-charge {
+  from { box-shadow: 0 1.4vw 0 var(--ov-lip), 0 4vw 7vw rgba(0, 0, 0, 0.45); }
+  to { box-shadow: 0 1.4vw 0 var(--ov-crimson-lip), 0 4vw 7vw rgba(0, 0, 0, 0.45); }
+}
+
+/* Winner: the card is pressed into its lip and springs back — a button being
+   hit, which is the one gesture the whole site is built around. */
+.ov-body .ovr[data-phase='winner'] .ovr-card {
+  animation-name: mm-land;
+}
+@keyframes mm-land {
+  0% {
+    transform: translateY(1.4vw);
+    box-shadow: 0 0 0 var(--ov-crimson-lip), 0 2vw 4vw rgba(0, 0, 0, 0.45);
+  }
+  45% {
+    transform: translateY(-0.5vw);
+    box-shadow: 0 1.9vw 0 var(--ov-crimson-lip), 0 4vw 7vw rgba(0, 0, 0, 0.45);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 1.4vw 0 var(--ov-crimson-lip), 0 4vw 7vw rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* The live dots keep their ring, in the live cyan the site uses for "live". */
+.ov-body .ovr-dot { animation-name: mm-ring-vw; }
+@keyframes mm-ring-vw {
+  0% { box-shadow: 0 0 0 0 rgba(60, 240, 240, 0.6); }
+  100% { box-shadow: 0 0 0 2vw rgba(60, 240, 240, 0); }
+}
+.ov-body .ovt-stage-label::before { animation-name: mm-ring-u; }
+@keyframes mm-ring-u {
+  0% { box-shadow: 0 0 0 0 rgba(60, 240, 240, 0.6); }
+  100% { box-shadow: 0 0 0 calc(var(--u) * 0.45) rgba(60, 240, 240, 0); }
+}
+
+/* The live match, in both views: its lip pulses crimson instead of a halo. */
+.ov-body .ovt-match[data-live],
+.ov-body .ovt .bkt-card[data-live] {
+  animation-name: mm-live;
+}
+@keyframes mm-live {
+  from { box-shadow: 0 5px 0 var(--ov-crimson-lip); }
+  to { box-shadow: 0 5px 0 #c3163b; }
+}
+
+/* In the 420px stage panel the tab rail directly beneath already names the
+   stage, so the header's copy of it comes down a size — enough for the prize
+   in the eyebrow to stop being cut to "$…". */
+.ov-body .ovt[data-view='stage'] .ovt-stage strong { font-size: calc(var(--u) * 0.9); }
+
+/* The champion's prize as a proper chip — the site's rounded, lipped shape
+   rather than a bare crimson block. */
+.ov-body .ovt-champ-prize {
+  display: inline-block;
+  padding: calc(var(--u) * 0.35) calc(var(--u) * 1);
+  border-radius: calc(var(--u) * 0.7);
+  line-height: 1.15;
+}
+
+/* A slot picked by hand has no artwork, and falls back to its initial. At
+   champion size that letter needs centring, or it sits in the corner of an
+   empty box and reads as a broken image. */
+.ov-body .ovt-champ-body .slotp-art {
+  display: grid;
+  place-items: center;
+  background: var(--ov-surface-2);
+  border: 1px solid var(--ov-border);
+  color: #93a7bd;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}

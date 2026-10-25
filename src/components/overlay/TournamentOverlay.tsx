@@ -1,12 +1,12 @@
 'use client';
 
 import { useLayoutEffect, useRef, useState } from 'react';
-import { FaCrown } from 'react-icons/fa';
 
 import { buildBracket, advanceWinner, matchesInRound, type Match, type Player } from '@/lib/bracket';
 import type { TournamentOverlay as State } from '@/lib/overlay.shared';
 import { Bracket } from '../Bracket';
 import { SlotThumb } from '../SlotPicker';
+import { PRIMARY_PARTNER } from '@/lib/partners';
 import { usePoll } from './usePoll';
 
 /**
@@ -35,9 +35,11 @@ export function TournamentOverlay({ view, demo }: { view: TournamentView; demo: 
   const head = (
     <>
       <header className="ovt-head">
+        {/* eslint-disable-next-line @next/next/no-img-element -- channel mark */}
+        <img className="ovt-mark" src="/brand-mark.webp" alt="" />
         <span className="ovt-title">
           <span className="ovt-eyebrow">
-            Tournament{t.prize && <> · <b>{t.prize}</b></>}
+            <span className="ovt-brand">Misfit Mason · </span>Tournament{t.prize && <> · <b>{t.prize}</b></>}
           </span>
           <span className="ovt-name">{t.name}</span>
         </span>
@@ -100,6 +102,9 @@ export function TournamentOverlay({ view, demo }: { view: TournamentView; demo: 
               ))}
             </ul>
           )}
+          <p className="ovt-code">
+            Play under code <b>{PRIMARY_PARTNER.code}</b> on {PRIMARY_PARTNER.name}
+          </p>
         </div>
       </Fit>
     </div>
@@ -142,8 +147,13 @@ function StageMatch({ match, live }: { match: Match; live: boolean }) {
 function Champion({ player, prize }: { player: Player; prize: string }) {
   return (
     <div className="ovt-champ">
+      {/* The leaderboard's chalice and crown: the same two marks the site uses
+          for first place, so a champion here reads like a winner there. */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- prize art */}
+      <img className="ovt-champ-art" src="/prize-chalice.webp" alt="" />
       <span className="ovt-champ-label">
-        <FaCrown aria-hidden /> Champion
+        {/* eslint-disable-next-line @next/next/no-img-element -- rank emblem */}
+        <img className="ovt-champ-crown" src="/rank-crown.webp" alt="" /> Champion
       </span>
       <div className="ovt-champ-body">
         {player.slot && <SlotThumb name={player.slot} img={player.slotImg} />}
