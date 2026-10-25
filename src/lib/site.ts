@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { SOCIALS } from './partners';
 
 /**
@@ -38,6 +40,9 @@ export const ROUTES = [
   { path: '/leaderboards', priority: 0.9, changeFrequency: 'hourly' as const },
   { path: '/rewards', priority: 0.7, changeFrequency: 'weekly' as const },
   { path: '/challenges', priority: 0.8, changeFrequency: 'weekly' as const },
+  { path: '/vip-rewards', priority: 0.8, changeFrequency: 'weekly' as const },
+  { path: '/tournaments', priority: 0.7, changeFrequency: 'daily' as const },
+  { path: '/guess-the-balance', priority: 0.7, changeFrequency: 'daily' as const },
   { path: '/claim', priority: 0.7, changeFrequency: 'monthly' as const },
   { path: '/vip-transfer', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/how-it-works', priority: 0.6, changeFrequency: 'monthly' as const },
@@ -51,3 +56,26 @@ export const SOCIAL_PROFILES = [
   SOCIALS.tiktok,
   SOCIALS.x,
 ];
+
+/** Pages that exist for signed-in people or admins and have no business in search. */
+export const PRIVATE_PAGE: Metadata = {
+  robots: { index: false, follow: false },
+};
+
+/** Per-page metadata with the canonical and Open Graph fields filled in alike. */
+export function pageMeta({
+  title,
+  description,
+  path,
+}: {
+  title: string;
+  description: string;
+  path: string;
+}): Metadata {
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path },
+  };
+}

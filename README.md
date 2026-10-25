@@ -94,6 +94,85 @@ bearer auth with the JWT. Two things the code depends on:
 The Roobet board is **$750 per period, paid $300 / $200 / $125 / $75 / $50** to
 the top five.
 
+### Live store — Redis required in production
+
+Tournaments, guess the balance, the raffle picker, linked profiles and VIP
+reward claims all keep state in `src/lib/store.ts`, ported from Fugroo. It has
+two backends, picked by the environment:
+
+- **Redis** the moment `KV_REST_API_URL` + `KV_REST_API_TOKEN` (or the
+  `UPSTASH_REDIS_REST_*` pair) are set. **Production needs this.** Add *Upstash
+  for Redis* from the Vercel Marketplace and both variables are created for
+  you; the free tier is far more than this site uses. Keys are prefixed
+  `misfitmason:`.
+- **Files** under `store/` otherwise, which only works in development: Vercel
+  has no writable disk, so without Redis every write throws. The admin panel
+  checks for exactly this and says so at the top of every tool; a player
+  pressing Claim gets "not accepting claims right now" rather than a 500.
+
+Not a concurrent database: two admins saving the same bracket in the same
+second can lose one edit. For one person running an event that is fine.
+
+### Admin panel
+
+`/admin`, gated on `ADMIN_DISCORD_IDS` (comma-separated Discord account ids —
+ids, never handles, since a handle can be released and claimed by someone
+else). Unset means nobody gets in. Every tool and every server action re-checks
+the session; the nav is a courtesy, not a control. Admins reach it from their
+Profile page — the sidebar deliberately does not read the session, because
+doing that in the root layout would make every page dynamic and lose the
+leaderboard's cache.
+
+Tools: overview · raffle picker · guess the balance · tournaments · VIP rewards
+(mark claims paid) · linked accounts · stream overlays (OBS URLs).
+
+### VIP rewards
+
+`/vip-rewards`. Four monthly levels — $10k → $25, $25k → $50, $50k → $75,
+$75k → $100 — that **stack**, each claimable once per month. Configured in
+`VIP_REWARDS` (`src/lib/vip-rewards.ts`):
+
+- **Weighted wager**, like the leaderboard. On the raw stake, dice at a 1% edge
+  clears $75k for about $750 of expected loss and collects $250. `metric` is
+  one line to change if that is ever wanted.
+- **Calendar month in Eastern time**, the leaderboard's zone.
+- A claim is re-checked against Roobet's own figure on the server, filed to the
+  store, then posted to the claims webhook. One claim per Discord account *and*
+  per Roobet account per level per month.
+
+Claiming needs a linked Roobet account (`/profile`). Linking checks the name
+against the affiliate roster and stores Roobet's own spelling — the Fugroo
+original documented this check but never actually made it.
+
+### Tournaments, guess the balance, raffle picker, overlays
+
+Ported from Fugroo with the same behaviour, onto this site's session and
+palette (`ported.css` maps Fugroo's token names onto ours; overlays are
+crimson-led). Overlays live in their own root layout, `src/app/(overlay)`, so
+an OBS browser source gets a transparent page with no sidebar:
+
+- `/overlay/tournament` — the live bracket.
+- `/overlay/raffle` — the raffle card and winner.
+
+The raffle picker reads Kick chat **from the admin's browser** (Kick's Pusher
+socket), so entries only collect while that tab is open. The server looks the
+channel up on Kick (`KICK_CHANNEL`, default `misfitmason`). **Kick's firewall
+blocks a spoofed Chrome user-agent from a server** — the Fugroo original sent
+one and the lookup came back 403, which the panel reported as "no chatroom".
+`kick.ts` now sends an honest `MisfitMasonSite/1.0` UA, verified against both
+Kick calls. Fugroo has the same bug.
+
+Kick account linking (for the "under code" raffle gate) is optional and needs a
+Kick developer app: `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET`, redirect
+`https://www.misfitmason.com/api/kick/callback`.
+
+### Sign-in returns you where you were
+
+`/api/auth/discord/login?next=/path` carries the destination through the
+signed OAuth state cookie. `safeNext()` honours same-site paths only —
+`//host`, `/\host`, absolute URLs and control characters fall back to `/claim`,
+so the Discord consent screen cannot be used as an open redirect.
+
 ### Period-close announcements
 
 When a period ends, `/api/cron/period-close` posts the final table into the same

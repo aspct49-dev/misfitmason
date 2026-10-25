@@ -9,6 +9,7 @@ import {
   discordCredentials,
   readPayload,
   redirectUri,
+  safeNext,
   signPayload,
   type SessionUser,
 } from '@/lib/session';
@@ -25,9 +26,10 @@ export const dynamic = 'force-dynamic';
 
 const UA = 'MisfitMasonClaims/1.0 (+https://misfitmason.com)';
 
-function back(request: Request, error?: string) {
-  const url = new URL(error ? `/claim?login=${error}` : '/claim', request.url);
-  return NextResponse.redirect(url);
+function back(request: Request, error?: string, next = '/claim') {
+  const target = new URL(safeNext(next), request.url);
+  if (error) target.searchParams.set('login', error);
+  return NextResponse.redirect(target);
 }
 
 export async function GET(request: Request) {
@@ -42,7 +44,7 @@ export async function GET(request: Request) {
   if (!code || !state) return back(request, 'no_code');
 
   const jar = await cookies();
-  const expected = readPayload<{ state: string }>(jar.get(OAUTH_STATE_COOKIE)?.value);
+  const expected = readPayload<{ state: string; next?: string }>(jar.get(OAUTH_STATE_COOKIE)?.value);
   if (!expected || expected.state !== state) return back(request, 'bad_state');
 
   let user: SessionUser;
@@ -94,7 +96,7 @@ export async function GET(request: Request) {
     return back(request, 'auth_failed');
   }
 
-  const response = back(request);
+  const response = back(request, undefined, expected.next);
   response.cookies.set(
     SESSION_COOKIE,
     signPayload(user, SESSION_TTL_SECONDS),

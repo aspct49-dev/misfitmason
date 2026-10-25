@@ -30,3 +30,7 @@ Thumbs.db
 
 # Local leaderboard snapshots — player data, not for the public repo.
 /data/
+
+# Live local state for the JSON store (tournaments, guesses, profiles…).
+# Production uses Redis; these files only exist in development.
+/store/

@@ -116,13 +116,26 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PAGES
 
-Home · Leaderboards · **Challenges** · Rewards · **Claim** · **VIP transfer** ·
-How it works · Legal.
+Grouped in the sidebar: **Home · Leaderboards · VIP rewards · Challenges** ·
+*Events:* Tournaments · Guess the balance · *Rewards:* Overview · Claim · VIP
+transfer · How it works · Profile. Plus `/admin` (admins only, via Profile) and
+`/overlay/*` (OBS, own root layout, transparent).
 
 Claim and VIP transfer are pages, not sections: both are linked to directly
 from streams and the Discord, and both are something a player arrives at with
 intent. `/rewards` is the overview that explains what exists and points at
 them.
+
+---
+
+## PORTED FEATURES
+
+Tournaments, guess the balance, the raffle picker, overlays and the admin panel
+come from the Fugroo build. Their stylesheets stay close to the originals;
+`ported.css` points Fugroo's token names (cyan, violet, navy, gold) at this
+site's crimson, live cyan and near-black. **No gold** survives the bridge —
+first place is the accent. Overlays are crimson-led, since on stream the brand
+colour should carry the winner.
 
 ---
 

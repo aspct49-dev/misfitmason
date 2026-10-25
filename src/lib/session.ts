@@ -2,6 +2,8 @@ import 'server-only';
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
+import { cookies } from 'next/headers';
+
 /**
  * Signed cookies, for the Discord sign-in and the claim cooldown.
  *
@@ -98,4 +100,33 @@ export function discordCredentials(): { clientId: string; clientSecret: string }
   const clientSecret = process.env.DISCORD_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret) return null;
   return { clientId, clientSecret };
+}
+
+/**
+ * The signed-in Discord account for this request, or null.
+ *
+ * One reader for every server component and route that needs to know who is
+ * asking, so the cookie name and the signature check live in one place.
+ */
+export async function currentUser(): Promise<SessionUser | null> {
+  const jar = await cookies();
+  const user = readPayload<SessionUser>(jar.get(SESSION_COOKIE)?.value);
+  return user ? { id: user.id, username: user.username, avatarUrl: user.avatarUrl } : null;
+}
+
+/**
+ * Where to send someone after sign-in, if they asked for somewhere.
+ *
+ * Only a same-site path is honoured. A `next` of `//evil.example` or
+ * `https://evil.example` is an open redirect — the Discord consent screen
+ * would lend our name to a link that ends somewhere else — so anything that is
+ * not a plain path starting with a single slash falls back to the default.
+ */
+export function safeNext(value: string | null | undefined, fallback = '/claim'): string {
+  if (!value) return fallback;
+  // `/\` is treated as `//` by some browsers, so it is refused alongside it.
+  if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return fallback;
+  // Control characters (tabs, newlines) can be used to smuggle a second URL.
+  if (/[\u0000-\u001f]/.test(value)) return fallback;
+  return value;
 }

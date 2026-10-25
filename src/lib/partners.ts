@@ -68,6 +68,9 @@ export function scheduleLine(partner: Partner): string {
   return 'runs twice a month — the 1st to the 15th, and the 16th to the last day — each opening and closing at 00:00 UTC';
 }
 
+/** The headline partner. Single-partner today; the registry keeps it swappable. */
+export const PRIMARY_PARTNER = PARTNERS.roobet;
+
 /** Column and caption label for the figure a board ranks on. */
 export function wagerLabel(partner: Partner): string {
   return partner.weighted ? 'Weighted' : 'Wagered';

@@ -8,6 +8,7 @@ import {
   cookieOptions,
   discordCredentials,
   redirectUri,
+  safeNext,
   signPayload,
 } from '@/lib/session';
 
@@ -31,6 +32,9 @@ export async function GET(request: Request) {
   }
 
   const state = randomBytes(16).toString('base64url');
+  // Carried in the signed state cookie, not the URL Discord sees, so it cannot
+  // be swapped on the way back.
+  const next = safeNext(new URL(request.url).searchParams.get('next'));
   const authorize = new URL('https://discord.com/oauth2/authorize');
   authorize.searchParams.set('client_id', credentials.clientId);
   authorize.searchParams.set('redirect_uri', redirectUri(request));
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
   const response = NextResponse.redirect(authorize);
   response.cookies.set(
     OAUTH_STATE_COOKIE,
-    signPayload({ state }, OAUTH_STATE_TTL_SECONDS),
+    signPayload({ state, next }, OAUTH_STATE_TTL_SECONDS),
     cookieOptions(OAUTH_STATE_TTL_SECONDS),
   );
   return response;

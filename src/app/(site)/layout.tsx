@@ -1,28 +1,16 @@
 import type { Metadata } from 'next';
-import { DM_Sans, JetBrains_Mono } from 'next/font/google';
 
 import { Shell } from '@/components/Shell';
+import { FONT_VARIABLES } from '@/lib/fonts';
 import { SiteFooter } from '@/components/SiteFooter';
 import { TOTAL_PRIZE_POOL } from '@/lib/partners';
 import { SITE, SOCIAL_PROFILES } from '@/lib/site';
-import './globals.css';
-import './home.css';
-import './leaderboard.css';
-
-/* One sans for everything, one mono for every number and label. Two families is
-   the whole type system — display faces were what made the first pass shout. */
-const sans = DM_Sans({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-});
-const mono = JetBrains_Mono({
-  weight: ['400', '500', '700'],
-  subsets: ['latin'],
-  variable: '--font-mono-stack',
-  display: 'swap',
-});
+import '../globals.css';
+import '../home.css';
+import '../leaderboard.css';
+import '../ported.css';
+import '../tournaments.css';
+import '../hunts.css';
 
 export const metadata: Metadata = {
   // Absolute origin for canonicals, Open Graph and the sitemap.
@@ -94,7 +82,7 @@ function structuredData() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={FONT_VARIABLES}>
       <body>
         <script
           type="application/ld+json"

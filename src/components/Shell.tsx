@@ -16,14 +16,46 @@ import { SOCIAL_LINKS } from './socials';
  * than the feature it advertises.
  */
 
-const NAV = [
-  { href: '/', label: 'Home' },
-  { href: '/leaderboards', label: 'Leaderboards', showPot: true },
-  { href: '/challenges', label: 'Challenges' },
-  { href: '/rewards', label: 'Rewards' },
-  { href: '/claim', label: 'Claim' },
-  { href: '/vip-transfer', label: 'VIP transfer' },
-  { href: '/how-it-works', label: 'How it works' },
+type NavItem = { href: string; label: string; showPot?: boolean };
+
+/*
+ * Grouped, because ten destinations in one column stop being scannable. The
+ * groups answer "what am I here to do": compete, join an event, collect, or
+ * read up. Section labels only where a group has more than one kind of thing.
+ */
+const NAV: Array<{ label?: string; items: NavItem[] }> = [
+  {
+    items: [
+      { href: '/', label: 'Home' },
+      { href: '/leaderboards', label: 'Leaderboards', showPot: true },
+      { href: '/vip-rewards', label: 'VIP rewards' },
+      { href: '/challenges', label: 'Challenges' },
+    ],
+  },
+  {
+    label: 'Events',
+    items: [
+      { href: '/tournaments', label: 'Tournaments' },
+      { href: '/guess-the-balance', label: 'Guess the balance' },
+    ],
+  },
+  {
+    label: 'Rewards',
+    items: [
+      { href: '/rewards', label: 'Overview' },
+      { href: '/claim', label: 'Claim' },
+      { href: '/vip-transfer', label: 'VIP transfer' },
+    ],
+  },
+  {
+    items: [
+      { href: '/how-it-works', label: 'How it works' },
+      // Not session-aware on purpose: reading cookies in the root layout would
+      // make every page dynamic and lose the leaderboard's cache. /profile
+      // sends a signed-out visitor to Discord, and shows admins the panel link.
+      { href: '/profile', label: 'Profile' },
+    ],
+  },
 ];
 
 export function Shell({ totalPot, children }: { totalPot: number; children: React.ReactNode }) {
@@ -42,17 +74,22 @@ export function Shell({ totalPot, children }: { totalPot: number; children: Reac
         </Link>
 
         <nav className="nav">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="nav-item"
-              data-active={pathname === item.href}
-              aria-current={pathname === item.href ? 'page' : undefined}
-            >
-              {item.label}
-              {item.showPot && <span className="nav-badge">{formatMoney(totalPot)}</span>}
-            </Link>
+          {NAV.map((group, i) => (
+            <div className="nav-group" key={group.label ?? `group-${i}`}>
+              {group.label && <span className="nav-label">{group.label}</span>}
+              {group.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="nav-item"
+                  data-active={pathname === item.href}
+                  aria-current={pathname === item.href ? 'page' : undefined}
+                >
+                  {item.label}
+                  {item.showPot && <span className="nav-badge">{formatMoney(totalPot)}</span>}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
 

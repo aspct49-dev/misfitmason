@@ -1,0 +1,53 @@
+/*
+ * Token bridge for the features ported from the Fugroo build — tournaments,
+ * guess the balance, the giveaway picker, the admin panel and the overlays.
+ *
+ * Their stylesheets (tournaments.css, hunts.css, overlay.css) are kept close to
+ * the originals so a fix there can be carried across; what changes is what the
+ * names point at. Fugroo is cyan and violet on navy, with gold for first place.
+ * This site is crimson on near-black and does not use gold anywhere (see
+ * DESIGN_LOCK.md), so every Fugroo name resolves to one of this site's own
+ * tokens, or to a colour derived from them.
+ *
+ * "Cyan" is Fugroo's primary light — it becomes the crimson accent. "Violet"
+ * is its secondary — it becomes the live cyan this site keeps for the Kick
+ * chip and focus rings, which is the one other light on the page.
+ */
+:root {
+  /* Surfaces */
+  --void: var(--bg);
+  --hull: var(--surface);
+  --hull-2: var(--surface-2);
+  --edge: var(--border);
+  --edge-lit: var(--border-strong);
+
+  /* Primary light → crimson accent */
+  --cyan: var(--accent);
+  --cyan-hot: var(--accent-hover);
+  --cyan-deep: #9e1230;
+  --cyan-quiet: var(--accent-quiet);
+
+  /* Secondary light → the live cyan */
+  --violet: var(--live);
+  --violet-hot: #8ff7f7;
+  --violet-quiet: #0a2226;
+
+  /* First place: accent, not gold. */
+  --rank-1: var(--accent);
+  --rank-1-quiet: var(--accent-quiet);
+
+  /* Card hues */
+  --hue-teal: var(--live);
+  --hue-amber: #f2724d;
+  --brand: var(--accent);
+
+  /* Shape and motion */
+  --r-sm: 6px;
+  --r: var(--radius-lg);
+  --r-lg: 14px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fugroo set headings in a narrow display face; this site has no display
+     face by design, so headings stay in the sans at a heavier weight. */
+  --font-display: var(--font-sans);
+}
