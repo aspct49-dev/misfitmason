@@ -290,7 +290,10 @@ submission does not spend someone's allowance.
 
 ### Excluded accounts
 
-`src/lib/staff.ts` holds the usernames that never appear on a board. They are
+`src/lib/staff.ts` holds the usernames that never appear on a board — currently
+one staff member under three aliases: Hooly (Lootbox), Warhooly (Shuffle) and
+Hooly123 (Roobet). They are also left out of VIP rewards, which pay against the
+same wager figures. Being excluded is not being an admin; that list is separate. They are
 dropped before ranking *and* before the whole-board stats, so staff play does
 not inflate the totals either. Matching is case-insensitive.
 

@@ -10,10 +10,12 @@
  */
 /**
  * One person can appear under different names on different operators, so every
- * alias has to be listed: the same staff member is "Hooly" on Lootbox and
- * "Warhooly" on Shuffle, which the site has carried before.
+ * alias has to be listed: the same staff member is "Hooly" on Lootbox,
+ * "Warhooly" on Shuffle and "Hooly123" on Roobet (confirmed by the client,
+ * 2026-10-25). Excluded from the boards only — being staff is not the same as
+ * running the site, so none of these is an admin.
  */
-const EXCLUDED = ['warhooly', 'hooly'];
+const EXCLUDED = ['warhooly', 'hooly', 'hooly123'];
 
 export function isExcludedPlayer(username: string | null | undefined): boolean {
   if (!username) return false;

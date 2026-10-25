@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { formatMoney, zonedInstant } from './format';
 import { PARTNERS } from './partners';
 import { fetchRoobetRows } from './roobet-stats';
+import { isExcludedPlayer } from './staff';
 import type { SessionUser } from './session';
 import { mutateJson, readJson } from './store';
 
@@ -89,7 +90,9 @@ async function monthWagers(month: Month): Promise<Map<string, number>> {
   const rows = await fetchRoobetRows(month.start, new Date(month.end.getTime() + 1000));
   const wagers = new Map<string, number>();
   for (const row of rows) {
-    if (!row.username) continue;
+    // Staff are left out here as on the leaderboard: a reward paid against the
+    // same wager figures should not reach the people running the board.
+    if (!row.username || isExcludedPlayer(row.username)) continue;
     const figure =
       VIP_REWARDS.metric === 'weighted' ? (row.weightedWagered ?? row.wagered ?? 0) : (row.wagered ?? 0);
     wagers.set(row.username.trim().toLowerCase(), figure);
