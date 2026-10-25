@@ -94,7 +94,7 @@ bearer auth with the JWT. Two things the code depends on:
 The Roobet board is **$750 per period, paid $300 / $200 / $125 / $75 / $50** to
 the top five.
 
-### Live store — Redis required in production
+### Live store — Postgres or Redis required in production
 
 Tournaments, guess the balance, the raffle picker, linked profiles and VIP
 reward claims all keep state in `src/lib/store.ts`, ported from Fugroo. It has
@@ -105,6 +105,11 @@ two backends, picked by the environment:
   for Redis* from the Vercel Marketplace and both variables are created for
   you; the free tier is far more than this site uses. Keys are prefixed
   `misfitmason:`.
+- **Postgres** when `DATABASE_URL` (or `POSTGRES_URL`) is set — **Neon** from
+  the Vercel Marketplace, which has a free plan where the Upstash listing did
+  not. One table, `misfitmason_store (name, body, updated_at)`, created on first
+  use, so connecting the database is the whole setup. Redis wins if both are
+  configured, so adding a second integration never makes existing data vanish.
 - **Files** under `store/` otherwise, which only works in development: Vercel
   has no writable disk, so without Redis every write throws. The admin panel
   checks for exactly this and says so at the top of every tool; a player

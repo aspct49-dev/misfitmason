@@ -60,8 +60,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             The store is not writable, so creating a tournament, opening a guess round or linking a
             Roobet account will fail.{' '}
             {STORE_KIND === 'files'
-              ? 'It is using local files, which works on a VPS and cannot work on a serverless host — there is no writable disk. Connect a KV store (Vercel KV or Upstash) and redeploy; store.ts switches over on its own once KV_REST_API_URL and KV_REST_API_TOKEN are set.'
-              : 'It is configured for KV but the write was refused — check KV_REST_API_URL and KV_REST_API_TOKEN, then redeploy.'}
+              ? 'It is using local files, which cannot work on Vercel — there is no writable disk. Connect Neon (Postgres) or Upstash (Redis) from the Vercel Marketplace and redeploy; the store switches over on its own once DATABASE_URL, or KV_REST_API_URL and KV_REST_API_TOKEN, are set.'
+              : STORE_KIND === 'postgres'
+                ? 'It is configured for Postgres but the write was refused — check DATABASE_URL in Vercel, that the Neon database is not suspended, then redeploy.'
+                : 'It is configured for Redis but the write was refused — check KV_REST_API_URL and KV_REST_API_TOKEN, then redeploy.'}
           </p>
           <p className="admin-note" style={{ marginTop: 10 }}>
             Reading still works, so everything below shows real data. It is saving that will not.

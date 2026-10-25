@@ -1,13 +1,16 @@
 import 'server-only';
 
 import { promises as fs } from 'node:fs';
+
+import { neon } from '@neondatabase/serverless';
 import path from 'node:path';
 
 /**
  * The JSON store the tournaments, guesses, giveaway, profiles and VIP-reward
  * claims all sit on. Ported from the Fugroo build.
  *
- * Two backends, chosen by the environment rather than by a flag:
+ * Three backends, chosen by the environment rather than by a flag (Postgres,
+ * for Neon, is described at `pgBackend`):
  *
  *   **Files** (default) — `data/*.json`, written atomically: serialised to a
  *   temporary file and renamed over the real one, so a crash mid-write leaves
@@ -105,11 +108,68 @@ function kvBackend(cfg: { url: string; token: string }): Backend {
   };
 }
 
+/**
+ * Postgres, for Neon from the Vercel Marketplace.
+ *
+ * The store only ever reads and writes whole named documents, so Postgres
+ * needs nothing more than one table of name → JSON text. That keeps every
+ * feature above this file unchanged whichever backend is underneath.
+ *
+ * Neon's HTTP driver rather than a pooled TCP client: each query is one
+ * request, which is what a serverless function wants — no connection to hold
+ * open between invocations, and nothing to exhaust when traffic spikes.
+ *
+ * The table is created on first use, so connecting the database is the whole
+ * setup: no migration to run, no console to visit.
+ */
+function pgConfig(): string | null {
+  return process.env.DATABASE_URL ?? process.env.POSTGRES_URL ?? null;
+}
+
+function pgBackend(url: string): Backend {
+  const sql = neon(url);
+  let ready: Promise<unknown> | null = null;
+  const ensureTable = () =>
+    (ready ??= sql`
+      CREATE TABLE IF NOT EXISTS misfitmason_store (
+        name       text PRIMARY KEY,
+        body       text NOT NULL,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )
+    `.catch((err) => {
+      // Let the next call try again rather than caching a failure forever.
+      ready = null;
+      throw err;
+    }));
+
+  return {
+    async read(name) {
+      await ensureTable();
+      const rows = (await sql`SELECT body FROM misfitmason_store WHERE name = ${name}`) as {
+        body: string;
+      }[];
+      return rows[0]?.body ?? null;
+    },
+    async write(name, body) {
+      await ensureTable();
+      await sql`
+        INSERT INTO misfitmason_store (name, body, updated_at)
+        VALUES (${name}, ${body}, now())
+        ON CONFLICT (name) DO UPDATE SET body = EXCLUDED.body, updated_at = now()
+      `;
+    },
+  };
+}
+
+/* Redis wins if both are configured — it was here first, and switching an
+   existing deployment's store by adding a second integration would make its
+   data appear to vanish. */
 const cfg = kvConfig();
-const backend: Backend = cfg ? kvBackend(cfg) : fileBackend;
+const pg = cfg ? null : pgConfig();
+const backend: Backend = cfg ? kvBackend(cfg) : pg ? pgBackend(pg) : fileBackend;
 
 /** Which store is in use, for the admin panel to be able to say so. */
-export const STORE_KIND: 'kv' | 'files' = cfg ? 'kv' : 'files';
+export const STORE_KIND: 'kv' | 'postgres' | 'files' = cfg ? 'kv' : pg ? 'postgres' : 'files';
 
 /* ------------------------------------------------------------------- api */
 
