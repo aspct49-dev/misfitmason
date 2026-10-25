@@ -108,6 +108,5 @@ export const SOCIALS = {
   youtube: 'https://youtube.com/@MisfitMason',
   tiktok: 'https://tiktok.com/@MisfitMason',
   x: 'https://x.com/MasonMisfit',
-  /** PLACEHOLDER until the client sends the invite. */
-  discord: 'https://discord.gg/6pDbYYuAW',
+  discord: 'https://discord.gg/Cawf7MQt9K',
 };

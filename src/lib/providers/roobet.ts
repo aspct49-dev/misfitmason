@@ -42,25 +42,26 @@ export function affiliateIdFromToken(token: string): string {
   return json.id as string;
 }
 
-/** Roobet takes plain ISO dates, not full timestamps. */
-function isoDate(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
-
 /**
- * The upper bound to send, which is the day *after* the period ends.
+ * The window to send, as full ISO timestamps.
  *
- * Roobet's window is half-open: `startDate` is inclusive, but `endDate` means
- * "up to 00:00 on this date" and excludes the day itself. Sending the last day
- * of the period would therefore throw away that whole day's wagering —
- * silently, and on the one day that matters most, because the board settles
- * that night.
+ * Roobet honours the time of day, not just the date — verified against the live
+ * API on 2026-10-25: moving the start from 00:00Z to 12:00Z dropped two players,
+ * and moving the end from midnight to noon changed the weighted total by over
+ * $1,200. That matters because the board opens and closes at 8am Eastern, not
+ * at midnight. Sending dates alone (as an earlier version did) counted twelve
+ * hours of pre-launch play and, worse, cut off the final twelve hours of every
+ * period — the last morning, when standings are decided.
  *
- * `period.end` is 23:59:59 on the last day, so a second past it lands at 00:00
- * the next day and `isoDate` rounds to exactly the bound this endpoint wants.
+ * The end is sent as the next period's opening instant, a second past
+ * `period.end`, so the bound is exactly the boundary whether Roobet treats it as
+ * inclusive or exclusive.
  */
-function exclusiveEnd(d: Date): string {
-  return isoDate(new Date(d.getTime() + 1000));
+function window(period: Period): { start: string; end: string } {
+  return {
+    start: period.start.toISOString(),
+    end: new Date(period.end.getTime() + 1000).toISOString(),
+  };
 }
 
 /**
@@ -83,8 +84,9 @@ export const roobetProvider: LeaderboardProvider = {
 
     const url = new URL(ENDPOINT);
     url.searchParams.set('userId', affiliateIdFromToken(token));
-    url.searchParams.set('startDate', isoDate(period.start));
-    url.searchParams.set('endDate', exclusiveEnd(period.end));
+    const bounds = window(period);
+    url.searchParams.set('startDate', bounds.start);
+    url.searchParams.set('endDate', bounds.end);
 
     const res = await fetch(url, {
       headers: { accept: 'application/json', authorization: `Bearer ${token}` },

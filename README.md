@@ -82,9 +82,12 @@ before launch.** All three have been through a chat window.
 `GET https://roobetconnect.com/affiliate/v2/stats?userId=<id>&startDate=&endDate=`,
 bearer auth with the JWT. Two things the code depends on:
 
-- **`endDate` is exclusive.** It means "up to 00:00 on this date", so the bound
-  sent is the day *after* the period ends. Sending the last day itself drops
-  that whole day's wagering — silently, on the day the board settles.
+- **It honours time of day, so bounds go as full ISO timestamps.** Verified on
+  2026-10-25: moving the start from 00:00Z to 12:00Z dropped two players, and
+  moving the end from midnight to noon moved the weighted total by over $1,200.
+  The board opens and closes at 8am Eastern, so date-only bounds would count
+  twelve hours of pre-launch play and cut off the last twelve hours of every
+  period. The end is sent as the next period's opening instant.
 - **It returns `wagered` and `weightedWagered`.** The board ranks, displays and
   totals the weighted figure; see the decisions below.
 
