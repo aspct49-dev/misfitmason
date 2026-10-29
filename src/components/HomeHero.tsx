@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { formatMoney } from '@/lib/format';
-import { AFFILIATE_RETURN, PARTNERS, TOTAL_PRIZE_POOL } from '@/lib/partners';
+import { PARTNERS, REWARDS_HEADLINE } from '@/lib/partners';
 
 /**
  * The lodge, in four depth planes:
@@ -102,8 +102,7 @@ export function HomeHero() {
         {/* Kept to one line at this width: two lines reach up past the felt and
             land on the mascot's shoulders. */}
         <p className="hero-tagline">
-          {formatMoney(TOTAL_PRIZE_POOL)} every two weeks, and {AFFILIATE_RETURN.percentage}% of
-          affiliate revenue returned to players.
+          {REWARDS_HEADLINE} — leaderboard, raffle and milestones.
         </p>
         <div className="hero-actions">
           <Link className="btn btn-primary" href="/leaderboards">

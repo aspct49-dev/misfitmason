@@ -23,8 +23,8 @@ export function SiteFooter() {
               <span className="brand-name">Misfit Mason</span>
             </div>
             <p className="footer-note">
-              Community wager leaderboards run by MisfitMason. Affiliate revenue is returned to the
-              players who generate it.
+              Community wager leaderboards and rewards run by MisfitMason, on Roobet under code
+              MisfitMason.
             </p>
             <div className="socials">
               {SOCIAL_LINKS.map(([label, href]) => (
@@ -45,7 +45,7 @@ export function SiteFooter() {
               <Link href="/tournaments">Tournaments</Link>
               <Link href="/guess-the-balance">Guess the balance</Link>
               <Link href="/rewards">Rewards</Link>
-              <Link href="/claim">Claim</Link>
+              <Link href="/raffle">Raffle</Link>
               <Link href="/vip-transfer">VIP transfer</Link>
               <Link href="/how-it-works">How it works</Link>
             </nav>

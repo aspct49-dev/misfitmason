@@ -82,6 +82,8 @@ export interface Leaderboard {
   biggestHit?: BiggestHit;
   /** Set when the board has not opened yet; `periodStart` is the opening date. */
   upcoming?: boolean;
+  /** Set on a closed period's board: final standings, no countdown. */
+  final?: boolean;
   /** Set when a live provider failed and fixtures were served instead. */
   error?: string;
 }
@@ -150,12 +152,22 @@ export type Schedule =
       time: string;
       /** IANA zone, e.g. 'America/New_York'. */
       timeZone: string;
+    }
+  /**
+   * Periods that break on fixed days of every month — the 14th and the 28th,
+   * say — at a wall-clock time in `timeZone`.
+   *
+   * For a deal that runs month to month from a day other than the 1st: two
+   * breaks a month keep every period inside one deal month, which fortnights
+   * cannot (a month is not 28 days, so they drift off the deal's start).
+   * Periods come out at 14 to 17 days rather than exactly 14.
+   */
+  | {
+      kind: 'monthly-days';
+      /** Days of the month the periods break on, ascending, each 1–28. */
+      days: number[];
+      /** The board's first opening, YYYY-MM-DD in `timeZone`; before it, upcoming. */
+      opens: string;
+      time: string;
+      timeZone: string;
     };
-
-export interface AffiliateReturn {
-  /** Share of affiliate revenue returned to players. Always 100 here. */
-  percentage: number;
-  cadence: string;
-  method: string;
-  isPlaceholder: boolean;
-}

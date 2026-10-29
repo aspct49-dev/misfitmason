@@ -1,5 +1,5 @@
 import { periodFor, timeLabel } from './format';
-import type { AffiliateReturn, Partner, PartnerId, VipTransfer } from './types';
+import type { Partner, PartnerId, VipTransfer } from './types';
 
 /**
  * The partner registry. Prize pools, splits and codes live here and nowhere
@@ -32,10 +32,16 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     // fortnights from there. The zone is carried rather than baked into a UTC
     // instant: Eastern is UTC-4 that day and UTC-5 from 1 November, and a board
     // advertised as opening at 8am has to keep opening at 8am.
+    // Breaks on the 14th and the 28th at 8am Eastern (client decision,
+    // 2026-10-29): the deal runs month to month from the 14th, so two periods
+    // sit inside each deal month. The period that opened 28 Oct therefore runs
+    // to 14 Nov rather than the 11 Nov a strict fortnight would have given.
+    // The zone is carried rather than baked into a UTC instant: Eastern moves
+    // from UTC-4 to UTC-5 on 1 November, and 8am has to stay 8am.
     schedule: {
-      kind: 'rolling',
-      anchor: '2026-10-14',
-      days: 14,
+      kind: 'monthly-days',
+      days: [14, 28],
+      opens: '2026-10-14',
       time: '08:00',
       timeZone: 'America/New_York',
     },
@@ -64,6 +70,14 @@ export function scheduleLine(partner: Partner): string {
     });
     const at = timeLabel(first.toISOString(), schedule.timeZone);
     return `runs in ${schedule.days}-day periods from ${opens}, each opening and closing at ${at}`;
+  }
+  if (schedule.kind === 'monthly-days') {
+    const ord = (n: number) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`;
+    const days = schedule.days.map(ord);
+    const list = days.length > 1 ? `${days.slice(0, -1).join(', ')} and the ${days[days.length - 1]}` : days[0];
+    // The hour as it reads in the zone today; the rule is "8am Eastern" year round.
+    const at = timeLabel(periodFor(schedule).start.toISOString(), schedule.timeZone).replace(/ [A-Z]{2,4}$/, '');
+    return `runs twice a month, from the ${list} to the next, each period opening and closing at ${at} Eastern`;
   }
   return 'runs twice a month — the 1st to the 15th, and the 16th to the last day — each opening and closing at 00:00 UTC';
 }
@@ -95,15 +109,55 @@ export const VIP_TRANSFER: VipTransfer = {
 };
 
 /**
- * The affiliate return. The percentage is fixed and real; the mechanics are
- * placeholders pending the client's operational detail.
+ * The rewards line-up, in the client's words and order (2026-10-29). It
+ * replaced the 100% affiliate-revenue return, which is no longer offered.
+ *
+ * The headline figure is the client's own, used as given.
  */
-export const AFFILIATE_RETURN: AffiliateReturn = {
-  percentage: 100,
-  cadence: 'Monthly',
-  method: 'Claimed on this site, paid manually',
-  isPlaceholder: true,
-};
+export const REWARDS_HEADLINE = '$950 In Potential Monthly Rewards';
+
+export const REWARDS_LINEUP = [
+  {
+    id: 'leaderboard',
+    figure: '$750',
+    title: 'Bi-Weekly Leaderboard',
+    detail: 'Top 5 positions paid, ranked on weighted wager.',
+    href: '/leaderboards',
+    cta: 'View the board',
+  },
+  {
+    id: 'milestones',
+    figure: '$250',
+    title: 'Monthly Wager Milestones',
+    detail: 'Four levels, each paid once a month as you reach it.',
+    href: '/vip-rewards',
+    cta: 'See your progress',
+  },
+  {
+    id: 'raffle',
+    figure: '$100',
+    title: 'Bi-Weekly Raffle',
+    detail: 'A ticket for every $75 of weighted wager. $75 first, $25 second.',
+    href: '/raffle',
+    cta: 'See your tickets',
+  },
+  {
+    id: 'deposit',
+    figure: '5%',
+    title: 'First Time Deposit Bonus',
+    detail: '5% lossback, capped at $100 a month.',
+    href: 'DISCORD',
+    cta: 'Details in the Discord',
+  },
+  {
+    id: 'vip',
+    figure: 'VIP',
+    title: 'VIP Transfer',
+    detail: 'Already a VIP elsewhere? Apply to have your level matched.',
+    href: '/vip-transfer',
+    cta: 'Apply',
+  },
+] as const;
 
 export const SOCIALS = {
   kick: 'https://kick.com/misfitmason',

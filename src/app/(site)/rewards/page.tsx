@@ -1,63 +1,61 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { AffiliateRevenue, Partners } from '@/components/Sections';
-import { formatMoney } from '@/lib/format';
-import { PARTNERS, PARTNER_ORDER, TOTAL_PRIZE_POOL } from '@/lib/partners';
+import { Partners } from '@/components/Sections';
+import { REWARDS_HEADLINE, REWARDS_LINEUP, PRIMARY_PARTNER, SOCIALS } from '@/lib/partners';
+
+const description = `${REWARDS_HEADLINE} on ${PRIMARY_PARTNER.name}: a $750 bi-weekly leaderboard, $250 in monthly wager milestones, a $100 bi-weekly raffle, a first-time deposit bonus and VIP transfers.`;
 
 export const metadata: Metadata = {
   title: 'Rewards',
-  description: '100% of affiliate revenue returned to players, $750 in bi-weekly Roobet leaderboard prizes across five paying places, and VIP transfers.',
+  description,
   alternates: { canonical: '/rewards' },
-  openGraph: { title: 'Rewards', description: '100% of affiliate revenue returned to players, $750 in bi-weekly Roobet leaderboard prizes across five paying places, and VIP transfers.', url: '/rewards' },
+  openGraph: { title: 'Rewards', description, url: '/rewards' },
 };
 
+/**
+ * The rewards line-up, as the client states it — the page that replaced the
+ * affiliate-revenue claim. Each card points at the page where that reward
+ * actually runs, so this is the overview and never a second copy of the rules.
+ */
 export default function RewardsPage() {
   return (
     <>
-      <section className="section wrap" style={{ paddingTop: 40 }}>
-        <div className="section-head">
-          <h1 className="h-page">Rewards</h1>
-        </div>
-        <p className="lede">
-          Three separate things, funded separately, and all three are running now.
+      <section className="section wrap claim" style={{ paddingBottom: 0 }}>
+        <span className="claim-kicker">Rewards under code {PRIMARY_PARTNER.code}</span>
+        <h1 className="claim-title">{REWARDS_HEADLINE}</h1>
+        <p className="claim-lede">
+          Play {PRIMARY_PARTNER.name} under code <b>{PRIMARY_PARTNER.code}</b> and every one of these
+          applies to you. Nothing to opt into.
         </p>
+      </section>
 
-        <div className="grid-3" style={{ marginTop: 24 }}>
-          <Link className="card card-link" href="/claim">
-            <span className="label">Affiliate revenue</span>
-            <div className="stat-v accent" style={{ marginTop: 12 }}>
-              100%
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Returned to the players who generated it. Claim your share.
-            </p>
-          </Link>
-          <Link className="card card-link" href="/vip-transfer">
-            <span className="label">VIP transfer</span>
-            <div className="stat-v text" style={{ marginTop: 12 }}>
-              Matched
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              Already a VIP elsewhere? Apply to have the level carried over.
-            </p>
-          </Link>
-          <div className="card">
-            <span className="label">Leaderboard prizes</span>
-            <div className="stat-v" style={{ marginTop: 12 }}>
-              {formatMoney(TOTAL_PRIZE_POOL)}
-            </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 12 }}>
-              {PARTNER_ORDER.map((id) => `${PARTNERS[id].name} ${formatMoney(PARTNERS[id].prizePool)}`).join(
-                ', ',
-              )}
-              . Paid to the top of each board, funded out of pocket.
-            </p>
-          </div>
+      <section className="section wrap">
+        <div className="rwd-grid">
+          {REWARDS_LINEUP.map((r) => {
+            const external = r.href === 'DISCORD';
+            const href = external ? SOCIALS.discord : r.href;
+            const body = (
+              <>
+                <span className="rwd-figure">{r.figure}</span>
+                <h2>{r.title}</h2>
+                <p>{r.detail}</p>
+                <span className="rwd-cta">{r.cta} →</span>
+              </>
+            );
+            return external ? (
+              <a className="rwd-card" key={r.id} href={href} target="_blank" rel="noreferrer">
+                {body}
+              </a>
+            ) : (
+              <Link className="rwd-card" key={r.id} href={href}>
+                {body}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      <AffiliateRevenue />
       <Partners />
     </>
   );

@@ -17,8 +17,8 @@ import {
 /**
  * Finishes the Discord sign-in and issues the session cookie.
  *
- * Failures go back to the claim section with a `login` code rather than
- * rendering an error page: the player is mid-task, and the form is where the
+ * Failures go back to the page the player started on with a `login` code rather than
+ * rendering an error page: the player is mid-task, and that page is where the
  * retry lives. Nothing here is ever shown raw to the browser — the codes map to
  * copy in the UI.
  */
@@ -26,7 +26,7 @@ export const dynamic = 'force-dynamic';
 
 const UA = 'MisfitMasonClaims/1.0 (+https://misfitmason.com)';
 
-function back(request: Request, error?: string, next = '/claim') {
+function back(request: Request, error?: string, next = '/profile') {
   const target = new URL(safeNext(next), request.url);
   if (error) target.searchParams.set('login', error);
   return NextResponse.redirect(target);

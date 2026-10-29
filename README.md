@@ -1,13 +1,20 @@
 # Misfit Mason
 
-Community leaderboard site for the Kick streamer MisfitMason. A **$750 bi-weekly
-Roobet** wager leaderboard ranked on weighted wager, slot challenges, and 100% of
-affiliate revenue returned to players — claimed through a form that posts into
-Discord.
+Community leaderboard site for the Kick streamer MisfitMason. The rewards
+line-up (`REWARDS_LINEUP` in `src/lib/partners.ts`, client copy 2026-10-29):
 
-**Periods are half-months**, both ends at 00:00 UTC: the 1st to the 15th, and the
-16th to the last day of the month. `currentPeriod()` in `src/lib/format.ts` is
-the only place that is decided.
+- **$750 bi-weekly Roobet leaderboard**, top 5 paid, ranked on weighted wager.
+- **$250 in monthly wager milestones** (`/vip-rewards`).
+- **$100 bi-weekly raffle** (`/raffle`) — a ticket per $75 weighted, $75 / $25.
+- **First-time deposit bonus** — 5% lossback, $100 monthly cap, handled in Discord.
+- **VIP transfer** (`/vip-transfer`).
+
+Headlined as "$950 in potential monthly rewards", verbatim from the client. The
+affiliate-revenue claim was removed on 2026-10-29; these replace it.
+
+**Periods break on the 14th and the 28th**, at 08:00 America/New_York — the
+deal month runs 14th to 14th. `periodFor()` in `src/lib/format.ts` is the only
+place that is decided.
 
 Partner history: Roobet → Shuffle → Lootbox → **Roobet** (2026-10-08). Lootbox
 ran alongside it for a week and was removed again on 2026-10-16, taking its
@@ -28,8 +35,8 @@ npm run build && npm start
 
 ```
 ROOBET_API_TOKEN=<affiliate JWT>
-DISCORD_CLAIM_WEBHOOK_URL=<webhook the claim form posts into>
-CLAIM_SECRET=<any long random string>
+DISCORD_CLAIM_WEBHOOK_URL=<webhook for announcements and VIP applications>
+CLAIM_SECRET=<any long random string — signs session cookies>
 DISCORD_CLIENT_ID=<OAuth app id>
 DISCORD_CLIENT_SECRET=<OAuth app secret>
 ```
@@ -39,8 +46,9 @@ inside it, so there is nothing else to configure and nothing to keep in sync.
 
 `DISCORD_CLAIM_WEBHOOK_URL` is server-side only and must never become a
 `NEXT_PUBLIC_` variable — anyone holding that URL can post into the channel as
-the bot. `CLAIM_SECRET` signs the 24-hour cooldown cookie; changing it clears
-every outstanding cooldown.
+the bot. The variable keeps its old name so the Vercel settings did not need
+touching when the claim form went. `CLAIM_SECRET` signs the Discord session
+and the VIP-transfer cooldown; changing it signs everyone out.
 
 ## Deploying to Vercel
 
@@ -113,7 +121,7 @@ two backends, picked by the environment:
 - **Files** under `store/` otherwise, which only works in development: Vercel
   has no writable disk, so without Redis every write throws. The admin panel
   checks for exactly this and says so at the top of every tool; a player
-  pressing Claim gets "not accepting claims right now" rather than a 500.
+  claiming a milestone gets "not accepting claims right now" rather than a 500.
 
 Not a concurrent database: two admins saving the same bracket in the same
 second can lose one edit. For one person running an event that is fine.
@@ -128,8 +136,38 @@ Profile page — the sidebar deliberately does not read the session, because
 doing that in the root layout would make every page dynamic and lose the
 leaderboard's cache.
 
-Tools: overview · raffle picker · guess the balance · tournaments · VIP rewards
-(mark claims paid) · linked accounts · stream overlays (OBS URLs).
+Tools: overview · raffle picker · wager raffle · guess the balance ·
+tournaments · VIP rewards (mark claims paid) · linked accounts · stream
+overlays (OBS URLs).
+
+**Discord sign-in stays for this panel** (and for milestone claims and profile
+linking) even though the affiliate claim it was built for is gone.
+
+### Bi-weekly wager raffle
+
+`/raffle`, configured in `WAGER_RAFFLE` (`src/lib/wager-raffle.ts`). Every $75
+of **weighted** wager in a leaderboard period is one ticket — the same figure
+and the same window the board uses. Two prizes, $75 and $25, one per player.
+Not to be confused with the raffle *picker*, which draws from Kick chat.
+
+- **Drawn at the close by the period-close cron**, right after the board's
+  announcement, and posted to the same webhook. A dry run shows the pool and
+  never draws.
+- **Drawn once.** The result is saved in the store (`wager-raffle.json`) and
+  `drawRaffle` returns a saved draw unchanged, so a retried cron or an admin
+  pressing Draw cannot re-roll it. Picks use `crypto.randomInt`; a winner's
+  tickets leave the pool before the next place.
+- **`firstPeriodStart`** is the 28 October period — the one live when the
+  raffle was announced. Earlier periods are never drawable.
+- `/admin/wager-raffle` shows full usernames for payouts, and offers a manual
+  draw only for a closed, undrawn period (the cron missed it, or Roobet was
+  down at the close).
+
+### Previous leaderboard
+
+`/leaderboards` has a Current / Previous switch. Previous is the last closed
+period's final standings (`getPreviousLeaderboard`), labelled "Final" with its
+closing time instead of a countdown.
 
 ### VIP rewards
 
@@ -191,13 +229,13 @@ Kick developer app: `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET`, redirect
 
 `/api/auth/discord/login?next=/path` carries the destination through the
 signed OAuth state cookie. `safeNext()` honours same-site paths only —
-`//host`, `/\host`, absolute URLs and control characters fall back to `/claim`,
+`//host`, `/\host`, absolute URLs and control characters fall back to `/profile`,
 so the Discord consent screen cannot be used as an open redirect.
 
 ### Period-close announcements
 
-When a period ends, `/api/cron/period-close` posts the final table into the same
-Discord channel as the claims. Run by Vercel Cron (`vercel.json`), guarded by
+When a period ends, `/api/cron/period-close` posts the final table into
+the Discord channel, then draws and posts the wager raffle. Run by Vercel Cron (`vercel.json`), guarded by
 `CRON_SECRET` — Vercel sends it as a bearer token automatically once the
 variable is set, and the route refuses outright when it is unset rather than
 leaving a public endpoint that posts to Discord.
@@ -218,7 +256,9 @@ still running as its own final standings.
 
 Query parameters, all requiring the secret:
 
-- `dry=1` builds the message and returns it without posting.
+- `dry=1` builds the message and returns it without posting or drawing. It
+  runs without a webhook configured, so it can be tried locally with the real
+  one blanked.
 - `at=<ISO>` pretends it is another time — **dry runs only**, so a preview
   cannot announce the wrong period.
 - `force=1` posts outside the window, for a run that was missed.
@@ -226,24 +266,13 @@ Query parameters, all requiring the secret:
 Usernames are wrapped in inline code: masked names begin with asterisks, which
 Discord otherwise reads as bold markers and swallows the rest of the line.
 
-### Affiliate-revenue claims
+### Discord sign-in
 
-Its own page at `/claim`. Sign in with Discord, then `POST /api/claim` with a
-Roobet username; the route posts an embed to `DISCORD_CLAIM_WEBHOOK_URL`. There
-is no database: the Discord channel is the claim record.
+Used by the admin panel, milestone claims and profile linking. The affiliate
+claim form it was first built for was removed on 2026-10-29.
 
-`/rewards` is the overview — what exists and where to do it — and links across
-to `/claim` and `/vip-transfer` rather than hosting either form. The OAuth
-routes return to `/claim`, so the sign-in lands where the player was.
-
-The form is deliberately one heading, one sentence and one field. An earlier
-version carried the eligibility rules, the review process and the payout cycle
-in a column beside it, which is a lot of reading in front of a box that wants a
-username — those belong on `/legal` and in the Discord. The route still accepts
-an optional `note`, it simply is not asked for.
-
-**Discord OAuth.** `identify` scope only — the claim needs an account to
-attribute and a name to show, nothing more. Register the callback for **every
+**Discord OAuth.** `identify` scope only — an account id to check and a name
+to show, nothing more. Register the callback for **every
 origin the site is served from**, exactly:
 
 ```
@@ -266,26 +295,14 @@ it character for character — a trailing slash or the wrong scheme is a
 sign-ins to the production origin, so preview sign-in works without registering
 every preview URL.
 
-Anti-spam, weakest to strongest:
-
-- A small per-instance IP throttle. Serverless runs several instances, so treat
-  it as a speed bump, not a limit.
-- A 24-hour cooldown in an HMAC-signed cookie, keyed to the Discord account id.
-  Signed, so an expiry cannot be forged; cookie-based, so clearing cookies
-  clears it. Making it authoritative needs a datastore keyed on the player.
-- **Discord sign-in**, which is the one that matters: a second claim inside the
-  window needs a second Discord account.
-
-Every field is stripped of Discord formatting and mention syntax, and the
-message sets `allowed_mentions: { parse: [] }`, so nothing a stranger types can
-ping the server. Discord blocks posts from unfamiliar user agents, so both the
-webhook call and the OAuth calls send an explicit one — a bare default gets a
-403 with no useful body.
+Discord blocks posts from unfamiliar user agents, so both the webhook calls and
+the OAuth calls send an explicit one — a bare default gets a 403 with no useful
+body.
 
 ### VIP transfer applications
 
 Its own page at `/vip-transfer`, posting multipart to `POST /api/vip-transfer`
-and into the **same webhook as the claims**. A page rather than a section of
+and into the **same webhook as the announcements**. A page rather than a section of
 `/rewards` because it is the one thing people arrive at with intent — sent a
 link from a stream or the Discord — and a link into the middle of a long page
 is a worse answer than a page of its own. An
@@ -297,7 +314,7 @@ Nothing is stored — the images stream to Discord as attachments and the reques
 ends. Holding other people's account screenshots would serve nothing, since the
 only thing anyone does with an application is read it and reply.
 
-Sign-in is optional here, unlike the claim form: someone arriving from a stream
+Sign-in is optional here: someone arriving from a stream
 with a level elsewhere is exactly who this is for, and an account would be a
 step between them and the thing they came to do. Signing in only saves typing,
 and gives a handle they cannot mistype.
@@ -313,8 +330,8 @@ submission does not spend someone's allowance.
 
 `src/lib/staff.ts` holds the usernames that never appear on a board — currently
 one staff member under three aliases: Hooly (Lootbox), Warhooly (Shuffle) and
-Hooly123 (Roobet). They are also left out of VIP rewards, which pay against the
-same wager figures. Being excluded is not being an admin; that list is separate. They are
+Hooly123 (Roobet). They are also left out of VIP rewards and the wager raffle,
+which pay against the same wager figures. Being excluded is not being an admin; that list is separate. They are
 dropped before ranking *and* before the whole-board stats, so staff play does
 not inflate the totals either. Matching is case-insensitive.
 
@@ -346,10 +363,12 @@ render from the registry.
 ## Decisions worth knowing
 
 - **Each board runs its own schedule**, set by `schedule` on the partner and
-  resolved by `periodFor()`. Roobet runs **14-day periods from 2026-10-14 at
-  08:00 America/New_York** (client decision, 2026-10-12). The half-month shape
-  is still there for a board that wants the 1st and the 16th.
-- **A rolling schedule stores a zone, not a UTC instant.** Eastern is UTC-4 on
+  resolved by `periodFor()`. Roobet opened on 2026-10-14 at 08:00
+  America/New_York and now **breaks on the 14th and the 28th of every month**
+  (`monthly-days`, client decision 2026-10-29: the deal month starts on the
+  14th, so the 28 Oct period runs to 14 Nov). Periods are 13–17 days rather than
+  a fixed fortnight. The half-month and rolling 14-day shapes are still there.
+- **A schedule stores a zone, not a UTC instant.** Eastern is UTC-4 on
   14 October and UTC-5 from 1 November, so a fixed offset would quietly move the
   advertised 8am start to 7am from the third period onwards. Boundaries are
   computed by adding whole days to the anchor *date* and resolving the time in

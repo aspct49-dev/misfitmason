@@ -2,26 +2,26 @@ import type { Metadata } from 'next';
 
 import { LeaderboardTabs } from '@/components/LeaderboardTabs';
 import { PARTNERS, PARTNER_ORDER, scheduleLine } from '@/lib/partners';
-import { getAllLeaderboards } from '@/lib/services/leaderboard';
+import { getAllLeaderboards, getPreviousLeaderboards } from '@/lib/services/leaderboard';
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Leaderboards',
-  description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager. Periods run 14 days from 14 October, 8am Eastern.',
+  description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager, plus final standings from the last period. Periods break on the 14th and 28th at 8am Eastern.',
   alternates: { canonical: '/leaderboards' },
-  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager. Periods run 14 days from 14 October, 8am Eastern.', url: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager, plus final standings from the last period.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {
-  const boards = await getAllLeaderboards();
+  const [boards, previous] = await Promise.all([getAllLeaderboards(), getPreviousLeaderboards()]);
 
   return (
     <>
       {/* No page title: the board hero carries the heading for whichever
           partner is selected. */}
       <section className="section wrap" style={{ paddingTop: 32 }}>
-        <LeaderboardTabs boards={boards} />
+        <LeaderboardTabs boards={boards} previous={previous} />
       </section>
 
       <section className="section wrap" id="rules">

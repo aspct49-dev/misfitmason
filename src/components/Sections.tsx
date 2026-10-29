@@ -1,49 +1,6 @@
 import { formatMoney } from '@/lib/format';
-import { AFFILIATE_RETURN, PARTNERS, PARTNER_ORDER } from '@/lib/partners';
+import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { CopyCode } from './CopyCode';
-
-/** How the affiliate return works, described as a mechanism rather than a claim. */
-export function AffiliateRevenue() {
-  return (
-    <section className="section wrap">
-      <div className="section-head">
-        <h2 className="h-section">Affiliate revenue</h2>
-      </div>
-
-      <div className="grid-2">
-        <div>
-          <p className="lede">
-            Casinos pay affiliates a share of the revenue their referred players generate. On Misfit
-            Mason that share is not kept. It is returned {AFFILIATE_RETURN.cadence.toLowerCase()} to
-            the players who generated it, claimed on this site.
-          </p>
-          <p className="lede" style={{ marginTop: 14 }}>
-            Leaderboard prizes are funded separately, out of pocket, and are not drawn from affiliate
-            revenue.
-          </p>
-          <p className="lede" style={{ marginTop: 14 }}>
-            <a className="link" href="/claim">
-              Open a claim
-            </a>{' '}
-            with your {PARTNERS[PARTNER_ORDER[0]].name} username and a Discord handle. Claims are
-            checked against the affiliate statistics before anything is paid.
-          </p>
-        </div>
-
-        <div className="card">
-          <span className="label">Summary</span>
-          <div style={{ marginTop: 14 }}>
-            <Kv k="Share returned" v={`${AFFILIATE_RETURN.percentage}%`} />
-            <Kv k="Cycle" v={AFFILIATE_RETURN.cadence} />
-            <Kv k="Method" v={AFFILIATE_RETURN.method} />
-            <Kv k="Minimum" v="None" />
-            <Kv k="Eligibility" v="Registered under the referral link" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function Kv({ k, v }: { k: string; v: string }) {
   return (
@@ -74,7 +31,7 @@ export function GettingStarted() {
         <Step
           n="03"
           title="Prizes at period end"
-          body="The paying places are settled from the prize pool when the period closes, and affiliate revenue is returned separately on a monthly cycle."
+          body="The paying places, the raffle and any milestones you reached are settled when the period closes, and announced in the Discord."
         />
       </div>
     </section>

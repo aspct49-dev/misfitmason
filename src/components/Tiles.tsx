@@ -1,7 +1,9 @@
 import Link from 'next/link';
 
 import { formatMoney } from '@/lib/format';
-import { AFFILIATE_RETURN, PARTNERS, TOTAL_PRIZE_POOL } from '@/lib/partners';
+import { TOTAL_PRIZE_POOL } from '@/lib/partners';
+import { VIP_REWARD_TOTAL } from '@/lib/vip-rewards';
+import { WAGER_RAFFLE_POOL } from '@/lib/wager-raffle';
 
 /**
  * The four-across row of entry points that sits near the foot of the page on
@@ -21,16 +23,16 @@ export function Tiles() {
           <p>Live Roobet standings for the current period, with full rules.</p>
         </Link>
 
-        <Link className="tile" href="/rewards">
-          <span className="tile-value">{AFFILIATE_RETURN.percentage}%</span>
-          <h3>Affiliate revenue</h3>
-          <p>All of it returned to the players who generated it.</p>
+        <Link className="tile" href="/raffle">
+          <span className="tile-value">{formatMoney(WAGER_RAFFLE_POOL)}</span>
+          <h3>Bi-weekly raffle</h3>
+          <p>A ticket for every $75 of weighted wager, drawn at each close.</p>
         </Link>
 
-        <Link className="tile" href="/claim">
-          <span className="tile-value">Claim</span>
-          <h3>Your share</h3>
-          <p>Send your username and a Discord handle to open a claim.</p>
+        <Link className="tile" href="/vip-rewards">
+          <span className="tile-value">{formatMoney(VIP_REWARD_TOTAL)}</span>
+          <h3>Wager milestones</h3>
+          <p>Four monthly levels, each paid as you reach it.</p>
         </Link>
 
         <Link className="tile" href="/how-it-works">

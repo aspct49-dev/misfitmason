@@ -28,9 +28,9 @@ export const SITE = {
   handle: 'MisfitMason',
   url: resolveSiteUrl(),
   description:
-    'A $750 bi-weekly Roobet wager leaderboard, ranked on weighted wager with five paying places. Play under the Misfit Mason code, climb the board, and get 100% of the affiliate revenue returned to players.',
+    '$950 in potential monthly rewards on Roobet under code MisfitMason: a $750 bi-weekly wager leaderboard, $250 in monthly wager milestones, a $100 bi-weekly raffle and a first-time deposit bonus.',
   /** Short form for Open Graph, where long descriptions get truncated. */
-  tagline: 'Bi-weekly wager leaderboards. 100% of affiliate revenue returned to players.',
+  tagline: '$950 in potential monthly rewards under code MisfitMason.',
   locale: 'en_GB',
 } as const;
 
@@ -43,7 +43,7 @@ export const ROUTES = [
   { path: '/vip-rewards', priority: 0.8, changeFrequency: 'weekly' as const },
   { path: '/tournaments', priority: 0.7, changeFrequency: 'daily' as const },
   { path: '/guess-the-balance', priority: 0.7, changeFrequency: 'daily' as const },
-  { path: '/claim', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/raffle', priority: 0.8, changeFrequency: 'daily' as const },
   { path: '/vip-transfer', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/how-it-works', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/legal', priority: 0.3, changeFrequency: 'yearly' as const },

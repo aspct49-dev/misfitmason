@@ -122,7 +122,7 @@ export async function currentUser(): Promise<SessionUser | null> {
  * would lend our name to a link that ends somewhere else — so anything that is
  * not a plain path starting with a single slash falls back to the default.
  */
-export function safeNext(value: string | null | undefined, fallback = '/claim'): string {
+export function safeNext(value: string | null | undefined, fallback = '/profile'): string {
   if (!value) return fallback;
   // `/\` is treated as `//` by some browsers, so it is refused alongside it.
   if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return fallback;

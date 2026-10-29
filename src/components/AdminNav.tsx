@@ -23,6 +23,7 @@ const TABS = [
   { href: '/admin/guess', label: 'Guess The Balance' },
   { href: '/admin/tournaments', label: 'Tournaments' },
   { href: '/admin/vip-rewards', label: 'VIP Rewards' },
+  { href: '/admin/wager-raffle', label: 'Wager Raffle' },
   { href: '/admin/accounts', label: 'Linked Accounts' },
   { href: '/admin/overlays', label: 'Stream Overlays' },
 ];

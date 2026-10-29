@@ -348,3 +348,17 @@
 .rules-list strong { color: var(--text); font-weight: 600; }
 
 .rules-note { color: var(--dim) !important; font-size: 13.5px !important; padding-top: 18px !important; }
+
+/* The closed period's stand-in for the countdown: says final, and when. */
+.lb-final { gap: 8px; }
+.lb-final .label { color: var(--accent); }
+.lb-final-when {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* The Current / Previous switch sits under the partner tabs, smaller, so the
+   partner stays the first choice and the period the second. */
+.lb-period-tabs { margin-top: 8px; }
+.lb-period-tabs .tab { min-height: 36px; padding: 0 16px; font-size: 13px; }

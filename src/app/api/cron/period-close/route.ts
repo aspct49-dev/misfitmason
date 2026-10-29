@@ -4,6 +4,7 @@ import { formatMoney, periodFor, periodLabel, scheduleZone } from '@/lib/format'
 import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { getLeaderboard } from '@/lib/services/leaderboard';
 import type { Leaderboard, Partner } from '@/lib/types';
+import { WAGER_RAFFLE, drawRaffle, raffleStandings, type RaffleDraw } from '@/lib/wager-raffle';
 
 /**
  * Posts the final standings to Discord when a period closes.
@@ -58,17 +59,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Not authorised' }, { status: 401 });
   }
 
-  const webhook = process.env.DISCORD_CLAIM_WEBHOOK_URL?.trim();
-  if (!webhook) {
-    console.error('[cron] DISCORD_CLAIM_WEBHOOK_URL is not set');
-    return NextResponse.json({ error: 'No webhook configured' }, { status: 503 });
-  }
-
   // `force` re-announces outside the window, for a run that was missed or for
   // a dry run before a real close. It cannot be reached without the secret.
   const params = new URL(request.url).searchParams;
   const force = params.get('force') === '1';
   const dry = params.get('dry') === '1';
+
+  // A dry run posts nothing, so it does not need a webhook — which lets it be
+  // run with the real one blanked out.
+  const webhook = process.env.DISCORD_CLAIM_WEBHOOK_URL?.trim() ?? '';
+  if (!webhook && !dry) {
+    console.error('[cron] DISCORD_CLAIM_WEBHOOK_URL is not set');
+    return NextResponse.json({ error: 'No webhook configured' }, { status: 503 });
+  }
   /* `at` pretends it is another time, so a close can be previewed before it
      happens. Honoured only on a dry run: pretending on a live run would
      announce the wrong period, confidently. */
@@ -107,11 +110,47 @@ export async function GET(request: Request) {
     // can be checked without putting a test announcement in front of players.
     if (dry) {
       results.push({ partner: id, posted: false, reason: 'dry run', preview: buildMessage(partner, board) });
+      // A dry run never draws — a draw is permanent. It shows what would be
+      // drawn from instead.
+      if (id === WAGER_RAFFLE.partnerId) {
+        const pool = await raffleStandings({ start: closed.start, end: closed.end }).catch(() => null);
+        results.push({
+          raffle: true,
+          drawn: false,
+          reason: 'dry run',
+          entrants: pool?.entrants.length ?? null,
+          tickets: pool?.totalTickets ?? null,
+        });
+      }
       continue;
     }
 
     const delivered = await post(webhook, partner, board);
     results.push({ partner: id, posted: delivered, players: board.stats.players });
+
+    /* The raffle draws at the same close. drawRaffle is idempotent — a period
+       already drawn returns its saved result — so it is only announced when
+       this run made the draw, never a second time. */
+    if (id === WAGER_RAFFLE.partnerId) {
+      try {
+        const drawn = await drawRaffle({ start: closed.start, end: closed.end });
+        if (drawn.ok) {
+          const sent = drawn.fresh ? await postRaffle(webhook, drawn.draw) : false;
+          results.push({
+            raffle: true,
+            drawn: true,
+            fresh: drawn.fresh,
+            posted: sent,
+            winners: drawn.draw.winners.map((w) => w.masked),
+          });
+        } else {
+          results.push({ raffle: true, drawn: false, reason: drawn.error });
+        }
+      } catch (error) {
+        console.error('[cron] raffle draw failed:', error);
+        results.push({ raffle: true, drawn: false, reason: 'draw failed — use /admin/wager-raffle' });
+      }
+    }
   }
 
   return NextResponse.json({ ok: true, at: now.toISOString(), results });
@@ -181,6 +220,54 @@ async function post(webhook: string, partner: Partner, board: Leaderboard): Prom
     return true;
   } catch (error) {
     console.error('[cron] webhook failed:', error);
+    return false;
+  }
+}
+
+/** The raffle result, posted after the leaderboard's. */
+async function postRaffle(webhook: string, draw: RaffleDraw): Promise<boolean> {
+  const medal = ['🥇', '🥈', '🥉'];
+  const zone = scheduleZone(PARTNERS[WAGER_RAFFLE.partnerId].schedule);
+  const lines = draw.winners.map(
+    (w) =>
+      // Inline code: masked names start with asterisks, which Discord would
+      // otherwise read as bold markers.
+      `${medal[w.place - 1] ?? `**${w.place}.**`} \`${w.masked.replace(/`/g, "'")}\` — ${w.tickets} ticket${w.tickets === 1 ? '' : 's'} · **${formatMoney(w.prize)}**`,
+  );
+
+  const body = {
+    username: 'Misfit Mason leaderboards',
+    allowed_mentions: { parse: [] },
+    embeds: [
+      {
+        title: `${formatMoney(draw.winners.reduce((s, w) => s + w.prize, 0))} raffle — winners`,
+        description: [
+          `**${periodLabel(draw.periodStart, draw.periodEnd, zone)}** · drawn`,
+          '',
+          ...(lines.length ? lines : ['No tickets were earned this period, so nothing was drawn.']),
+        ].join('\n'),
+        color: 0xe31b45,
+        fields: [
+          { name: 'Tickets in the draw', value: draw.totalTickets.toLocaleString('en-US'), inline: true },
+          { name: 'Players', value: String(draw.entrants), inline: true },
+          { name: 'One ticket per', value: `${formatMoney(WAGER_RAFFLE.ticketEvery)} weighted`, inline: true },
+        ],
+        footer: { text: 'misfitmason.com/raffle · usernames masked, as on the site' },
+        timestamp: draw.drawnAt,
+      },
+    ],
+  };
+
+  try {
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'user-agent': UA },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) console.error('[cron] raffle webhook rejected:', res.status, await res.text());
+    return res.ok;
+  } catch (error) {
+    console.error('[cron] raffle webhook failed:', error);
     return false;
   }
 }

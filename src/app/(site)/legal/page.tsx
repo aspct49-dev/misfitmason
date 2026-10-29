@@ -77,10 +77,9 @@ export default function LegalPage() {
           This is how the site is funded and it costs you nothing extra.
         </p>
         <p>
-          Our stated policy is that <strong>100% of that affiliate revenue is returned</strong> to
-          the players who generated it. Leaderboard prizes are funded separately and personally by
-          MisfitMason. We do not operate any casino, we do not hold your funds, and we cannot
-          influence any game outcome.
+          The rewards on this site — the leaderboard, the raffle, the wager milestones and the
+          deposit bonus — are paid by MisfitMason. We do not operate any casino, we do not hold
+          your funds, and we cannot influence any game outcome.
         </p>
 
         <h2 id="terms">Terms</h2>

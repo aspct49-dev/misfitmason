@@ -120,9 +120,9 @@ export const roobetProvider: LeaderboardProvider = {
         sorted.map((row) => ({
           username: row.username,
           wagered: ranked(row),
-          // Carried through but not rendered — on a masked name it would be
-          // the only identifying detail left.
-          favouriteGame: row.favoriteGameTitle,
+          // Deliberately not passed on. The table renders a favourite game
+          // when one is present, and on a masked name it is the one detail
+          // that could identify the player — so it never reaches the board.
           tierBadgeUrl: row.rankLevelImage,
         })),
         partner.prizeTable,

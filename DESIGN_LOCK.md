@@ -20,7 +20,7 @@ site in the category.
 
 **Copy rules.**
 - No two-line punchy headlines with full stops.
-- Headings are nouns: "Leaderboards", "Affiliate revenue", "Getting started".
+- Headings are nouns: "Leaderboards", "Rewards", "Getting started".
 - Never imply gambling is profitable, and never imply a community larger than
   the one that exists.
 
@@ -83,10 +83,9 @@ Hover changes colour and border only, never scale or position. Full
 2. **Standings** — partner tabs, prize banner, countdown, the paying places,
    whole-board stats.
 3. **Kick row** — a link out, not an embed.
-4. **Affiliate revenue** — mechanism plus a summary table.
-6. **Getting started** — three steps.
-7. **Partners** — one card each.
-8. **Footer** — legal, responsible gambling, socials.
+4. **Getting started** — three steps.
+5. **Partners** — one card each.
+6. **Footer** — legal, responsible gambling, socials.
 
 ---
 
@@ -102,8 +101,11 @@ Hover changes colour and border only, never scale or position. Full
 - **Metric**: Roobet weighted wager (2026-10-08), with the RTP bands under the
   table. The per-partner `weighted` flag drives the labels, for an operator that
   reports no weighted figure.
-- **Period**: 14-day periods from 14 Oct 2026, opening and closing at **8:00 AM
-  America/New_York** — held across the clock change, not a fixed UTC offset.
+- **Period**: breaks on the **14th and the 28th** (from 28 Oct 2026; the first
+  period ran 14–28 Oct), opening and closing at **8:00 AM America/New_York** —
+  held across the clock change, not a fixed UTC offset.
+- **Previous period** behind a Current / Previous switch: final standings,
+  "Final" in the period line, and the closing time where the countdown was.
 - **Prizes** — Roobet $750 per period: `300/200/125/75/50`, five paying places.
 - **One partner, no tabs.** The switcher renders only at two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
@@ -116,15 +118,16 @@ Hover changes colour and border only, never scale or position. Full
 
 ## PAGES
 
-Grouped in the sidebar: **Home · Leaderboards · VIP rewards · Challenges** ·
-*Events:* Tournaments · Guess the balance · *Rewards:* Overview · Claim · VIP
+Grouped in the sidebar: **Home · Leaderboards · VIP rewards · Raffle · Challenges** ·
+*Events:* Tournaments · Guess the balance · *Rewards:* Overview · VIP
 transfer · How it works · Profile. Plus `/admin` (admins only, via Profile) and
 `/overlay/*` (OBS, own root layout, transparent).
 
-Claim and VIP transfer are pages, not sections: both are linked to directly
-from streams and the Discord, and both are something a player arrives at with
-intent. `/rewards` is the overview that explains what exists and points at
-them.
+The raffle and VIP transfer are pages, not sections: both are linked to
+directly from streams and the Discord, and both are something a player arrives
+at with intent. `/rewards` is the overview — the client's line-up, one card per
+reward, each pointing at where it lives. The affiliate claim was removed
+2026-10-29.
 
 ---
 

@@ -15,8 +15,8 @@ import {
 /**
  * Starts the Discord sign-in.
  *
- * `identify` only: the claim needs a stable account to attribute to and a name
- * to put in the channel, and nothing else. Asking for email or guild scopes
+ * `identify` only: sign-in needs a stable account to attribute to and a name
+ * to show, and nothing else. Asking for email or guild scopes
  * would make the consent screen look like it wants more than it does.
  *
  * The state is random, signed and short-lived. Without it, anyone could feed a
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
   const credentials = discordCredentials();
   if (!credentials) {
     console.error('[auth] DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is not set');
-    return NextResponse.redirect(new URL('/claim?login=not_configured', request.url));
+    return NextResponse.redirect(new URL('/profile?login=not_configured', request.url));
   }
 
   const state = randomBytes(16).toString('base64url');

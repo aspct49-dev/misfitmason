@@ -4,9 +4,9 @@ import { GettingStarted, Partners } from '@/components/Sections';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.',
+  description: 'How the leaderboard, the raffle, the wager milestones and the deposit bonus work on Roobet under code MisfitMason, in three steps.',
   alternates: { canonical: '/how-it-works' },
-  openGraph: { title: 'How it works', description: 'How casino affiliate revenue and the $750 bi-weekly Roobet leaderboard fit together, in three steps.', url: '/how-it-works' },
+  openGraph: { title: 'How it works', description: 'How the leaderboard, the raffle, the wager milestones and the deposit bonus work on Roobet under code MisfitMason, in three steps.', url: '/how-it-works' },
 };
 
 export default function HowItWorksPage() {
@@ -18,18 +18,20 @@ export default function HowItWorksPage() {
         </div>
         <div className="prose">
           <p>
-            Casinos run affiliate programmes that pay a share of the revenue a referred player
-            generates. That share is usually kept by whoever referred the player. On Misfit Mason
-            it is returned to the players instead.
+            Sign up on Roobet under code MisfitMason and your play counts toward everything on this
+            site at once: the bi-weekly leaderboard, the raffle, and the monthly wager milestones.
+            There is nothing to opt into, and it costs nothing extra or changes how any game
+            behaves.
           </p>
           <p>
-            Registering through the referral links means a portion of what the casino makes from
-            your play comes back to you rather than staying with the operator or the affiliate. It
-            costs nothing extra and does not change how any game behaves.
+            All three run on Roobet&apos;s weighted wager — the figure Roobet discounts by each
+            game&apos;s RTP — so a dollar through a high-RTP game like dice counts for less than a
+            dollar through slots. The leaderboard ranks on it, the raffle gives a ticket for every
+            $75 of it, and the milestones pay out as it passes each level.
           </p>
           <p>
-            The bi-weekly leaderboard is a separate arrangement, funded out of pocket, so that
-            there is something to compete for rather than only something to claim.
+            The rewards are funded by MisfitMason. New depositors also get a first-time deposit
+            bonus, and players with a VIP level elsewhere can apply to have it matched.
           </p>
         </div>
       </section>

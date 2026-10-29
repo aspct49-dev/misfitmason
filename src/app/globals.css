@@ -1188,3 +1188,84 @@ a.vipr-btn:hover { border-color: var(--accent); color: var(--text); }
 .vipr-btn-claim[disabled] { opacity: 0.6; cursor: progress; }
 .vipr-btn-done { border-color: var(--live); color: var(--live); }
 .vipr-error { margin: 8px 0 0; color: var(--accent); font-size: 13px; }
+
+/* -------------------------------------------------------------- wager raffle */
+
+.rfl-prizes { display: flex; justify-content: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.rfl-prize {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--accent);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 #8e0f2b;
+}
+.rfl-prize b { color: #fff; font-size: 20px; letter-spacing: 0; }
+
+.rfl-last { display: grid; gap: 14px; }
+.rfl-last-winners { display: grid; gap: 8px; }
+.rfl-winner {
+  display: grid;
+  grid-template-columns: 52px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.rfl-winner:first-child { border-color: rgba(227, 27, 69, 0.5); box-shadow: inset 3px 0 0 var(--accent); }
+.rfl-place { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--dim); text-transform: uppercase; }
+.rfl-meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.rfl-won { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+.rfl-note { margin: 0; color: var(--dim); font-size: 13px; }
+
+@media (max-width: 720px) {
+  .rfl-winner { grid-template-columns: 44px 1fr auto; }
+  .rfl-meta { display: none; }
+}
+
+/* -------------------------------------------------------------- rewards */
+
+.rwd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.rwd-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(140deg, rgba(227, 27, 69, 0.12), rgba(227, 27, 69, 0) 60%),
+    var(--surface);
+  transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.rwd-card:hover { border-color: var(--accent); }
+.rwd-card h2 { margin: 0; font-size: 18px; }
+.rwd-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.rwd-figure {
+  font-family: var(--font-mono);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+  line-height: 1;
+}
+.rwd-cta {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}

@@ -66,11 +66,11 @@ export function Board({
             ? 'Not open yet'
             : board.upcoming
               ? `Opens ${openingLabel(board.periodStart, zone)}`
-              : // A fortnight that opens at 8am closes at 7:59am on its last day, so the
+              : // A period that opens at 8am closes at 7:59am on its last day, so the
                 // hour is stated with the dates rather than left to be guessed at.
-                `${periodLabel(board.periodStart, board.periodEnd, zone)}${
-                  partner.schedule.kind === 'rolling'
-                    ? ` · ${timeLabel(board.periodStart, zone)}`
+                `${board.final ? 'Final · ' : ''}${periodLabel(board.periodStart, board.periodEnd, zone)}${
+                  partner.schedule.kind !== 'half-month'
+                    ? ` · ${clock(board.periodStart, zone)}`
                     : ''
                 }`}
         </span>
@@ -137,14 +137,14 @@ function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }
       <div>
         <span className="label">
           Starts {openingLabel(board.periodStart, zone)},{' '}
-          {timeLabel(board.periodStart, zone)}
+          {clock(board.periodStart, zone)}
         </span>
         <h2 className="lb-soon-title">
           {formatMoney(board.prizePool)} {partner.name} leaderboard
         </h2>
         <p className="lb-soon-sub">
           The first period runs {periodLabel(board.periodStart, board.periodEnd, zone)}, opening at{' '}
-          {timeLabel(board.periodStart, zone)}. Wagers before it opens do not count, so register
+          {clock(board.periodStart, zone)}. Wagers before it opens do not count, so register
           under code <strong>{partner.code}</strong> now — the account has to exist before anything
           can be counted, and it cannot be moved across later.
         </p>
@@ -165,6 +165,16 @@ function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }
   );
 }
 
+/**
+ * The hour, in the board's zone. Eastern is written "ET" rather than EDT or
+ * EST: a period that opens in daylight time can close in standard time, and a
+ * label naming one of them is wrong about the other end.
+ */
+function clock(iso: string, zone: string): string {
+  const t = timeLabel(iso, zone);
+  return zone === 'America/New_York' ? t.replace(/ E[DS]T$/, ' ET') : t;
+}
+
 /** e.g. "14 October" — the opening day, read in the board's own zone. */
 function openingLabel(iso: string, timeZone: string): string {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone });
@@ -175,10 +185,30 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
     <>
       <Podium entries={board.entries.slice(0, 3)} wagerLabel={wagerLabel(partner)} />
 
-      <div className="lb-ends">
-        <span className="label">Leaderboard ends in</span>
-        <Countdown endsAt={board.periodEnd} />
-      </div>
+      {/* A closed period has nothing to count down to: it says it is final and
+          when it closed, so nobody reads last fortnight's table as live. */}
+      {board.final ? (
+        <div className="lb-ends lb-final">
+          <span className="label">Final standings</span>
+          <span className="lb-final-when">
+            Closed{' '}
+            {openingLabel(
+              new Date(new Date(board.periodEnd).getTime() + 1000).toISOString(),
+              scheduleZone(partner.schedule),
+            )}
+            ,{' '}
+            {clock(
+              new Date(new Date(board.periodEnd).getTime() + 1000).toISOString(),
+              scheduleZone(partner.schedule),
+            )}
+          </span>
+        </div>
+      ) : (
+        <div className="lb-ends">
+          <span className="label">Leaderboard ends in</span>
+          <Countdown endsAt={board.periodEnd} />
+        </div>
+      )}
 
       <div className="lb-stats">
         <div className="lb-stats-head">

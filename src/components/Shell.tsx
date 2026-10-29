@@ -29,6 +29,7 @@ const NAV: Array<{ label?: string; items: NavItem[] }> = [
       { href: '/', label: 'Home' },
       { href: '/leaderboards', label: 'Leaderboards', showPot: true },
       { href: '/vip-rewards', label: 'VIP rewards' },
+      { href: '/raffle', label: 'Raffle' },
       { href: '/challenges', label: 'Challenges' },
     ],
   },
@@ -43,7 +44,6 @@ const NAV: Array<{ label?: string; items: NavItem[] }> = [
     label: 'Rewards',
     items: [
       { href: '/rewards', label: 'Overview' },
-      { href: '/claim', label: 'Claim' },
       { href: '/vip-transfer', label: 'VIP transfer' },
     ],
   },

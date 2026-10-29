@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { periodFor } from '../format';
+import { periodFor, previousPeriodFor } from '../format';
 import { getPartner, PARTNER_ORDER } from '../partners';
 import { roobetProvider } from '../providers/roobet';
 import { buildEntries } from '../providers/shared';
@@ -67,6 +67,29 @@ export async function getLeaderboard(
     console.error(`[leaderboard] ${partnerId} provider failed:`, message);
     return fallbackFor(partnerId, window, message);
   }
+}
+
+/**
+ * The last closed period's final standings, or null before any has closed.
+ *
+ * Fetched live rather than read from an archive: Roobet's API takes the closed
+ * window as readily as the open one, and a live read reflects any correction
+ * Roobet makes after the close. The period-close announcement is the record of
+ * what was posted at the time.
+ */
+export async function getPreviousLeaderboard(partnerId: PartnerId): Promise<Leaderboard | null> {
+  const previous = previousPeriodFor(getPartner(partnerId).schedule);
+  if (!previous) return null;
+  const board = await getLeaderboard(partnerId, { start: previous.start, end: previous.end });
+  return { ...board, final: true };
+}
+
+export async function getPreviousLeaderboards(): Promise<Record<PartnerId, Leaderboard | null>> {
+  const boards = await Promise.all(PARTNER_ORDER.map((id) => getPreviousLeaderboard(id)));
+  return Object.fromEntries(PARTNER_ORDER.map((id, i) => [id, boards[i]])) as Record<
+    PartnerId,
+    Leaderboard | null
+  >;
 }
 
 /** Each partner on its own schedule, so the two boards can be cut differently. */

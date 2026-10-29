@@ -155,16 +155,81 @@ export function rollingPeriod(
 }
 
 /** The period a partner is in right now, by its own schedule. */
+/**
+ * The period containing `now` on a schedule that breaks on fixed days of every
+ * month (see `Schedule['monthly-days']`).
+ *
+ * Builds the break instants for the months either side of now, in the zone,
+ * and takes the pair now falls between. Days are capped at 28 by the type, so
+ * every month has every break and February needs no special case.
+ */
+export function monthlyDaysPeriod(
+  days: number[],
+  opens: string,
+  time: string,
+  timeZone: string,
+  now: Date = new Date(),
+) {
+  const [hh, mm] = time.split(':').map(Number);
+  const [oy, om, od] = opens.split('-').map(Number);
+  const opening = zonedInstant(oy, om - 1, od, hh, mm, timeZone);
+
+  const breaksAround = (at: Date) => {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric' })
+      .formatToParts(at)
+      .reduce<Record<string, string>>((acc, p) => ({ ...acc, [p.type]: p.value }), {});
+    const y = Number(parts.year);
+    const m = Number(parts.month) - 1;
+    const out: Date[] = [];
+    for (let offset = -1; offset <= 2; offset++) {
+      for (const d of days) out.push(zonedInstant(y, m + offset, d, hh, mm, timeZone));
+    }
+    return out.sort((a, b) => a.getTime() - b.getTime());
+  };
+
+  if (now.getTime() < opening.getTime()) {
+    const next = breaksAround(opening).find((b) => b.getTime() > opening.getTime())!;
+    return { start: opening, end: new Date(next.getTime() - 1000), upcoming: true };
+  }
+
+  const breaks = breaksAround(now);
+  // The last break at or before now. (A loop rather than findLastIndex, which
+  // the project's TypeScript target does not include.)
+  let i = 0;
+  for (let k = 0; k < breaks.length; k++) if (breaks[k].getTime() <= now.getTime()) i = k;
+  const start = breaks[i];
+  const end = new Date(breaks[i + 1].getTime() - 1000);
+  return { start, end, upcoming: false };
+}
+
 export function periodFor(schedule: Schedule, now: Date = new Date()) {
   if (schedule.kind === 'rolling') {
     return rollingPeriod(schedule.anchor, schedule.days, schedule.time, schedule.timeZone, now);
   }
+  if (schedule.kind === 'monthly-days') {
+    return monthlyDaysPeriod(schedule.days, schedule.opens, schedule.time, schedule.timeZone, now);
+  }
   return { ...currentPeriod(now), upcoming: false };
+}
+
+/**
+ * The period before the current one, or null if the board has not finished one.
+ *
+ * One second before the current period's start lands in the previous period —
+ * unless that is before the board opened, when `periodFor` answers with the
+ * opening period itself, which is the current one, not a previous one.
+ */
+export function previousPeriodFor(schedule: Schedule, now: Date = new Date()) {
+  const current = periodFor(schedule, now);
+  if (current.upcoming) return null;
+  const previous = periodFor(schedule, new Date(current.start.getTime() - 1000));
+  if (previous.upcoming || previous.start.getTime() >= current.start.getTime()) return null;
+  return previous;
 }
 
 /** The zone a schedule's dates should be read in. Half-months are UTC. */
 export function scheduleZone(schedule: Schedule): string {
-  return schedule.kind === 'rolling' ? schedule.timeZone : 'UTC';
+  return schedule.kind === 'half-month' ? 'UTC' : schedule.timeZone;
 }
 
 /** e.g. "8:00 AM EDT" — the opening time, named in its own zone. */
