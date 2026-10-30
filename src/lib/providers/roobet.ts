@@ -1,7 +1,6 @@
 import 'server-only';
 
 import { getPartner } from '../partners';
-import { withoutExcluded } from '../staff';
 import { buildEntries } from './shared';
 import type { Leaderboard, LeaderboardProvider, Period } from '../types';
 
@@ -104,9 +103,9 @@ export const roobetProvider: LeaderboardProvider = {
       throw new Error('Roobet returned an unexpected payload');
     }
 
-    // Excluded before ranking *and* before the totals, so staff play does not
-    // inflate the board stats either.
-    const rows = withoutExcluded(payload, (row) => row.username);
+    // Staff are ranked like anyone else here (client decision, 2026-10-30);
+    // lib/staff.ts still keeps them out of the raffle and VIP rewards.
+    const rows = payload;
 
     // Registered but idle accounts come back at zero. They are not standings,
     // and a row reading $0 tells a reader nothing about the race.

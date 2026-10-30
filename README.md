@@ -328,12 +328,11 @@ submission does not spend someone's allowance.
 
 ### Excluded accounts
 
-`src/lib/staff.ts` holds the usernames that never appear on a board — currently
-one staff member under three aliases: Hooly (Lootbox), Warhooly (Shuffle) and
-Hooly123 (Roobet). They are also left out of VIP rewards and the wager raffle,
-which pay against the same wager figures. Being excluded is not being an admin; that list is separate. They are
-dropped before ranking *and* before the whole-board stats, so staff play does
-not inflate the totals either. Matching is case-insensitive.
+`src/lib/staff.ts` lists one staff member under three aliases: Hooly (Lootbox),
+Warhooly (Shuffle) and Hooly123 (Roobet). They are **ranked on the leaderboard
+like anyone else** (client decision, 2026-10-30, reversing the 2026-10-25
+exclusion) but kept out of the wager raffle and VIP rewards. Being excluded is
+not being an admin; that list is separate. Matching is case-insensitive.
 
 ## Architecture
 
@@ -344,7 +343,7 @@ src/lib/format.ts           masking + money/period formatting
 src/lib/providers/roobet    live API, server-only
 src/lib/providers/shared    fills a prize table to N seats, marking empties unclaimed
 src/lib/services/leaderboard the only entry point the UI calls
-src/lib/staff.ts            accounts excluded from every board
+src/lib/staff.ts            staff kept out of the raffle and VIP rewards
 src/app/api/leaderboard/    JSON proxy (OBS overlays, bots) — token never leaves the server
 src/components/             presentational, take data as props
 ```
