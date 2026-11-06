@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { LeaderboardTabs } from '@/components/LeaderboardTabs';
+import { formatSplit, potPhrase } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, scheduleLine } from '@/lib/partners';
 import { getAllLeaderboards, getPreviousLeaderboards } from '@/lib/services/leaderboard';
 
@@ -8,9 +9,9 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Leaderboards',
-  description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager, plus final standings from the last period. Periods break on the 14th and 28th at 8am Eastern.',
+  description: 'Live standings for the $750 bi-weekly Roobet leaderboard, top five paid on weighted wager, and the 350-coin bi-weekly Rain leaderboard, top three paid, plus final standings from the last period.',
   alternates: { canonical: '/leaderboards' },
-  openGraph: { title: 'Leaderboards', description: 'Live Roobet standings for the $750 bi-weekly wager leaderboard, top five paid on weighted wager, plus final standings from the last period.', url: '/leaderboards' },
+  openGraph: { title: 'Leaderboards', description: 'Live standings for the $750 Roobet and 350-coin Rain bi-weekly leaderboards, plus final standings from the last period.', url: '/leaderboards' },
 };
 
 export default async function LeaderboardsPage() {
@@ -32,10 +33,10 @@ export default async function LeaderboardsPage() {
         <ul className="rules-list">
           {PARTNER_ORDER.map((id) => (
             <li key={id}>
-              <strong>{PARTNERS[id].name}:</strong> a ${PARTNERS[id].prizePool} pool{' '}
+              <strong>{PARTNERS[id].name}:</strong> a {potPhrase(PARTNERS[id].prizePool, PARTNERS[id].currency)} pool{' '}
               {PARTNERS[id].comingSoon
                 ? 'with the split to be announced before it opens.'
-                : `paid ${PARTNERS[id].prizeTable.map((p) => `$${p}`).join(' / ')} to the top ${PARTNERS[id].prizeTable.length}.`}
+                : `paid ${formatSplit(PARTNERS[id].prizeTable, PARTNERS[id].currency)} to the top ${PARTNERS[id].prizeTable.length}.`}
             </li>
           ))}
           {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (

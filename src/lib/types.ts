@@ -4,7 +4,13 @@
  * learn which casino a row came from.
  */
 
-export type PartnerId = 'roobet';
+export type PartnerId = 'roobet' | 'rain';
+
+/**
+ * What a board's figures are counted in. Rain runs on its own site coins, so
+ * its pool, its split and its wager column are coins, never dollars.
+ */
+export type Currency = 'usd' | 'coins';
 
 /** Whether the numbers on screen came from a real API or from fixtures. */
 export type DataSource = 'live' | 'mock';
@@ -17,8 +23,10 @@ export interface Partner {
   /** Operator's own brand mark, served from /public. */
   logo: string;
   signupUrl: string;
-  /** Total pot for the current period, in whole dollars. */
+  /** Total pot for the current period, in whole `currency` units. */
   prizePool: number;
+  /** Unit of the pool, the split and the wager figures. */
+  currency: Currency;
   /** Payout per rank, index 0 = 1st. Length defines how many seats pay. */
   prizeTable: number[];
   /** What the ranking is measured on, stated verbatim in the rules copy. */

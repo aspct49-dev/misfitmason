@@ -107,7 +107,11 @@ Hover changes colour and border only, never scale or position. Full
 - **Previous period** behind a Current / Previous switch: final standings,
   "Final" in the period line, and the closing time where the countdown was.
 - **Prizes** — Roobet $750 per period: `300/200/125/75/50`, five paying places.
-- **One partner, no tabs.** The switcher renders only at two or more boards.
+  Rain 350 coins per period: `175/125/50`, three paying places, raw wager,
+  fortnights from 8 Nov 2026 at 8:00 AM ET.
+- **Coins are never dollars.** A coin board's figures read "175 coins", never
+  "$175", and are left out of the dollar total on the nav badge.
+- **Partner tabs** (logo only) render at two or more boards.
 - **No minimum** to qualify. Usernames masked to the last four characters.
 - **Mobile**: the wagered column collapses under the prize; rank, player and
   prize stay. No horizontal scroll at 390px.

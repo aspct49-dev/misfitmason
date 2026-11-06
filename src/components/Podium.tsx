@@ -1,5 +1,5 @@
-import { formatMoney } from '@/lib/format';
-import type { LeaderboardEntry } from '@/lib/types';
+import { formatAmount } from '@/lib/format';
+import type { Currency, LeaderboardEntry } from '@/lib/types';
 
 /**
  * Top three as hanging banners, in the nsbrooklyn pattern: the frame artwork
@@ -22,7 +22,15 @@ const EMBLEM: Record<number, string> = {
 
 const PLACE: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd' };
 
-function Seat({ entry, wagerLabel }: { entry: LeaderboardEntry; wagerLabel: string }) {
+function Seat({
+  entry,
+  wagerLabel,
+  currency,
+}: {
+  entry: LeaderboardEntry;
+  wagerLabel: string;
+  currency: Currency;
+}) {
   const first = entry.rank === 1;
 
   return (
@@ -46,7 +54,7 @@ function Seat({ entry, wagerLabel }: { entry: LeaderboardEntry; wagerLabel: stri
             <div className="lb-name">{entry.unclaimed ? 'Open' : entry.username}</div>
           </div>
 
-          <div className="lb-prize">{formatMoney(entry.prize)}</div>
+          <div className="lb-prize">{formatAmount(entry.prize, currency)}</div>
         </div>
       </div>
 
@@ -54,7 +62,7 @@ function Seat({ entry, wagerLabel }: { entry: LeaderboardEntry; wagerLabel: stri
           line without the name and prize losing their weight. */}
       <div className="lb-wager">
         <span className="label">{wagerLabel}</span>
-        <b>{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</b>
+        <b>{entry.unclaimed ? '—' : formatAmount(entry.wagered, currency)}</b>
       </div>
 
       {first && entry.unclaimed && <div className="lb-open-note">Nobody has taken it</div>}
@@ -65,9 +73,11 @@ function Seat({ entry, wagerLabel }: { entry: LeaderboardEntry; wagerLabel: stri
 export function Podium({
   entries,
   wagerLabel = 'Wagered',
+  currency = 'usd',
 }: {
   entries: LeaderboardEntry[];
   wagerLabel?: string;
+  currency?: Currency;
 }) {
   const [first, second, third] = entries;
   const order = [second, first, third].filter(Boolean);
@@ -75,7 +85,7 @@ export function Podium({
   return (
     <div className="lb-podium">
       {order.map((entry) => (
-        <Seat key={entry.rank} entry={entry} wagerLabel={wagerLabel} />
+        <Seat key={entry.rank} entry={entry} wagerLabel={wagerLabel} currency={currency} />
       ))}
     </div>
   );

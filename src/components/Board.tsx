@@ -1,6 +1,6 @@
-import { formatMoney, periodLabel, scheduleZone, timeLabel } from '@/lib/format';
+import { formatAmount, periodLabel, potPhrase, potTitle, scheduleZone, timeLabel } from '@/lib/format';
 import { wagerLabel } from '@/lib/partners';
-import type { Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
+import type { Currency, Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
 import { Countdown } from './Countdown';
 import { CopyCode } from './CopyCode';
 import { Podium } from './Podium';
@@ -32,7 +32,7 @@ export function Board({
         <img className="lb-hero-logo" src={partner.logo} alt={partner.name} />
 
         <h1 className="lb-hero-title">
-          <span className="amt">{formatMoney(board.prizePool)}</span> Bi-Weekly
+          <span className="amt">{potTitle(board.prizePool, partner.currency)}</span> Bi-Weekly
           <br />
           Leaderboard
         </h1>
@@ -40,7 +40,7 @@ export function Board({
         <p className="lb-hero-sub">
           {partner.comingSoon ? (
             <>
-              A {formatMoney(board.prizePool)} {partner.name} board is on the way. Sign up under
+              A {potPhrase(board.prizePool, partner.currency)} {partner.name} board is on the way. Sign up under
               code {partner.code} now and your wagers count from the day it opens.
             </>
           ) : (
@@ -100,7 +100,7 @@ function ComingSoon({ partner, prizePool }: { partner: Partner; prizePool: numbe
       <div>
         <span className="label">Coming soon</span>
         <h2 className="lb-soon-title">
-          {formatMoney(prizePool)} {partner.name} leaderboard
+          {potPhrase(prizePool, partner.currency)} {partner.name} leaderboard
         </h2>
         <p className="lb-soon-sub">
           The board opens once the {partner.name} integration is live. Register under code{' '}
@@ -140,7 +140,7 @@ function NotStarted({ partner, board }: { partner: Partner; board: Leaderboard }
           {clock(board.periodStart, zone)}
         </span>
         <h2 className="lb-soon-title">
-          {formatMoney(board.prizePool)} {partner.name} leaderboard
+          {potPhrase(board.prizePool, partner.currency)} {partner.name} leaderboard
         </h2>
         <p className="lb-soon-sub">
           The first period runs {periodLabel(board.periodStart, board.periodEnd, zone)}, opening at{' '}
@@ -183,7 +183,11 @@ function openingLabel(iso: string, timeZone: string): string {
 function Standings({ board, partner }: { board: Leaderboard; partner: Partner }) {
   return (
     <>
-      <Podium entries={board.entries.slice(0, 3)} wagerLabel={wagerLabel(partner)} />
+      <Podium
+        entries={board.entries.slice(0, 3)}
+        wagerLabel={wagerLabel(partner)}
+        currency={partner.currency}
+      />
 
       {/* A closed period has nothing to count down to: it says it is final and
           when it closed, so nobody reads last fortnight's table as live. */}
@@ -219,13 +223,13 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
           <Stat label="Total players" value={board.stats.players.toLocaleString('en-US')} />
           <Stat
             label={partner.weighted ? 'Total weighted' : 'Total wagered'}
-            value={formatMoney(board.stats.totalWagered)}
+            value={formatAmount(board.stats.totalWagered, partner.currency)}
           />
           <Stat
             label={partner.weighted ? 'Top weighted' : 'Top wager'}
-            value={formatMoney(board.stats.topWager)}
+            value={formatAmount(board.stats.topWager, partner.currency)}
           />
-          <Stat label="Prize pool" value={formatMoney(board.prizePool)} accent />
+          <Stat label="Prize pool" value={formatAmount(board.prizePool, partner.currency)} accent />
         </div>
       </div>
 
@@ -240,7 +244,7 @@ function Standings({ board, partner }: { board: Leaderboard; partner: Partner })
           <span className="label">Reward</span>
         </div>
         {board.entries.map((entry) => (
-          <Row key={entry.rank} entry={entry} />
+          <Row key={entry.rank} entry={entry} currency={partner.currency} />
         ))}
       </div>
 
@@ -298,7 +302,7 @@ function updatedLabel(iso: string): string {
   );
 }
 
-function Row({ entry }: { entry: LeaderboardEntry }) {
+function Row({ entry, currency }: { entry: LeaderboardEntry; currency: Currency }) {
   return (
     <div
       className="rank-row"
@@ -325,10 +329,10 @@ function Row({ entry }: { entry: LeaderboardEntry }) {
         </div>
       </div>
 
-      <div className="rank-wager">{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</div>
+      <div className="rank-wager">{entry.unclaimed ? '—' : formatAmount(entry.wagered, currency)}</div>
       {/* An em dash rather than $0: a zero in the prize column reads as a
           prize of nothing won, not as a place outside the money. */}
-      <div className="rank-prize">{entry.prize > 0 ? formatMoney(entry.prize) : '—'}</div>
+      <div className="rank-prize">{entry.prize > 0 ? formatAmount(entry.prize, currency) : '—'}</div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { formatMoney } from '@/lib/format';
+import { formatAmount, potPhrase } from '@/lib/format';
 import { wagerLabel } from '@/lib/partners';
 import type { Leaderboard, LeaderboardEntry, Partner } from '@/lib/types';
 
@@ -24,7 +24,7 @@ export function PromoBoard({ board, partner }: { board: Leaderboard; partner: Pa
             {partner.name} · {board.source === 'mock' ? 'Sample standings' : 'Live standings'}
           </span>
           <h2 style={{ marginTop: 12 }}>
-            <span>{formatMoney(board.prizePool)}</span> leaderboard
+            <span>{potPhrase(board.prizePool, partner.currency)}</span> leaderboard
           </h2>
           <p>
             Climb the {partner.name} board under code {partner.code} and take a share of the pot.
@@ -48,9 +48,9 @@ export function PromoBoard({ board, partner }: { board: Leaderboard; partner: Pa
                 )}
                 <span className="pod-name">{entry.unclaimed ? 'Open place' : entry.username}</span>
                 <span className="pod-label">{wagerLabel(partner)}</span>
-                <span className="pod-wager">{entry.unclaimed ? '—' : formatMoney(entry.wagered)}</span>
+                <span className="pod-wager">{entry.unclaimed ? '—' : formatAmount(entry.wagered, partner.currency)}</span>
               </div>
-              <div className="pod-ribbon">{formatMoney(entry.prize)}</div>
+              <div className="pod-ribbon">{formatAmount(entry.prize, partner.currency)}</div>
             </div>
           ))}
         </div>

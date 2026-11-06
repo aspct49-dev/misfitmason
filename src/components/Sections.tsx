@@ -1,4 +1,4 @@
-import { formatMoney } from '@/lib/format';
+import { formatAmount, formatSplit } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { CopyCode } from './CopyCode';
 
@@ -65,9 +65,9 @@ export function Partners() {
               </div>
               <p style={{ color: 'var(--muted)', fontSize: 14, margin: '8px 0 16px' }}>{p.blurb}</p>
 
-              <Kv k="Prize pool" v={formatMoney(p.prizePool)} />
+              <Kv k="Prize pool" v={formatAmount(p.prizePool, p.currency)} />
               <Kv k="Paid places" v={p.comingSoon ? 'TBA' : `Top ${p.prizeTable.length}`} />
-              <Kv k="Split" v={p.comingSoon ? 'TBA' : p.prizeTable.map((x) => `$${x}`).join(' / ')} />
+              <Kv k="Split" v={p.comingSoon ? 'TBA' : formatSplit(p.prizeTable, p.currency)} />
               <Kv k="Referral code" v={p.code} />
 
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>

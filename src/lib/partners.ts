@@ -16,6 +16,7 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     logo: '/roobet-logo.png',
     signupUrl: 'https://roobet.com/?ref=MisfitMason',
     prizePool: 750,
+    currency: 'usd',
     // Client split, 2026-10-08. Five paying places; must always total prizePool.
     prizeTable: [300, 200, 125, 75, 50],
     metricLabel: 'Weighted amount wagered',
@@ -49,9 +50,38 @@ export const PARTNERS: Record<PartnerId, Partner> = {
     comingSoon: false,
     blurb: 'Slots, originals, crash and sports. Standings come from the Roobet affiliate API.',
   },
+  rain: {
+    id: 'rain',
+    name: 'Rain',
+    // Rain referral links are rain.gg/r/<code>. The code itself is assumed to
+    // match Roobet's until the client confirms it.
+    code: 'MisfitMason',
+    logo: '/rain-logo.png',
+    signupUrl: 'https://rain.gg/r/MisfitMason',
+    // Client split, 2026-11-06. Paid in Rain's site coins, not dollars.
+    prizePool: 350,
+    currency: 'coins',
+    prizeTable: [175, 125, 50],
+    metricLabel: 'Amount wagered',
+    // Rain's affiliate API reports only the raw stake; there is no weighted
+    // figure to rank on.
+    weighted: false,
+    // Fortnights from Sunday 8 November 2026 (client decision), at the same
+    // 8am Eastern as Roobet so the one close-of-period cron covers both.
+    schedule: {
+      kind: 'rolling',
+      anchor: '2026-11-08',
+      days: 14,
+      time: '08:00',
+      timeZone: 'America/New_York',
+    },
+    hasLiveApi: true,
+    comingSoon: false,
+    blurb: 'Case battles, originals and slots. Standings come from the Rain affiliate API.',
+  },
 };
 
-export const PARTNER_ORDER: PartnerId[] = ['roobet'];
+export const PARTNER_ORDER: PartnerId[] = ['roobet', 'rain'];
 
 export function getPartner(id: PartnerId): Partner {
   return PARTNERS[id];
@@ -90,8 +120,11 @@ export function wagerLabel(partner: Partner): string {
   return partner.weighted ? 'Weighted' : 'Wagered';
 }
 
-/** Combined pot across every partner — the figure on the nav badge. */
-export const TOTAL_PRIZE_POOL = PARTNER_ORDER.reduce(
+/**
+ * Combined dollar pot — the figure on the nav badge. Coin boards are left out:
+ * coins and dollars do not add up to a number that means anything.
+ */
+export const TOTAL_PRIZE_POOL = PARTNER_ORDER.filter((id) => PARTNERS[id].currency === 'usd').reduce(
   (sum, id) => sum + PARTNERS[id].prizePool,
   0,
 );

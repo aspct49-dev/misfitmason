@@ -1,4 +1,4 @@
-import { formatMoney } from '@/lib/format';
+import { formatAmount, formatSplit } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { CopyCode } from './CopyCode';
 
@@ -41,7 +41,7 @@ export function Offers() {
               <ul className="offer-rows">
                 <li>
                   <span>Prize pool per period</span>
-                  <b>{formatMoney(p.prizePool)}</b>
+                  <b>{formatAmount(p.prizePool, p.currency)}</b>
                 </li>
                 <li>
                   <span>Paid places</span>
@@ -49,7 +49,7 @@ export function Offers() {
                 </li>
                 <li>
                   <span>Split</span>
-                  <b>{p.comingSoon ? 'TBA' : p.prizeTable.map((x) => `$${x}`).join(' / ')}</b>
+                  <b>{p.comingSoon ? 'TBA' : formatSplit(p.prizeTable, p.currency)}</b>
                 </li>
                 <li>
                   <span>Minimum to qualify</span>

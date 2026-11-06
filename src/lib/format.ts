@@ -1,6 +1,6 @@
 /** Formatting and masking. Shared by providers and components. */
 
-import type { Schedule } from './types';
+import type { Currency, Schedule } from './types';
 
 /**
  * Usernames are masked to their last four characters — the convention across
@@ -27,6 +27,33 @@ export function formatMoney(n: number, opts: { cents?: boolean } = {}): string {
       maximumFractionDigits: opts.cents ? 2 : 0,
     })
   );
+}
+
+/**
+ * An amount in a board's own unit: "$1,240" on Roobet, "1,240 coins" on Rain.
+ * Coins are never shown with a dollar sign — they are not dollars, and a "$"
+ * beside them would state a cash value nobody has promised.
+ */
+export function formatAmount(n: number, currency: Currency = 'usd', opts: { cents?: boolean } = {}): string {
+  if (currency === 'usd') return formatMoney(n, opts);
+  return `${n.toLocaleString('en-US', { maximumFractionDigits: opts.cents ? 2 : 0 })} coins`;
+}
+
+/** The pot as a headline: "$750", or "350 Coin" for a coin board. */
+export function potTitle(n: number, currency: Currency = 'usd'): string {
+  return currency === 'usd' ? formatMoney(n) : `${n.toLocaleString('en-US')} Coin`;
+}
+
+/** The pot inside a sentence: "a $750 pool", "a 350-coin pool". */
+export function potPhrase(n: number, currency: Currency = 'usd'): string {
+  return currency === 'usd' ? formatMoney(n) : `${n.toLocaleString('en-US')}-coin`;
+}
+
+/** A prize table: "$300 / $200 / $125", or "175 / 125 / 50 coins". */
+export function formatSplit(table: number[], currency: Currency = 'usd'): string {
+  return currency === 'usd'
+    ? table.map((p) => formatMoney(p)).join(' / ')
+    : `${table.map((p) => p.toLocaleString('en-US')).join(' / ')} coins`;
 }
 
 export function formatMultiplier(n: number): string {

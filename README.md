@@ -35,6 +35,7 @@ npm run build && npm start
 
 ```
 ROOBET_API_TOKEN=<affiliate JWT>
+RAIN_API_KEY=<Rain.gg affiliate key, sent as x-api-key>
 DISCORD_CLAIM_WEBHOOK_URL=<webhook for announcements and VIP applications>
 CLAIM_SECRET=<any long random string — signs session cookies>
 DISCORD_CLIENT_ID=<OAuth app id>
@@ -55,7 +56,7 @@ and the VIP-transfer cooldown; changing it signs everyone out.
 1. Import the repo. Vercel detects Next.js; no build settings to change.
 2. Add these under Settings → Environment Variables, for Production, Preview and
    Development:
-   - **`ROOBET_API_TOKEN`**, **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**,
+   - **`ROOBET_API_TOKEN`**, **`RAIN_API_KEY`**, **`DISCORD_CLAIM_WEBHOOK_URL`**, **`CLAIM_SECRET`**,
      **`DISCORD_CLIENT_ID`** and **`DISCORD_CLIENT_SECRET`**.
    - **`NEXT_PUBLIC_SITE_URL`** — the canonical origin, e.g.
      `https://www.misfitmason.com` — the host Vercel actually serves, since the
@@ -84,6 +85,24 @@ standings refresh about once a minute without a rebuild.
 
 **Rotate the Roobet token, the Discord webhook and the Discord client secret
 before launch.** All three have been through a chat window.
+
+### Rain API
+
+A second board, added 2026-11-06: **350 coins per period, paid 175 / 125 / 50**
+to the top three, ranked on the raw amount wagered (Rain reports no weighted
+figure). Rolling 14-day periods from **Sunday 8 November 2026, 08:00
+America/New_York** — the same hour as Roobet, so the one period-close cron
+announces both. Prizes are Rain site coins: `currency: 'coins'` on the partner
+makes every pool, split and wager figure read "coins", never "$", and the nav
+badge sums dollar boards only.
+
+`GET https://api.rain.gg/v1/affiliates/leaderboard?type=wagered&start_date=&end_date=`
+with the key in an `x-api-key` header (`src/lib/providers/rain.ts`). Top 50
+only; `results` is `null`, not `[]`, for an empty window. Rain rate-limits it and
+asks for ten minutes of caching, so the fetch revalidates every 600s. The races
+endpoint is not used: no race is configured on rain.gg for this code, so the
+periods and split are this site's own. The raffle endpoint is not enabled for
+this key. The provider reads `RAIN_API_KEY`, falling back to `rain_api_key`.
 
 ### Roobet API
 

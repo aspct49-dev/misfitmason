@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { formatSplit, potPhrase } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER, scheduleLine } from '@/lib/partners';
 
 export const metadata: Metadata = {
@@ -25,10 +26,10 @@ export default function LegalPage() {
         <ul>
           {PARTNER_ORDER.map((id) => (
             <li key={id}>
-              <strong>{PARTNERS[id].name}</strong> — a ${PARTNERS[id].prizePool} pool{' '}
+              <strong>{PARTNERS[id].name}</strong> — a {potPhrase(PARTNERS[id].prizePool, PARTNERS[id].currency)} pool{' '}
               {PARTNERS[id].comingSoon
                 ? 'with the split to be announced before it opens.'
-                : `paid ${PARTNERS[id].prizeTable.map((p) => `$${p}`).join(' / ')} to the top ${PARTNERS[id].prizeTable.length}.`}
+                : `paid ${formatSplit(PARTNERS[id].prizeTable, PARTNERS[id].currency)} to the top ${PARTNERS[id].prizeTable.length}.`}
             </li>
           ))}
           {PARTNER_ORDER.filter((id) => !PARTNERS[id].comingSoon).map((id) => (

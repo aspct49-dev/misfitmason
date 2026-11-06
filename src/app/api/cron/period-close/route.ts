@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { formatMoney, periodFor, periodLabel, scheduleZone } from '@/lib/format';
+import { formatAmount, formatMoney, periodFor, periodLabel, scheduleZone } from '@/lib/format';
 import { PARTNERS, PARTNER_ORDER } from '@/lib/partners';
 import { getLeaderboard } from '@/lib/services/leaderboard';
 import type { Leaderboard, Partner } from '@/lib/types';
@@ -164,12 +164,12 @@ function buildMessage(partner: Partner, board: Leaderboard) {
   const medal = ['🥇', '🥈', '🥉'];
   const lines = paid.map((entry) => {
     const place = medal[entry.rank - 1] ?? `**${entry.rank}.**`;
-    if (entry.unclaimed) return `${place} *Open place* — ${formatMoney(entry.prize)} unclaimed`;
+    if (entry.unclaimed) return `${place} *Open place* — ${formatAmount(entry.prize, partner.currency)} unclaimed`;
     /* Masked names start with asterisks, which Discord reads as bold/italic
        markers: "**wMww" bolds the rest of the line and eats the name. Inline
        code is the one wrapper that renders them literally. */
     const name = `\`${entry.username.replace(/`/g, "'")}\``;
-    return `${place} ${name} — ${formatMoney(entry.wagered)} ${partner.weighted ? 'weighted' : 'wagered'} · **${formatMoney(entry.prize)}**`;
+    return `${place} ${name} — ${formatAmount(entry.wagered, partner.currency)} ${partner.weighted ? 'weighted' : 'wagered'} · **${formatAmount(entry.prize, partner.currency)}**`;
   });
 
   const body = {
@@ -190,10 +190,10 @@ function buildMessage(partner: Partner, board: Leaderboard) {
           { name: 'Players', value: String(board.stats.players), inline: true },
           {
             name: partner.weighted ? 'Total weighted' : 'Total wagered',
-            value: formatMoney(board.stats.totalWagered),
+            value: formatAmount(board.stats.totalWagered, partner.currency),
             inline: true,
           },
-          { name: 'Paid out', value: formatMoney(winners.reduce((s, e) => s + e.prize, 0)), inline: true },
+          { name: 'Paid out', value: formatAmount(winners.reduce((s, e) => s + e.prize, 0), partner.currency), inline: true },
         ],
         footer: { text: 'misfitmason.com · usernames masked, as on the site' },
         timestamp: new Date().toISOString(),
